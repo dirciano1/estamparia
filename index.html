@@ -3,37 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estamparia Gerais | Visualizador 3D Realista</title>
+    <title>Visualizador 3D Realista | Estamparia Gerais</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <style>
-        body { margin: 0; background: #f8fafc; font-family: 'Poppins', sans-serif; overflow: hidden; }
+        body { margin: 0; background: #ffffff; font-family: 'Poppins', sans-serif; overflow: hidden; }
         #canvas-container { width: 100%; height: 100vh; cursor: grab; }
-        #canvas-container:active { cursor: grabbing; }
-        
-        /* Painel flutuante opcional para controle */
-        .controls-panel {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: white; padding: 10px 20px; border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1); display: flex; gap: 10px; z-index: 100;
-        }
-        .btn {
-            background: #2563eb; color: white; border: none; padding: 8px 15px;
-            border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold;
-        }
-        .btn:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
-
-    <div class="controls-panel">
-        <button class="btn" onclick="controls.autoRotate = !controls.autoRotate">Girar Lig/Desl</button>
-        <button class="btn" onclick="camera.position.set(0, 0, 4);">Resetar Vista</button>
-    </div>
 
     <div id="canvas-container"></div>
 
@@ -43,135 +24,88 @@
         function init() {
             const container = document.getElementById('canvas-container');
 
-            // 1. Cena e Fundo
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xffffff);
 
-            // 2. Câmera
             camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.set(0, 0, 4);
 
-            // 3. Renderizador de Alta Qualidade
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.outputEncoding = THREE.sRGBEncoding;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2; // Brilho do estúdio
+            renderer.toneMappingExposure = 1.2;
             container.appendChild(renderer.domElement);
 
-            // 4. Iluminação (Estúdio de Fotografia)
-            scene.add(new THREE.AmbientLight(0xffffff, 1.0)); // Luz suave global
-            
-            const mainLight = new THREE.DirectionalLight(0xffffff, 0.7);
-            mainLight.position.set(5, 10, 7);
-            scene.add(mainLight);
+            scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+            const light = new THREE.DirectionalLight(0xffffff, 0.8);
+            light.position.set(5, 10, 7);
+            scene.add(light);
 
-            const fillLight = new THREE.PointLight(0xffffff, 0.4);
-            fillLight.position.set(-5, 5, -5);
-            scene.add(fillLight);
-
-            // 5. Carregadores
             loaderGLTF = new THREE.GLTFLoader();
             texLoader = new THREE.TextureLoader();
 
-            // LÓGICA DE CARREGAMENTO E APLICAÇÃO
-            
-            // A. Carregar a Estampa
-            // AJUSTE: Mude para 'canecas/01.jpg' se estiver em pasta
-            const estampaUrl = 'canecas/01.jpg'; 
-            const estampa = texLoader.load(estampaUrl);
-            
+            // 1. CARREGAR A ESTAMPA
+            const estampa = texLoader.load('canecas/01.jpg'); // Certifique-se que o caminho está correto
+            estampa.flipY = false; 
             estampa.encoding = THREE.sRGBEncoding;
-            estampa.flipY = false; // Corrige a textura invertida no GLTF
-            estampa.wrapS = THREE.ClampToEdgeWrapping;
-            estampa.wrapT = THREE.ClampToEdgeWrapping;
 
-            // B. Carregar a Caneca Branca (Extraída)
-            const modelUrl = 'caneca.gltf';
-            loaderGLTF.load(modelUrl, (gltf) => {
+            // 2. CARREGAR O MODELO EXTRAÍDO (caneca.gltf)
+            loaderGLTF.load('caneca.gltf', (gltf) => {
                 const model = gltf.scene;
 
-                // Percorrer o modelo para encontrar as partes
                 model.traverse((node) => {
                     if (node.isMesh) {
-                        // MATERIAL DE CERÂMICA REALISTA (MeshPhysicalMaterial)
-                        const materialCeramica = new THREE.MeshPhysicalMaterial({
+                        // Criamos o material base (Branco Porcelana)
+                        const matPorcelana = new THREE.MeshPhysicalMaterial({
                             color: 0xffffff,
                             metalness: 0,
-                            roughness: 0.05,
-                            reflectivity: 0.8,
-                            clearcoat: 1.0,          // Verniz de porcelana
-                            clearcoatRoughness: 0.02, // Brilho nítido
+                            roughness: 0.1,
+                            clearcoat: 1.0,
+                            clearcoatRoughness: 0.05,
                             side: THREE.DoubleSide
                         });
 
-                        // LÓGICA DE ISOLAMENTO DA ESTAMPA
-                        // Geralmente, o corpo cilíndrico é a maior mesh ou tem um nome específico.
-                        // O Mug3D costuma separar o corpo da alça.
+                        // LÓGICA DE FILTRO:
+                        // O modelo do Mug3D divide a caneca em partes. 
+                        // Geralmente a estampa fica na "Mesh" que tem a maior quantidade de triângulos ou nomes como 'Area', 'Print' ou 'Body'.
                         
-                        // Tentativa 1: Identificar pelo nome (comum em GLTF)
-                        if (node.name.toLowerCase().includes('body') || 
-                            node.name.toLowerCase().includes('corpo') ||
-                            node.name.toLowerCase().includes('print') ||
-                            node.name.toLowerCase().includes('cyl')
-                        ) {
-                            materialCeramica.map = estampa; // Aplica apenas no corpo
+                        // Vamos listar os nomes no console para você ver se precisar ajustar
+                        console.log("Peça encontrada:", node.name, "| Material original ID:", node.material.id);
+
+                        // No arquivo que você baixou, a parte da estampa costuma ser a primeira ou a que tem material index 0 ou nomes específicos.
+                        // Se pegou em tudo, vamos forçar apenas na peça cilíndrica.
+                        
+                        // TESTE: Se o nome da peça for "Object_0" ou similar (comum em exportação do Three.js)
+                        // Ajustamos para aplicar a estampa apenas na peça externa.
+                        if (node.name.includes("body") || node.name.includes("Area") || node.name.includes("mesh_0") || node.name.includes("Object_0")) {
+                            matPorcelana.map = estampa;
                         } else {
-                            // Se o modelo Mug3D for bem estruturado, a alça e o interior
-                            // não entrarão no 'if' acima e permanecerão brancos.
-                            materialCeramica.map = null; 
+                            // Alça, Interior e Fundo ficam sem o mapa (brancos)
+                            matPorcelana.map = null;
                         }
 
-                        // Tentativa 2: Se o modelo for uma malha única (vaza para alça)
-                        // Ative a lógica UV abaixo (comente a Tentativa 1 acima):
-                        /*
-                        materialCeramica.map = estampa; // Aplica em tudo
-                        if (node.geometry.attributes.uv) {
-                            const uvs = node.geometry.attributes.uv.array;
-                            for (let i = 0; i < uvs.length; i += 2) {
-                                // Se a UV estiver na alça ou bordas, move para área branca
-                                if (uvs[i] > 0.94 || uvs[i] < 0.06 || uvs[i+1] < 0.1 || uvs[i+1] > 0.9) {
-                                    uvs[i] = 0; uvs[i+1] = 0; // Ponto branco na textura
-                                }
-                            }
-                            node.geometry.attributes.uv.needsUpdate = true;
-                        }
-                        */
-
-                        node.material = materialCeramica;
+                        node.material = matPorcelana;
                     }
                 });
 
-                // Centralização e Escala Automática
                 const box = new THREE.Box3().setFromObject(model);
                 const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3()).length();
                 model.position.sub(center);
-                model.scale.setScalar(3.0 / size);
+                model.scale.setScalar(3.0 / box.getSize(new THREE.Vector3()).length());
                 
                 scene.add(model);
-            }, undefined, (error) => {
-                console.error("Erro ao carregar o modelo ou a textura:", error);
             });
 
-            // 6. Controles de Mouse (OrbitControls)
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
             controls.autoRotate = true;
-            controls.autoRotateSpeed = 1.0;
-            // Limitar o zoom para não "entrar" na caneca
-            controls.minDistance = 2.5;
-            controls.maxDistance = 6.0;
 
-            window.addEventListener('resize', onWindowResize, false);
-        }
-
-        function onWindowResize() {
-            const container = document.getElementById('canvas-container');
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
         }
 
         function animate() {
@@ -180,7 +114,6 @@
             renderer.render(scene, camera);
         }
 
-        // Iniciar tudo
         init();
         animate();
     </script>
