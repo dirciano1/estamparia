@@ -35,7 +35,7 @@
 <body>
 
     <div class="ui-overlay">
-        <span class="control-label">Cor da Alça, Interior e Fundo/Base</span>
+        <span class="control-label">Cor da Alça, Interior e Fundo</span>
         <div class="options" id="menu-cores-unico"></div>
     </div>
 
@@ -52,15 +52,10 @@
             { nome: 'Laranja', hex: '#F86900' }
         ];
 
-        // MAPEAMENTO ATUALIZADO (Removido Cylinder001_1 para a borda ficar branca)
-        const PECAS_COLORIDAS = [
-            "Cylinder001_5", // Alça
-            "Cylinder001_3", // Fundo / Base
-            "Cylinder001_4"  // Interior
-        ];
+        const PECAS_COLORIDAS = ["Cylinder001_5", "Cylinder001_3", "Cylinder001_4"];
         const MESH_CORPO = "Cylinder001_2"; 
 
-        let scene, camera, renderer, controls, currentEstampa = null;
+        let scene, camera, renderer, controls, model3D, currentEstampa = null;
 
         function init() {
             const container = document.getElementById('canvas-container');
@@ -82,20 +77,28 @@
             light.position.set(5, 10, 7);
             scene.add(light);
 
+            // --- LÓGICA DE LINK DINÂMICO (foto|cor) ---
+            const hash = window.location.hash.substring(1);
+            const partes = hash.split('|');
+            const nomeFoto = partes[0] || "";
+            const corLink = partes[1] || "#ffffff"; // Branco por padrão se não houver cor no link
+
             const texLoader = new THREE.TextureLoader();
-            let nomeArquivo = window.location.hash.substring(1);
-            
-            if (nomeArquivo && nomeArquivo.trim() !== "") {
-                currentEstampa = texLoader.load('canecas/' + nomeArquivo);
+            if (nomeFoto && nomeFoto.trim() !== "") {
+                currentEstampa = texLoader.load('canecas/' + nomeFoto);
                 currentEstampa.flipY = false;
                 currentEstampa.encoding = THREE.sRGBEncoding;
             }
 
             const loader = new THREE.GLTFLoader();
             loader.load('caneca.gltf', (gltf) => {
-                const model = gltf.scene;
+                model3D = gltf.scene;
+                
+                // Preparar a cor do link
+                const colorObj = new THREE.Color(corLink);
+                colorObj.convertSRGBToLinear();
 
-                model.traverse((node) => {
+                model3D.traverse((node) => {
                     if (node.isMesh) {
                         const mat = new THREE.MeshPhysicalMaterial({
                             color: 0xffffff,
@@ -105,19 +108,26 @@
                             side: THREE.DoubleSide
                         });
 
+                        // Se for corpo, aplica imagem
                         if (node.name === MESH_CORPO && currentEstampa) {
                             mat.map = currentEstampa;
                         }
+                        
+                        // Se for parte colorida, aplica a cor vinda do link
+                        if (PECAS_COLORIDAS.includes(node.name)) {
+                            mat.color.copy(colorObj);
+                        }
+
                         node.material = mat;
                     }
                 });
 
-                const box = new THREE.Box3().setFromObject(model);
-                model.position.sub(box.getCenter(new THREE.Vector3()));
-                model.scale.setScalar(3.5 / box.getSize(new THREE.Vector3()).length());
-                scene.add(model);
+                const box = new THREE.Box3().setFromObject(model3D);
+                model3D.position.sub(box.getCenter(new THREE.Vector3()));
+                model3D.scale.setScalar(3.5 / box.getSize(new THREE.Vector3()).length());
+                scene.add(model3D);
                 
-                gerarMenuUnico();
+                gerarMenuUnico(corLink);
             });
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -128,11 +138,15 @@
             window.addEventListener('hashchange', () => window.location.reload());
         }
 
-        function gerarMenuUnico() {
+        function gerarMenuUnico(corAtiva) {
             const container = document.getElementById('menu-cores-unico');
-            CORES.forEach((cor, index) => {
+            CORES.forEach((cor) => {
                 const btn = document.createElement('div');
-                btn.className = 'btn-color' + (index === 0 ? ' active' : '');
+                btn.className = 'btn-color';
+                
+                // Se o hex do botão for igual ao hex do link, marca como ativo
+                if(cor.hex.toLowerCase() === corAtiva.toLowerCase()) btn.classList.add('active');
+                
                 btn.style.backgroundColor = cor.hex;
                 
                 btn.onclick = () => {
@@ -140,10 +154,10 @@
                     btn.classList.add('active');
                     
                     const colorObj = new THREE.Color(cor.hex);
-                    colorObj.convertSRGBToLinear(); // Correção de tom para bater com o painel
+                    colorObj.convertSRGBToLinear();
                     
                     PECAS_COLORIDAS.forEach(meshId => {
-                        scene.traverse(node => {
+                        model3D.traverse(node => {
                             if (node.isMesh && node.name === meshId) {
                                 node.material.color.copy(colorObj);
                                 node.material.needsUpdate = true;
@@ -163,7 +177,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            controls.update();
+            if (controls) controls.update();
             renderer.render(scene, camera);
         }
 
