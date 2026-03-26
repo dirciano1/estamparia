@@ -3,59 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personalizador Master - Estamparia Gerais</title>
+    <title>Visualizador 3D - Estamparia Gerais</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; background-color: #ffffff; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #ffffff; }
         #canvas-container { width: 100vw; height: 100vh; cursor: grab; }
-
-        .ui-overlay {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95); padding: 15px 25px;
-            border-radius: 50px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 1000;
-            border: 1px solid #e2e8f0;
-        }
-
-        .control-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
-        .options { display: flex; gap: 12px; justify-content: center; }
-        
-        .btn-color {
-            width: 35px; height: 35px; border-radius: 50%; border: 3px solid white;
-            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            transition: all 0.2s ease;
-        }
-        .btn-color:hover { transform: scale(1.1); }
-        .btn-color.active { border-color: #2563eb; box-shadow: 0 0 0 2px #2563eb; }
+        #canvas-container:active { cursor: grabbing; }
     </style>
 </head>
 <body>
 
-    <div class="ui-overlay">
-        <span class="control-label">Cor da Alça, Interior e Fundo</span>
-        <div class="options" id="menu-cores-unico"></div>
-    </div>
-
     <div id="canvas-container"></div>
 
     <script>
-        const CORES = [
-            { nome: 'Branco', hex: '#ffffff' },
-            { nome: 'Vermelho', hex: '#DF1212' },
-            { nome: 'Azul', hex: '#1D85D0' },
-            { nome: 'Rosa Claro', hex: '#FFC2C2' },
-            { nome: 'Verde', hex: '#075103' },
-            { nome: 'Amarelo', hex: '#EDD900' },
-            { nome: 'Laranja', hex: '#F86900' }
-        ];
+        let scene, camera, renderer, controls, model3D, currentEstampa = null;
 
+        // Peças que serão coloridas via parâmetro do link
         const PECAS_COLORIDAS = ["Cylinder001_5", "Cylinder001_3", "Cylinder001_4"];
         const MESH_CORPO = "Cylinder001_2"; 
-
-        let scene, camera, renderer, controls, model3D, currentEstampa = null;
 
         function init() {
             const container = document.getElementById('canvas-container');
@@ -67,6 +35,7 @@
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.outputEncoding = THREE.sRGBEncoding;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
             renderer.toneMappingExposure = 1.0; 
@@ -78,29 +47,29 @@
             scene.add(light);
 
             const texLoader = new THREE.TextureLoader();
-            // PERMISSÃO PARA IMAGENS EXTERNAS (IMGUR)
             texLoader.setCrossOrigin('anonymous');
 
-            // --- LÓGICA DE LINK DINÂMICO (ID_IMGUR|cor) ---
+            // --- LÓGICA DO LINK (#ID_IMGUR|#COR) ---
             const hash = window.location.hash.substring(1);
             const partes = hash.split('|');
             const idImgur = partes[0] || "";
-            const corLink = partes[1] || "#ffffff"; 
+            const corHexLink = partes[1] || "#ffffff"; 
 
+            // Carrega imagem se houver ID
             if (idImgur && idImgur.trim() !== "") {
-                // Monta URL direta do Imgur
                 const urlImgur = `https://i.imgur.com/${idImgur}.jpeg`;
                 currentEstampa = texLoader.load(urlImgur);
                 currentEstampa.flipY = false;
                 currentEstampa.encoding = THREE.sRGBEncoding;
             }
 
+            // Prepara a cor do link
+            const corObjeto = new THREE.Color(corHexLink);
+            corObjeto.convertSRGBToLinear();
+
             const loader = new THREE.GLTFLoader();
             loader.load('caneca.gltf', (gltf) => {
                 model3D = gltf.scene;
-                
-                const colorObj = new THREE.Color(corLink);
-                colorObj.convertSRGBToLinear();
 
                 model3D.traverse((node) => {
                     if (node.isMesh) {
@@ -112,12 +81,14 @@
                             side: THREE.DoubleSide
                         });
 
+                        // Aplica cor do link nas partes coloridas
+                        if (PECAS_COLORIDAS.includes(node.name)) {
+                            mat.color.copy(corObjeto);
+                        }
+
+                        // Aplica estampa do link no corpo
                         if (node.name === MESH_CORPO && currentEstampa) {
                             mat.map = currentEstampa;
-                        }
-                        
-                        if (PECAS_COLORIDAS.includes(node.name)) {
-                            mat.color.copy(colorObj);
                         }
 
                         node.material = mat;
@@ -128,44 +99,15 @@
                 model3D.position.sub(box.getCenter(new THREE.Vector3()));
                 model3D.scale.setScalar(3.5 / box.getSize(new THREE.Vector3()).length());
                 scene.add(model3D);
-                
-                gerarMenuUnico(corLink);
             });
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
+            controls.autoRotateSpeed = 1.2;
 
             window.addEventListener('resize', onWindowResize);
             window.addEventListener('hashchange', () => window.location.reload());
-        }
-
-        function gerarMenuUnico(corAtiva) {
-            const container = document.getElementById('menu-cores-unico');
-            CORES.forEach((cor) => {
-                const btn = document.createElement('div');
-                btn.className = 'btn-color';
-                if(cor.hex.toLowerCase() === corAtiva.toLowerCase()) btn.classList.add('active');
-                btn.style.backgroundColor = cor.hex;
-                
-                btn.onclick = () => {
-                    document.querySelectorAll('.btn-color').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    
-                    const colorObj = new THREE.Color(cor.hex);
-                    colorObj.convertSRGBToLinear();
-                    
-                    PECAS_COLORIDAS.forEach(meshId => {
-                        model3D.traverse(node => {
-                            if (node.isMesh && node.name === meshId) {
-                                node.material.color.copy(colorObj);
-                                node.material.needsUpdate = true;
-                            }
-                        });
-                    });
-                };
-                container.appendChild(btn);
-            });
         }
 
         function onWindowResize() {
