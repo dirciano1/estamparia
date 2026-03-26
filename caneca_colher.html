@@ -3,28 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caneca com Colher 3D - Estamparia Gerais</title>
+    <title>Visualizador Caneca Colher - Estamparia Gerais</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background-color: #ffffff; }
-        #canvas-container { width: 100vw; height: 100vh; cursor: grab; }
-        #canvas-container:active { cursor: grabbing; }
-        
-        /* Ajuste para garantir que ocupe o espaço correto no iframe do painel */
-        @media (max-width: 900px) {
-            #canvas-container { height: 80vh; }
-        }
+        #canvas-container { width: 100vw; height: 100vh; }
     </style>
 </head>
 <body>
-
     <div id="canvas-container"></div>
 
     <script>
-        let scene, camera, renderer, controls, model3D, currentEstampa = null;
+        let scene, camera, renderer, controls, model3D;
 
         function init() {
             const container = document.getElementById('canvas-container');
@@ -36,19 +28,13 @@
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.outputEncoding = THREE.sRGBEncoding;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
             container.appendChild(renderer.domElement);
 
-            // Iluminação reforçada para realçar a colher e o interior
             scene.add(new THREE.AmbientLight(0xffffff, 1.2));
             const light = new THREE.DirectionalLight(0xffffff, 0.8);
             light.position.set(5, 10, 7);
             scene.add(light);
-
-            const texLoader = new THREE.TextureLoader();
-            texLoader.setCrossOrigin('anonymous');
 
             // --- LÓGICA DO LINK (#ID_IMGUR|#COR) ---
             const hash = window.location.hash.substring(1);
@@ -56,75 +42,70 @@
             const idImgur = partes[0] || "";
             const corHexLink = partes[1] || "#ffffff"; 
 
-            if (idImgur && idImgur.trim() !== "") {
-                const urlImgur = `https://i.imgur.com/${idImgur}.jpeg`;
-                currentEstampa = texLoader.load(urlImgur);
-                currentEstampa.flipY = false;
-                currentEstampa.encoding = THREE.sRGBEncoding;
+            const texLoader = new THREE.TextureLoader();
+            texLoader.setCrossOrigin('anonymous');
+            
+            let estampa = null;
+            if (idImgur) {
+                estampa = texLoader.load(`https://i.imgur.com/${idImgur}.jpeg`);
+                estampa.flipY = false;
+                estampa.encoding = THREE.sRGBEncoding;
             }
 
-            const corObjeto = new THREE.Color(corHexLink);
-            corObjeto.convertSRGBToLinear();
+            const corObjeto = new THREE.Color(corHexLink).convertSRGBToLinear();
 
             const loader = new THREE.GLTFLoader();
-            
-            // Carrega o arquivo glTF (Certifique-se que o model.bin está na mesma pasta)
             loader.load('caneca_colher.gltf', (gltf) => {
                 model3D = gltf.scene;
 
                 model3D.traverse((node) => {
-                    if (node.isMesh && node.name === "Cylinder001") {
+                    if (node.isMesh) {
+                        // Criamos materiais do zero para ignorar o erro da "texture.jpg"
+                        const materiaisNovos = [];
                         
-                        // Criamos materiais novos para ignorar a "texture.jpg" que dá erro
-                        const materials = [];
+                        // O seu modelo tem exatamente 5 partes (primitives)
                         for (let i = 0; i < 5; i++) {
-                            materials[i] = new THREE.MeshPhysicalMaterial({
+                            materiaisNovos[i] = new THREE.MeshPhysicalMaterial({
                                 color: 0xffffff,
                                 roughness: 0.1,
                                 clearcoat: 1.0,
-                                side: THREE.DoubleSide,
-                                map: null // Remove a textura original problemática
+                                side: THREE.DoubleSide
                             });
                         }
 
-                        // Mapeamento dos Materiais do seu GLTF:
-                        // Índice 1: Corpo da caneca (Estampa)
-                        if (currentEstampa) {
-                            materials[1].map = currentEstampa;
-                        }
+                        // Mapeamento baseado no seu arquivo GLTF:
+                        // 1. Corpo da caneca (Estampa)
+                        if (estampa) materiaisNovos[1].map = estampa;
 
-                        // Índices 2, 3 e 4: Partes coloridas (Alça, Colher, Interior, Fundo)
-                        materials[2].color.copy(corObjeto);
-                        materials[3].color.copy(corObjeto);
-                        materials[4].color.copy(corObjeto);
+                        // 2. Partes Coloridas (Alça, Interior, Colher, Fundo)
+                        materiaisNovos[2].color.copy(corObjeto);
+                        materiaisNovos[3].color.copy(corObjeto);
+                        materiaisNovos[4].color.copy(corObjeto);
 
-                        node.material = materials;
+                        node.material = materiaisNovos;
                     }
                 });
 
+                // Centralização e Escala
                 const box = new THREE.Box3().setFromObject(model3D);
-                model3D.position.sub(box.getCenter(new THREE.Vector3()));
+                const center = box.getCenter(new THREE.Vector3());
+                model3D.position.sub(center);
                 model3D.scale.setScalar(3.5 / box.getSize(new THREE.Vector3()).length());
+                
                 scene.add(model3D);
-            }, 
-            undefined, 
-            (error) => {
-                console.error("Erro ao carregar o modelo: Verifique se o arquivo model.bin está na mesma pasta.");
             });
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
-            controls.autoRotateSpeed = 1.2;
 
-            window.addEventListener('resize', onWindowResize);
-            window.addEventListener('hashchange', () => window.location.reload());
-        }
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            animate();
         }
 
         function animate() {
@@ -134,7 +115,6 @@
         }
 
         init();
-        animate();
     </script>
 </body>
 </html>
