@@ -3,37 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estamparia Gerais | Visualizador 3D Realista</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <title>Estamparia Gerais | Personalizador 3D</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <style>
-        body { margin: 0; background: #ffffff; font-family: 'Poppins', sans-serif; overflow: hidden; }
-        #canvas-container { width: 100%; height: 100vh; cursor: grab; }
-        #canvas-container:active { cursor: grabbing; }
+        :root { --primary: #2563eb; --bg: #f1f5f9; --panel: #1e293b; }
+        body { margin: 0; background: var(--bg); font-family: 'Poppins', sans-serif; }
+
+        /* CATALOGO */
+        .catalog { padding: 50px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 15px; padding: 15px; text-align: center; cursor: pointer; shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; border-radius: 10px; }
+
+        /* MODAL ESTRUTURA */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 95%; max-width: 1100px; border-radius: 20px; display: flex; height: 90vh; overflow: hidden; position: relative; }
+        .close { position: absolute; right: 20px; top: 15px; font-size: 30px; cursor: pointer; color: #64748b; z-index: 10; }
+
+        .modal-left { flex: 1.5; background: #fff; position: relative; border-right: 1px solid #e2e8f0; }
+        #container3d { width: 100%; height: 100%; outline: none; }
+
+        .modal-right { flex: 1; display: flex; flex-direction: column; background: #f8fafc; }
+        .scroll-area { padding: 30px; overflow-y: auto; flex-grow: 1; }
+
+        /* PAINEL DE CUSTOMIZAÇÃO EMBUTIDO */
+        .custom-panel { background: #fff; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0; margin-top: 20px; }
+        .part-row { background: #f1f5f9; padding: 10px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .part-label { font-size: 12px; font-weight: 600; color: #334155; flex: 1; }
+        .controls-group { display: flex; align-items: center; gap: 10px; }
+        
+        input[type="color"] { border: none; width: 25px; height: 25px; cursor: pointer; background: none; }
+        .price { font-size: 24px; font-weight: 800; color: #16a34a; margin: 15px 0; }
+        .btn-whats { background: #25d366; color: white; padding: 15px; text-align: center; text-decoration: none; border-radius: 10px; font-weight: 700; display: block; }
+
+        @media (max-width: 850px) {
+            .modal-content { flex-direction: column; }
+            .modal-left { height: 40%; flex: none; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="canvas-container"></div>
+    <section class="catalog">
+        <div class="card" onclick="openModal3D('canecas/01.jpg', 'Caneca Personalizada Premium', '35,90')">
+            <img src="canecas/01.jpg">
+            <h3>Caneca 330ml</h3>
+            <p>Clique para personalizar</p>
+        </div>
+    </section>
+
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            
+            <div class="modal-left">
+                <div id="container3d"></div>
+            </div>
+
+            <div class="modal-right">
+                <div class="scroll-area">
+                    <h2 id="modalTitle" style="margin:0">Nome do Produto</h2>
+                    
+                    <div class="custom-panel" id="ui-parts">
+                        <p style="font-size: 13px; font-weight: bold; margin-bottom: 15px; color: var(--primary);">Personalize as cores:</p>
+                        </div>
+
+                    <div class="price">R$ <span id="modalPrice">0,00</span></div>
+                    <a href="#" id="waLink" class="btn-whats" target="_blank">Finalizar Pedido</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        let scene, camera, renderer, controls, loaderGLTF, texLoader;
+        let scene, camera, renderer, controls, loaderGLTF, texLoader, currentEstampa;
 
-        function init() {
-            const container = document.getElementById('canvas-container');
+        const partsConfig = [
+            { id: "Cylinder001_2", label: "Corpo da Caneca", hasImg: true },
+            { id: "Cylinder001_5", label: "Alça", hasImg: false },
+            { id: "Cylinder001_4", label: "Interior", hasImg: false },
+            { id: "Cylinder001_1", label: "Borda Superior", hasImg: false },
+            { id: "Cylinder001_3", label: "Fundo / Base", hasImg: false }
+        ];
 
-            // Cena e Câmera
+        function init3D(imgUrl) {
+            const container = document.getElementById('container3d');
+            container.innerHTML = '';
+
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xffffff);
-
             camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 1000);
             camera.position.set(0, 0, 4);
 
-            // Renderizador (ALTA QUALIDADE)
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.outputEncoding = THREE.sRGBEncoding;
@@ -41,7 +107,6 @@
             renderer.toneMappingExposure = 1.2;
             container.appendChild(renderer.domElement);
 
-            // Iluminação
             scene.add(new THREE.AmbientLight(0xffffff, 1.0));
             const light = new THREE.DirectionalLight(0xffffff, 0.8);
             light.position.set(5, 10, 7);
@@ -49,103 +114,114 @@
 
             loaderGLTF = new THREE.GLTFLoader();
             texLoader = new THREE.TextureLoader();
+            currentEstampa = texLoader.load(imgUrl);
+            currentEstampa.flipY = false;
+            currentEstampa.encoding = THREE.sRGBEncoding;
 
-            // 1. CARREGAR A ESTAMPA
-            const estampaUrl = 'canecas/01.jpg'; // Verifique se o caminho está exato
-            const estampa = texLoader.load(estampaUrl);
-            estampa.flipY = false; 
-            estampa.encoding = THREE.sRGBEncoding;
-            estampa.wrapS = THREE.ClampToEdgeWrapping;
-            estampa.wrapT = THREE.ClampToEdgeWrapping;
-
-            // 2. CARREGAR O MODELO (caneca.gltf)
             loaderGLTF.load('caneca.gltf', (gltf) => {
                 const model = gltf.scene;
-
-                // Percorrer as peças do modelo
+                
                 model.traverse((node) => {
                     if (node.isMesh) {
-                        // Criamos o material base (Branco Porcelana Brilhante)
-                        // A estampa NÃO é aplicada aqui inicialmente.
-                        const matPorcelana = new THREE.MeshPhysicalMaterial({
+                        const mat = new THREE.MeshPhysicalMaterial({
                             color: 0xffffff,
                             metalness: 0,
                             roughness: 0.05,
-                            clearcoat: 1.0,          // Verniz de porcelana
-                            clearcoatRoughness: 0.02,
+                            clearcoat: 1.0,
                             side: THREE.DoubleSide
                         });
 
-                        node.material = matPorcelana;
-
-                        // LÓGICA DE CORTE UV (Mágica para isolar a estampa)
-                        // Como o modelo é uma peça única, precisamos modificar as coordenadas UV
-                        // da geometria para dizer onde a estampa pode e não pode aparecer.
-                        
-                        // Pegamos a geometria
-                        const geometry = node.geometry;
-                        if (geometry.attributes.uv) {
-                            const uvs = geometry.attributes.uv.array;
-                            for (let i = 0; i < uvs.length; i += 2) {
-                                // uvs[i] é a coordenada X (horizontal, de 0 a 1 em volta da caneca)
-                                // uvs[i+1] é a coordenada Y (vertical, de 0 a 1 do fundo ao topo)
-
-                                // O Mug3D costuma colocar a alça e o interior nas bordas (0 ou 1)
-                                // Vamos 'empurrar' essas áreas para um pixel branco na textura.
-
-                                // Filtro Vertical (Remove estampa do fundo e do topo interno)
-                                if (uvs[i+1] < 0.1 || uvs[i+1] > 0.9) {
-                                    uvs[i] = 0; uvs[i+1] = 0; // Ponto branco na textura
-                                }
-                                
-                                // Filtro Horizontal (Remove estampa da alça e interior)
-                                // Se o valor horizontal estiver muito nas bordas, assume que é alça.
-                                if (uvs[i] > 0.94 || uvs[i] < 0.06) {
-                                    uvs[i] = 0; uvs[i+1] = 0; // Ponto branco na textura
-                                }
-                            }
-                            geometry.attributes.uv.needsUpdate = true; // Força o Three.js a ler as novas UVs
+                        // Forçar configuração inicial solicitada:
+                        // Apenas o corpo (Cylinder001_2) recebe imagem
+                        if (node.name === "Cylinder001_2") {
+                            mat.map = currentEstampa;
+                        } else {
+                            mat.map = null; // Todo o resto nasce branco
                         }
 
-                        // Agora que limpamos as UVs, aplicamos a estampa
-                        node.material.map = estampa;
-                        console.log("-> Estampa aplicada com isolamento UV.");
+                        node.material = mat;
                     }
                 });
 
-                // Centralização e Escala Automática
                 const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3()).length();
-                model.position.sub(center);
-                model.scale.setScalar(3.0 / size);
-                
+                model.position.sub(box.getCenter(new THREE.Vector3()));
+                model.scale.setScalar(3.0 / box.getSize(new THREE.Vector3()).length());
                 scene.add(model);
+                generateUI(); // Cria o painel lateral
             });
 
-            // Controles de Mouse
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
-            controls.autoRotateSpeed = 1.0;
-            controls.minDistance = 2.5; 
-            controls.maxDistance = 6.0;
 
-            window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        function generateUI() {
+            const uiContainer = document.getElementById('ui-parts');
+            // Limpa apenas os controles (mantém o título)
+            const existingRows = uiContainer.querySelectorAll('.part-row');
+            existingRows.forEach(r => r.remove());
+
+            partsConfig.forEach(part => {
+                const row = document.createElement('div');
+                row.className = 'part-row';
+                row.innerHTML = `
+                    <span class="part-label">${part.label}</span>
+                    <div class="controls-group">
+                        <input type="checkbox" id="chk_${part.id}" ${part.hasImg ? 'checked' : ''} title="Ativar Imagem">
+                        <input type="color" id="col_${part.id}" value="#ffffff" title="Mudar Cor">
+                    </div>
+                `;
+                uiContainer.appendChild(row);
+
+                // Evento de Cor
+                document.getElementById(`col_${part.id}`).oninput = (e) => {
+                    updatePart(part.id, 'color', e.target.value);
+                };
+
+                // Evento de Imagem
+                document.getElementById(`chk_${part.id}`).onchange = (e) => {
+                    updatePart(part.id, 'map', e.target.checked);
+                };
             });
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
-            if (controls) controls.update();
-            renderer.render(scene, camera);
+        function updatePart(meshName, type, value) {
+            scene.traverse(node => {
+                if (node.isMesh && node.name === meshName) {
+                    if (type === 'color') node.material.color.set(value);
+                    if (type === 'map') node.material.map = value ? currentEstampa : null;
+                    node.material.needsUpdate = true;
+                }
+            });
         }
 
-        init();
-        animate();
+        function openModal3D(img, titulo, preco) {
+            document.getElementById('productModal').style.display = 'flex';
+            document.getElementById('modalTitle').innerText = titulo;
+            document.getElementById('modalPrice').innerText = preco;
+            document.getElementById('waLink').href = `https://wa.me/55SEUNUMERO?text=Quero a caneca ${titulo}`;
+            setTimeout(() => init3D(img), 100);
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        window.onresize = () => {
+            if (camera && renderer) {
+                const container = document.getElementById('container3d');
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+        };
     </script>
 </body>
 </html>
