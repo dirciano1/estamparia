@@ -75,7 +75,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.outputEncoding = THREE.sRGBEncoding;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2;
+            renderer.toneMappingExposure = 1.0; // Ajustado para cores mais fiéis
             container.appendChild(renderer.domElement);
 
             scene.add(new THREE.AmbientLight(0xffffff, 1.0));
@@ -135,11 +135,15 @@
                     document.querySelectorAll('.btn-color').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
+                    // Ajuste técnico de cor para bater com o painel (sRGB para Linear)
+                    const colorObj = new THREE.Color(cor.hex);
+                    colorObj.convertSRGBToLinear();
+                    
                     // Aplica a cor em todas as peças da lista ao mesmo tempo
                     PECAS_COLORIDAS.forEach(meshId => {
                         scene.traverse(node => {
                             if (node.isMesh && node.name === meshId) {
-                                node.material.color.set(cor.hex);
+                                node.material.color.copy(colorObj);
                                 node.material.needsUpdate = true;
                             }
                         });
