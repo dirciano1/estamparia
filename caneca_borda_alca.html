@@ -15,7 +15,7 @@
         /* Painel de Cores Flutuante */
         .color-selector {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9); padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.95); padding: 15px 25px;
             border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             display: flex; align-items: center; gap: 15px; z-index: 1000;
             border: 1px solid #eee;
@@ -40,7 +40,7 @@
     <div id="canvas-container"></div>
 
     <script>
-        // --- CONFIGURAÇÃO DE CORES (ADICIONE NOVAS AQUI) ---
+        // --- CONFIGURAÇÃO DE CORES ---
         const CORES_DISPONIVEIS = [
             { nome: 'Branco', hex: '#ffffff' },
             { nome: 'Vermelho', hex: '#DF1212' },
@@ -51,10 +51,9 @@
             { nome: 'Laranja', hex: '#F86900' }
         ];
 
-        // Mapeamento das peças do seu caneca.gltf
         const ID_ALCA = "Cylinder001_5";
-        const ID_FUNDO = "Cylinder001_3"; // Mapeado para o fundo/base
-        const ID_CORPO = "Cylinder001_2"; // Onde fica a arte
+        const ID_FUNDO = "Cylinder001_3"; 
+        const ID_CORPO = "Cylinder001_2"; 
 
         let scene, camera, renderer, controls, loaderGLTF;
 
@@ -70,7 +69,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.outputEncoding = THREE.sRGBEncoding;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2;
+            renderer.toneMappingExposure = 1.0; // Ajustado para não "lavar" as cores
             container.appendChild(renderer.domElement);
 
             scene.add(new THREE.AmbientLight(0xffffff, 1.0));
@@ -99,7 +98,6 @@
                         });
 
                         if (node.name === ID_CORPO) mat.map = estampa;
-                        
                         node.material = mat;
                     }
                 });
@@ -132,7 +130,7 @@
                     document.querySelectorAll('.btn-color').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
-                    // Aplicar cor na ALÇA e no FUNDO simultaneamente
+                    // Aplicar cor sincronizada
                     mudarCorParte(ID_ALCA, cor.hex);
                     mudarCorParte(ID_FUNDO, cor.hex);
                 };
@@ -144,7 +142,11 @@
         function mudarCorParte(id, hex) {
             scene.traverse(node => {
                 if (node.isMesh && node.name === id) {
-                    node.material.color.set(hex);
+                    // CONVERSÃO DE COR: sRGB (Painel) para Linear (Motor 3D)
+                    const colorObj = new THREE.Color(hex);
+                    colorObj.convertSRGBToLinear();
+                    
+                    node.material.color.copy(colorObj);
                     node.material.needsUpdate = true;
                 }
             });
