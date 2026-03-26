@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estamparia Gerais | Personalizador 3D</title>
+    <title>Estamparia Gerais | Personalizador 3D Restrito</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -11,51 +11,72 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <style>
-        :root { --primary: #2563eb; --bg: #f1f5f9; --panel: #1e293b; }
-        body { margin: 0; background: var(--bg); font-family: 'Poppins', sans-serif; }
+        :root { --primary: #2563eb; --bg: #f1f5f9; --text: #1e293b; --border: #e2e8f0; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text); }
 
-        /* CATALOGO */
-        .catalog { padding: 50px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 15px; padding: 15px; text-align: center; cursor: pointer; shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s; }
+        /* CATALOGO SIMPLES */
+        .catalog { padding: 50px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 15px; padding: 20px; text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.3s ease; }
         .card:hover { transform: translateY(-5px); }
-        .card img { width: 100%; border-radius: 10px; }
+        .card img { width: 100%; border-radius: 10px; margin-bottom: 15px; }
+        .card h3 { margin: 0 0 10px 0; font-size: 18px; }
+        .card p { margin: 0; font-size: 14px; color: #64748b; }
 
         /* MODAL ESTRUTURA */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 95%; max-width: 1100px; border-radius: 20px; display: flex; height: 90vh; overflow: hidden; position: relative; }
-        .close { position: absolute; right: 20px; top: 15px; font-size: 30px; cursor: pointer; color: #64748b; z-index: 10; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { background: white; width: 95%; max-width: 1100px; border-radius: 20px; display: flex; height: 90vh; overflow: hidden; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        .close { position: absolute; right: 20px; top: 15px; font-size: 35px; cursor: pointer; color: #94a3b8; z-index: 10; transition: color 0.2s; }
+        .close:hover { color: #ef4444; }
 
-        .modal-left { flex: 1.5; background: #fff; position: relative; border-right: 1px solid #e2e8f0; }
-        #container3d { width: 100%; height: 100%; outline: none; }
+        /* COLUNA ESQUERDA (3D) */
+        .modal-left { flex: 1.6; background: #fff; position: relative; border-right: 1px solid var(--border); }
+        #container3d { width: 100%; height: 100%; outline: none; cursor: grab; }
+        #container3d:active { cursor: grabbing; }
 
+        /* COLUNA DIREITA (CONTROLES) */
         .modal-right { flex: 1; display: flex; flex-direction: column; background: #f8fafc; }
-        .scroll-area { padding: 30px; overflow-y: auto; flex-grow: 1; }
+        .scroll-area { padding: 35px; overflow-y: auto; flex-grow: 1; }
+        .scroll-area h2 { margin: 0 0 25px 0; font-size: 24px; font-weight: 700; }
 
         /* PAINEL DE CUSTOMIZAÇÃO EMBUTIDO */
-        .custom-panel { background: #fff; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0; margin-top: 20px; }
-        .part-row { background: #f1f5f9; padding: 10px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-        .part-label { font-size: 12px; font-weight: 600; color: #334155; flex: 1; }
-        .controls-group { display: flex; align-items: center; gap: 10px; }
+        .custom-panel { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid var(--border); margin-bottom: 25px; }
+        .panel-title { font-size: 14px; font-weight: 700; margin: 0 0 15px 0; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
         
-        input[type="color"] { border: none; width: 25px; height: 25px; cursor: pointer; background: none; }
-        .price { font-size: 24px; font-weight: 800; color: #16a34a; margin: 15px 0; }
-        .btn-whats { background: #25d366; color: white; padding: 15px; text-align: center; text-decoration: none; border-radius: 10px; font-weight: 700; display: block; }
+        .part-row { background: #f1f5f9; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border: 1px solid transparent; }
+        .part-row:last-child { margin-bottom: 0; }
+        .part-label { font-size: 13px; font-weight: 600; color: #334155; flex: 1; }
+        
+        .controls-group { display: flex; align-items: center; gap: 12px; }
+        
+        /* Estilo para input color */
+        .color-wrapper { position: relative; width: 28px; height: 28px; overflow: hidden; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #cbd5e1; cursor: pointer; }
+        input[type="color"] { border: none; width: 40px; height: 40px; position: absolute; top: -6px; left: -6px; cursor: pointer; background: none; }
+        
+        /* Estilo para checkbox */
+        input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
 
+        .price-tag { font-size: 28px; font-weight: 800; color: #16a34a; margin-bottom: 15px; }
+        .btn-whats { background: #25d366; color: white; padding: 18px; text-align: center; text-decoration: none; border-radius: 12px; font-weight: 700; display: block; font-size: 16px; transition: background 0.2s; }
+        .btn-whats:hover { background: #1fba5a; }
+
+        /* RESPONSIVIDADE */
         @media (max-width: 850px) {
-            .modal-content { flex-direction: column; }
-            .modal-left { height: 40%; flex: none; }
+            .modal-content { flex-direction: column; height: 95vh; }
+            .modal-left { height: 45%; flex: none; border-right: none; border-bottom: 1px solid var(--border); }
+            .scroll-area { padding: 25px; }
         }
     </style>
 </head>
 <body>
 
     <section class="catalog">
-        <div class="card" onclick="openModal3D('canecas/01.jpg', 'Caneca Personalizada Premium', '35,90')">
-            <img src="canecas/01.jpg">
-            <h3>Caneca 330ml</h3>
-            <p>Clique para personalizar</p>
+        <div class="card" onclick="openModal3D('canecas/01.jpg', 'Caneca Porcelana Personalizada', '35,90')">
+            <img src="canecas/01.jpg" alt="Caneca Exemplo">
+            <h3>Caneca Clássica 330ml</h3>
+            <p>Toque para personalizar cores e arte</p>
         </div>
-    </section>
+        </section>
 
     <div id="productModal" class="modal">
         <div class="modal-content">
@@ -67,161 +88,236 @@
 
             <div class="modal-right">
                 <div class="scroll-area">
-                    <h2 id="modalTitle" style="margin:0">Nome do Produto</h2>
+                    <h2 id="modalTitle">Nome do Produto</h2>
                     
-                    <div class="custom-panel" id="ui-parts">
-                        <p style="font-size: 13px; font-weight: bold; margin-bottom: 15px; color: var(--primary);">Personalize as cores:</p>
-                        </div>
+                    <div class="custom-panel">
+                        <p class="panel-title">Configurar Cores e Arte:</p>
+                        <div id="ui-parts-container">
+                            </div>
+                    </div>
 
-                    <div class="price">R$ <span id="modalPrice">0,00</span></div>
-                    <a href="#" id="waLink" class="btn-whats" target="_blank">Finalizar Pedido</a>
+                    <div class="price-tag">R$ <span id="modalPrice">0,00</span></div>
+                    <a href="#" id="waLink" class="btn-whats" target="_blank">Encomendar via WhatsApp</a>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let scene, camera, renderer, controls, loaderGLTF, texLoader, currentEstampa;
+        // Variáveis Globais do Three.js
+        let scene, camera, renderer, controls, loaderGLTF, texLoader, currentEstampaTexture;
+        let isApiReady = false;
 
+        // CONFIGURAÇÃO DAS PARTES DA CANECA (Mapeamento Mug3D)
+        // id: nome da mesh no arquivo GLTF
+        // label: nome amigável que aparece no painel
+        // editableImg: se o usuário pode ligar/desligar a imagem nesta peça
         const partsConfig = [
-            { id: "Cylinder001_2", label: "Corpo da Caneca", hasImg: true },
-            { id: "Cylinder001_5", label: "Alça", hasImg: false },
-            { id: "Cylinder001_4", label: "Interior", hasImg: false },
-            { id: "Cylinder001_1", label: "Borda Superior", hasImg: false },
-            { id: "Cylinder001_3", label: "Fundo / Base", hasImg: false }
+            { id: "Cylinder001_2", label: "Corpo da Caneca (Arte)", editableImg: true },
+            { id: "Cylinder001_5", label: "Alça", editableImg: false },
+            { id: "Cylinder001_4", label: "Interior", editableImg: false },
+            { id: "Cylinder001_1", label: "Borda Superior", editableImg: false },
+            { id: "Cylinder001_3", label: "Fundo / Base", editableImg: false }
         ];
 
+        // INICIALIZAÇÃO DO AMBIENTE 3D
         function init3D(imgUrl) {
             const container = document.getElementById('container3d');
-            container.innerHTML = '';
+            container.innerHTML = ''; // Limpa renderizações anteriores
 
+            // 1. Cena e Câmera
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xffffff);
-            camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0, 4);
+            scene.background = new THREE.Color(0xffffff); // Fundo branco puro
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 4); // Posição padrão da câmera
+
+            // 2. Renderizador (Alta Qualidade)
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
             renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.outputEncoding = THREE.sRGBEncoding;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.outputEncoding = THREE.sRGBEncoding; // Cores corretas
+            renderer.toneMapping = THREE.ACESFilmicToneMapping; // Visual fotográfico
             renderer.toneMappingExposure = 1.2;
             container.appendChild(renderer.domElement);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 1.0));
-            const light = new THREE.DirectionalLight(0xffffff, 0.8);
-            light.position.set(5, 10, 7);
-            scene.add(light);
+            // 3. Iluminação de Estúdio
+            scene.add(new THREE.AmbientLight(0xffffff, 0.9)); // Luz global suave
+            
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+            dirLight.position.set(5, 10, 7);
+            scene.add(dirLight);
 
+            const pointLight = new THREE.PointLight(0xffffff, 0.4);
+            pointLight.position.set(-5, 5, -5);
+            scene.add(pointLight);
+
+            // 4. Carregadores
             loaderGLTF = new THREE.GLTFLoader();
             texLoader = new THREE.TextureLoader();
-            currentEstampa = texLoader.load(imgUrl);
-            currentEstampa.flipY = false;
-            currentEstampa.encoding = THREE.sRGBEncoding;
 
+            // Carrega a textura da estampa
+            currentEstampaTexture = texLoader.load(imgUrl, () => {
+                isApiReady = true; // Define como pronto quando a textura carregar
+            });
+            currentEstampaTexture.flipY = false; // Corrige orientação UV do GLTF
+            currentEstampaTexture.encoding = THREE.sRGBEncoding;
+
+            // 5. Carregar o Modelo da Caneca (caneca.gltf)
             loaderGLTF.load('caneca.gltf', (gltf) => {
                 const model = gltf.scene;
                 
                 model.traverse((node) => {
                     if (node.isMesh) {
+                        // Aplica material de porcelana base (PhysicalMaterial é o mais realista)
                         const mat = new THREE.MeshPhysicalMaterial({
-                            color: 0xffffff,
+                            color: 0xffffff, // Branco puro inicial
                             metalness: 0,
-                            roughness: 0.05,
-                            clearcoat: 1.0,
-                            side: THREE.DoubleSide
+                            roughness: 0.05, // Muito polido
+                            clearcoat: 1.0,  // Camada de verniz por cima
+                            clearcoatRoughness: 0.02,
+                            side: THREE.DoubleSide // Renderiza os dois lados da face
                         });
 
-                        // Forçar configuração inicial solicitada:
-                        // Apenas o corpo (Cylinder001_2) recebe imagem
+                        // CONFIGURAÇÃO INICIAL RESTRITA:
+                        // Somente o corpo (Cylinder001_2) recebe a imagem por padrão.
                         if (node.name === "Cylinder001_2") {
-                            mat.map = currentEstampa;
+                            mat.map = currentEstampaTexture;
                         } else {
-                            mat.map = null; // Todo o resto nasce branco
+                            // Alça, interior, borda e fundo nascem SEM IMAGEM
+                            mat.map = null; 
                         }
 
                         node.material = mat;
                     }
                 });
 
+                // Centralização e Escala Automática do Modelo
                 const box = new THREE.Box3().setFromObject(model);
-                model.position.sub(box.getCenter(new THREE.Vector3()));
-                model.scale.setScalar(3.0 / box.getSize(new THREE.Vector3()).length());
+                const center = box.getCenter(new THREE.Vector3());
+                model.position.sub(center); // Move o centro do modelo para (0,0,0)
+                
+                const size = box.getSize(new THREE.Vector3()).length();
+                model.scale.setScalar(3.0 / size); // Ajusta a escala para caber na tela
+                
                 scene.add(model);
-                generateUI(); // Cria o painel lateral
+                generateDynamicUI(); // Cria o painel lateral após o modelo carregar
+            }, undefined, (error) => {
+                console.error("Erro ao carregar o modelo 3D:", error);
+                document.getElementById('container3d').innerHTML = '<p style="padding:20px; color:red;">Erro ao carregar o modelo 3D. Verifique os arquivos.</p>';
             });
 
+            // 6. Controles de Mouse (OrbitControls)
             controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.autoRotate = true;
+            controls.enableDamping = true; // Suaviza o movimento
+            controls.dampingFactor = 0.05;
+            controls.autoRotate = true; // Rotação automática ligada
+            controls.autoRotateSpeed = 1.0;
+            controls.minDistance = 2.0; // Limite de zoom in
+            controls.maxDistance = 6.0; // Limite de zoom out
 
+            // Loop de Animação
             function animate() {
                 requestAnimationFrame(animate);
-                controls.update();
+                controls.update(); // Necessário para o damping
                 renderer.render(scene, camera);
             }
             animate();
         }
 
-        function generateUI() {
-            const uiContainer = document.getElementById('ui-parts');
-            // Limpa apenas os controles (mantém o título)
-            const existingRows = uiContainer.querySelectorAll('.part-row');
-            existingRows.forEach(r => r.remove());
+        // GERAÇÃO DINÂMICA DO PAINEL DE CONTROLES
+        function generateDynamicUI() {
+            const uiContainer = document.getElementById('ui-parts-container');
+            uiContainer.innerHTML = ''; // Limpa controles anteriores
 
             partsConfig.forEach(part => {
                 const row = document.createElement('div');
                 row.className = 'part-row';
+                
+                // HTML condicional: Inclui checkbox apenas se editableImg for true
+                let imageControlHTML = '';
+                if (part.editableImg) {
+                    imageControlHTML = `
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <input type="checkbox" id="chk_${part.id}" checked title="Ativar/Desativar Imagem no Corpo">
+                            <span style="font-size:10px; color:#64748b;">Arte</span>
+                        </div>
+                    `;
+                }
+
                 row.innerHTML = `
                     <span class="part-label">${part.label}</span>
                     <div class="controls-group">
-                        <input type="checkbox" id="chk_${part.id}" ${part.hasImg ? 'checked' : ''} title="Ativar Imagem">
-                        <input type="color" id="col_${part.id}" value="#ffffff" title="Mudar Cor">
+                        ${imageControlHTML}
+                        <div class="color-wrapper" title="Mudar Cor Base">
+                            <input type="color" id="col_${part.id}" value="#ffffff">
+                        </div>
                     </div>
                 `;
                 uiContainer.appendChild(row);
 
-                // Evento de Cor
-                document.getElementById(`col_${part.id}`).oninput = (e) => {
-                    updatePart(part.id, 'color', e.target.value);
-                };
+                // Vincula Evento de Mudança de Cor (Input Color)
+                document.getElementById(`col_${part.id}`).addEventListener('input', (e) => {
+                    updateModelPart(part.id, 'color', e.target.value);
+                });
 
-                // Evento de Imagem
-                document.getElementById(`chk_${part.id}`).onchange = (e) => {
-                    updatePart(part.id, 'map', e.target.checked);
-                };
-            });
-        }
-
-        function updatePart(meshName, type, value) {
-            scene.traverse(node => {
-                if (node.isMesh && node.name === meshName) {
-                    if (type === 'color') node.material.color.set(value);
-                    if (type === 'map') node.material.map = value ? currentEstampa : null;
-                    node.material.needsUpdate = true;
+                // Vincula Evento de Imagem (Checkbox) - Apenas se existir
+                if (part.editableImg) {
+                    document.getElementById(`chk_${part.id}`).addEventListener('change', (e) => {
+                        updateModelPart(part.id, 'map', e.target.checked);
+                    });
                 }
             });
         }
 
+        // FUNÇÃO PARA ATUALIZAR O MODELO 3D VIA UI
+        // meshName: id da peça (ex: Cylinder001_5)
+        // property: 'color' ou 'map'
+        // value: o valor da cor (hex) ou booleano do checkbox
+        function updateModelPart(meshName, property, value) {
+            if (!scene) return;
+            
+            scene.traverse(node => {
+                if (node.isMesh && node.name === meshName) {
+                    if (property === 'color') {
+                        node.material.color.set(value);
+                    } else if (property === 'map') {
+                        // Se o checkbox for marcado, aplica a textura. Se desmarcado, remove (null).
+                        node.material.map = value ? currentEstampaTexture : null;
+                    }
+                    node.material.needsUpdate = true; // Força o Three.js a atualizar o material
+                }
+            });
+        }
+
+        // FUNÇÕES DE ABERTURA E FECHAMENTO DO MODAL
         function openModal3D(img, titulo, preco) {
             document.getElementById('productModal').style.display = 'flex';
             document.getElementById('modalTitle').innerText = titulo;
             document.getElementById('modalPrice').innerText = preco;
-            document.getElementById('waLink').href = `https://wa.me/55SEUNUMERO?text=Quero a caneca ${titulo}`;
-            setTimeout(() => init3D(img), 100);
+            
+            // Atualiza o link do WhatsApp com mensagem personalizada
+            const mensagem = `Olá, gostaria de encomendar a caneca: ${titulo} (R$ ${preco})`;
+            document.getElementById('waLink').href = `https://wa.me/5500000000000?text=${encodeURIComponent(mensagem)}`;
+            
+            // Pequeno delay para garantir que o container3d tem tamanho antes de iniciar
+            setTimeout(() => init3D(img), 150);
         }
 
         function closeModal() {
             document.getElementById('productModal').style.display = 'none';
+            // Opcional: Parar animação ou limpar cena para economizar memória
         }
 
-        window.onresize = () => {
+        // AJUSTE DE JANELA (RESIZE)
+        window.addEventListener('resize', () => {
             if (camera && renderer) {
                 const container = document.getElementById('container3d');
+                if (!container) return;
                 camera.aspect = container.clientWidth / container.clientHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(container.clientWidth, container.clientHeight);
             }
-        };
+        });
     </script>
 </body>
 </html>
