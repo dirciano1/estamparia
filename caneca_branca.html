@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador 3D - Caneca Branca Dinâmica</title>
+    <title>Visualizador 3D - Caneca Imgur</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -21,7 +21,6 @@
     <script>
         let scene, camera, renderer, controls, loaderGLTF, texLoader;
 
-        // IDs das peças que mudarão de cor via link
         const PECAS_COLORIDAS = ["Cylinder001_5", "Cylinder001_3"]; // Alça e Fundo
 
         function init() {
@@ -48,22 +47,25 @@
 
             loaderGLTF = new THREE.GLTFLoader();
             texLoader = new THREE.TextureLoader();
+            
+            // Permite carregar imagens de domínios externos (Imgur)
+            texLoader.setCrossOrigin('anonymous');
 
-            // --- LÓGICA DE PARSE DO LINK (#foto.jpg|#cor) ---
+            // --- LÓGICA DE PARSE DO LINK (#ID_IMGUR|#cor) ---
             const hash = window.location.hash.substring(1);
             const partes = hash.split('|');
-            const nomeArquivo = partes[0] || "";
-            const corHexLink = partes[1] || "#ffffff"; // Branco por padrão
+            const idImgur = partes[0] || "";
+            const corHexLink = partes[1] || "#ffffff";
 
             let estampa = null;
-            if (nomeArquivo && nomeArquivo.trim() !== "") {
-                const caminhoCompleto = 'canecas/' + nomeArquivo;
-                estampa = texLoader.load(caminhoCompleto);
+            if (idImgur && idImgur.trim() !== "") {
+                // Monta a URL direta do Imgur usando o ID fornecido
+                const urlImgur = `https://i.imgur.com/${idImgur}.jpeg`;
+                estampa = texLoader.load(urlImgur);
                 estampa.flipY = false;
                 estampa.encoding = THREE.sRGBEncoding;
             }
 
-            // Preparar a cor do link com conversão Linear para fidelidade
             const corObjeto = new THREE.Color(corHexLink);
             corObjeto.convertSRGBToLinear();
 
@@ -81,12 +83,10 @@
                             side: THREE.DoubleSide
                         });
 
-                        // 1. Aplicar Cor do Link (Alça e Fundo)
                         if (PECAS_COLORIDAS.includes(node.name)) {
                             mat.color.copy(corObjeto);
                         }
 
-                        // 2. Aplicar Estampa do Link (Corpo)
                         if (node.name === "Cylinder001_2" && estampa) {
                             mat.map = estampa;
                         }
