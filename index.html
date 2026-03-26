@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estamparia Gerais | Personalizador 3D Restrito</title>
+    <title>Estamparia Gerais | Personalizador 3D Vinculado</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -13,7 +13,7 @@
     <style>
         :root { --primary: #2563eb; --bg: #f1f5f9; --text: #1e293b; --border: #e2e8f0; }
         * { box-sizing: border-box; }
-        body { margin: 0; background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text); }
+        body { margin: 0; background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text); overflow-x: hidden; }
 
         /* CATALOGO SIMPLES */
         .catalog { padding: 50px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
@@ -76,7 +76,7 @@
             <h3>Caneca Clássica 330ml</h3>
             <p>Toque para personalizar cores e arte</p>
         </div>
-        </section>
+    </section>
 
     <div id="productModal" class="modal">
         <div class="modal-content">
@@ -106,84 +106,73 @@
     <script>
         // Variáveis Globais do Three.js
         let scene, camera, renderer, controls, loaderGLTF, texLoader, currentEstampaTexture;
-        let isApiReady = false;
 
-        // CONFIGURAÇÃO DAS PARTES DA CANECA (Mapeamento Mug3D)
-        // id: nome da mesh no arquivo GLTF
-        // label: nome amigável que aparece no painel
+        // IDs FIXOS DO MODELO (Mapeamento Mug3D)
+        const ID_CORPO = "Cylinder001_2";
+        const ID_BORDA = "Cylinder001_1";
+
+        // CONFIGURAÇÃO DAS PARTES EXIBIDAS NO PAINEL
         // editableImg: se o usuário pode ligar/desligar a imagem nesta peça
         const partsConfig = [
-            { id: "Cylinder001_2", label: "Corpo da Caneca (Arte)", editableImg: true },
+            { id: ID_CORPO, label: "Corpo da Caneca (Arte)", editableImg: true },
             { id: "Cylinder001_5", label: "Alça", editableImg: false },
             { id: "Cylinder001_4", label: "Interior", editableImg: false },
-            { id: "Cylinder001_1", label: "Borda Superior", editableImg: false },
+            // Borda Superior removida daqui para não aparecer no painel
             { id: "Cylinder001_3", label: "Fundo / Base", editableImg: false }
         ];
 
         // INICIALIZAÇÃO DO AMBIENTE 3D
         function init3D(imgUrl) {
             const container = document.getElementById('container3d');
-            container.innerHTML = ''; // Limpa renderizações anteriores
+            container.innerHTML = ''; 
 
-            // 1. Cena e Câmera
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xffffff); // Fundo branco puro
+            scene.background = new THREE.Color(0xffffff);
 
             camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0, 4); // Posição padrão da câmera
+            camera.position.set(0, 0, 4); 
 
-            // 2. Renderizador (Alta Qualidade)
             renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
             renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.outputEncoding = THREE.sRGBEncoding; // Cores corretas
-            renderer.toneMapping = THREE.ACESFilmicToneMapping; // Visual fotográfico
+            renderer.outputEncoding = THREE.sRGBEncoding; 
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
             renderer.toneMappingExposure = 1.2;
             container.appendChild(renderer.domElement);
 
-            // 3. Iluminação de Estúdio
-            scene.add(new THREE.AmbientLight(0xffffff, 0.9)); // Luz global suave
-            
+            // Iluminação de Estúdio
+            scene.add(new THREE.AmbientLight(0xffffff, 0.9)); 
             const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
             dirLight.position.set(5, 10, 7);
             scene.add(dirLight);
 
-            const pointLight = new THREE.PointLight(0xffffff, 0.4);
-            pointLight.position.set(-5, 5, -5);
-            scene.add(pointLight);
-
-            // 4. Carregadores
             loaderGLTF = new THREE.GLTFLoader();
             texLoader = new THREE.TextureLoader();
 
             // Carrega a textura da estampa
-            currentEstampaTexture = texLoader.load(imgUrl, () => {
-                isApiReady = true; // Define como pronto quando a textura carregar
-            });
-            currentEstampaTexture.flipY = false; // Corrige orientação UV do GLTF
+            currentEstampaTexture = texLoader.load(imgUrl);
+            currentEstampaTexture.flipY = false; 
             currentEstampaTexture.encoding = THREE.sRGBEncoding;
 
-            // 5. Carregar o Modelo da Caneca (caneca.gltf)
+            // Carregar o Modelo da Caneca (caneca.gltf)
             loaderGLTF.load('caneca.gltf', (gltf) => {
                 const model = gltf.scene;
                 
                 model.traverse((node) => {
                     if (node.isMesh) {
-                        // Aplica material de porcelana base (PhysicalMaterial é o mais realista)
                         const mat = new THREE.MeshPhysicalMaterial({
-                            color: 0xffffff, // Branco puro inicial
+                            color: 0xffffff, 
                             metalness: 0,
-                            roughness: 0.05, // Muito polido
-                            clearcoat: 1.0,  // Camada de verniz por cima
+                            roughness: 0.05,
+                            clearcoat: 1.0, 
                             clearcoatRoughness: 0.02,
-                            side: THREE.DoubleSide // Renderiza os dois lados da face
+                            side: THREE.DoubleSide
                         });
 
                         // CONFIGURAÇÃO INICIAL RESTRITA:
-                        // Somente o corpo (Cylinder001_2) recebe a imagem por padrão.
-                        if (node.name === "Cylinder001_2") {
+                        // Somente o corpo recebe a imagem. Borda e outros nascem brancos.
+                        if (node.name === ID_CORPO) {
                             mat.map = currentEstampaTexture;
                         } else {
-                            // Alça, interior, borda e fundo nascem SEM IMAGEM
                             mat.map = null; 
                         }
 
@@ -191,34 +180,23 @@
                     }
                 });
 
-                // Centralização e Escala Automática do Modelo
+                // Centralização e Escala Automática
                 const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                model.position.sub(center); // Move o centro do modelo para (0,0,0)
-                
-                const size = box.getSize(new THREE.Vector3()).length();
-                model.scale.setScalar(3.0 / size); // Ajusta a escala para caber na tela
+                model.position.sub(box.getCenter(new THREE.Vector3()));
+                model.scale.setScalar(3.0 / box.getSize(new THREE.Vector3()).length());
                 
                 scene.add(model);
-                generateDynamicUI(); // Cria o painel lateral após o modelo carregar
-            }, undefined, (error) => {
-                console.error("Erro ao carregar o modelo 3D:", error);
-                document.getElementById('container3d').innerHTML = '<p style="padding:20px; color:red;">Erro ao carregar o modelo 3D. Verifique os arquivos.</p>';
+                generateDynamicUI(); // Cria o painel lateral
             });
 
-            // 6. Controles de Mouse (OrbitControls)
             controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; // Suaviza o movimento
-            controls.dampingFactor = 0.05;
-            controls.autoRotate = true; // Rotação automática ligada
+            controls.enableDamping = true; 
+            controls.autoRotate = true; 
             controls.autoRotateSpeed = 1.0;
-            controls.minDistance = 2.0; // Limite de zoom in
-            controls.maxDistance = 6.0; // Limite de zoom out
 
-            // Loop de Animação
             function animate() {
                 requestAnimationFrame(animate);
-                controls.update(); // Necessário para o damping
+                controls.update(); 
                 renderer.render(scene, camera);
             }
             animate();
@@ -227,18 +205,17 @@
         // GERAÇÃO DINÂMICA DO PAINEL DE CONTROLES
         function generateDynamicUI() {
             const uiContainer = document.getElementById('ui-parts-container');
-            uiContainer.innerHTML = ''; // Limpa controles anteriores
+            uiContainer.innerHTML = ''; 
 
             partsConfig.forEach(part => {
                 const row = document.createElement('div');
                 row.className = 'part-row';
                 
-                // HTML condicional: Inclui checkbox apenas se editableImg for true
                 let imageControlHTML = '';
                 if (part.editableImg) {
                     imageControlHTML = `
                         <div style="display:flex; align-items:center; gap:5px;">
-                            <input type="checkbox" id="chk_${part.id}" checked title="Ativar/Desativar Imagem no Corpo">
+                            <input type="checkbox" id="chk_${part.id}" checked>
                             <span style="font-size:10px; color:#64748b;">Arte</span>
                         </div>
                     `;
@@ -248,19 +225,25 @@
                     <span class="part-label">${part.label}</span>
                     <div class="controls-group">
                         ${imageControlHTML}
-                        <div class="color-wrapper" title="Mudar Cor Base">
+                        <div class="color-wrapper">
                             <input type="color" id="col_${part.id}" value="#ffffff">
                         </div>
                     </div>
                 `;
                 uiContainer.appendChild(row);
 
-                // Vincula Evento de Mudança de Cor (Input Color)
+                // Vincula Evento de Mudança de Cor
                 document.getElementById(`col_${part.id}`).addEventListener('input', (e) => {
-                    updateModelPart(part.id, 'color', e.target.value);
+                    const novaCor = e.target.value;
+                    updateModelPart(part.id, 'color', novaCor);
+
+                    // REGRA DE NEGÓCIO: Se mudou a cor do CORPO, muda a da BORDA também.
+                    if (part.id === ID_CORPO) {
+                        updateModelPart(ID_BORDA, 'color', novaCor);
+                    }
                 });
 
-                // Vincula Evento de Imagem (Checkbox) - Apenas se existir
+                // Vincula Evento de Imagem
                 if (part.editableImg) {
                     document.getElementById(`chk_${part.id}`).addEventListener('change', (e) => {
                         updateModelPart(part.id, 'map', e.target.checked);
@@ -269,46 +252,33 @@
             });
         }
 
-        // FUNÇÃO PARA ATUALIZAR O MODELO 3D VIA UI
-        // meshName: id da peça (ex: Cylinder001_5)
-        // property: 'color' ou 'map'
-        // value: o valor da cor (hex) ou booleano do checkbox
         function updateModelPart(meshName, property, value) {
             if (!scene) return;
-            
             scene.traverse(node => {
                 if (node.isMesh && node.name === meshName) {
-                    if (property === 'color') {
-                        node.material.color.set(value);
-                    } else if (property === 'map') {
-                        // Se o checkbox for marcado, aplica a textura. Se desmarcado, remove (null).
-                        node.material.map = value ? currentEstampaTexture : null;
-                    }
-                    node.material.needsUpdate = true; // Força o Three.js a atualizar o material
+                    if (property === 'color') node.material.color.set(value);
+                    else if (property === 'map') node.material.map = value ? currentEstampaTexture : null;
+                    node.material.needsUpdate = true;
                 }
             });
         }
 
-        // FUNÇÕES DE ABERTURA E FECHAMENTO DO MODAL
         function openModal3D(img, titulo, preco) {
             document.getElementById('productModal').style.display = 'flex';
             document.getElementById('modalTitle').innerText = titulo;
             document.getElementById('modalPrice').innerText = preco;
             
-            // Atualiza o link do WhatsApp com mensagem personalizada
+            // Link WhatsApp (Lembre-se de colocar seu número real)
             const mensagem = `Olá, gostaria de encomendar a caneca: ${titulo} (R$ ${preco})`;
             document.getElementById('waLink').href = `https://wa.me/5500000000000?text=${encodeURIComponent(mensagem)}`;
             
-            // Pequeno delay para garantir que o container3d tem tamanho antes de iniciar
             setTimeout(() => init3D(img), 150);
         }
 
         function closeModal() {
             document.getElementById('productModal').style.display = 'none';
-            // Opcional: Parar animação ou limpar cena para economizar memória
         }
 
-        // AJUSTE DE JANELA (RESIZE)
         window.addEventListener('resize', () => {
             if (camera && renderer) {
                 const container = document.getElementById('container3d');
