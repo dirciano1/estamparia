@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Customizer - Estamparia Gerais</title>
+    <title>Personalizador Master - Estamparia Gerais</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -14,37 +14,29 @@
 
         .ui-overlay {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95); padding: 20px;
-            border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            display: flex; flex-direction: column; gap: 15px; z-index: 1000;
-            border: 1px solid #e2e8f0; min-width: 320px;
+            background: rgba(255, 255, 255, 0.95); padding: 15px 25px;
+            border-radius: 50px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 1000;
+            border: 1px solid #e2e8f0;
         }
 
-        .control-group { display: flex; flex-direction: column; gap: 8px; }
-        .control-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; }
-        .options { display: flex; gap: 10px; flex-wrap: wrap; }
+        .control-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+        .options { display: flex; gap: 12px; justify-content: center; }
         
         .btn-color {
-            width: 30px; height: 30px; border-radius: 50%; border: 2px solid white;
-            cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 35px; height: 35px; border-radius: 50%; border: 3px solid white;
+            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.15);
             transition: all 0.2s ease;
         }
-        .btn-color:hover { transform: scale(1.15); }
-        .btn-color.active { border-color: #2563eb; transform: scale(1.1); box-shadow: 0 0 0 2px #2563eb; }
+        .btn-color:hover { transform: scale(1.1); }
+        .btn-color.active { border-color: #2563eb; box-shadow: 0 0 0 2px #2563eb; }
     </style>
 </head>
 <body>
 
     <div class="ui-overlay">
-        <div class="control-group">
-            <span class="control-label">Alça e Fundo/Base</span>
-            <div class="options" id="cores-alca-fundo"></div>
-        </div>
-
-        <div class="control-group">
-            <span class="control-label">Interior da Caneca</span>
-            <div class="options" id="cores-interior"></div>
-        </div>
+        <span class="control-label">Escolha a cor dos detalhes</span>
+        <div class="options" id="menu-cores-unico"></div>
     </div>
 
     <div id="canvas-container"></div>
@@ -60,13 +52,14 @@
             { nome: 'Laranja', hex: '#F86900' }
         ];
 
-        // Mapeamento corrigido: 
-        // 5 = Alça | 3 = Fundo/Base | 4 = Interior | 2 = Corpo | 1 = Borda
-        const MESH_ALCA = "Cylinder001_5";
-        const MESH_FUNDO = "Cylinder001_3";
-        const MESH_INTERIOR = "Cylinder001_4";
-        const MESH_CORPO = "Cylinder001_2";
-        const MESH_BORDA = "Cylinder001_1";
+        // Mapeamento das peças que devem mudar de cor juntas
+        const PECAS_COLORIDAS = [
+            "Cylinder001_5", // Alça
+            "Cylinder001_3", // Fundo
+            "Cylinder001_4", // Interior
+            "Cylinder001_1"  // Borda
+        ];
+        const MESH_CORPO = "Cylinder001_2"; // Estampa fixa
 
         let scene, camera, renderer, controls, currentEstampa;
 
@@ -120,11 +113,7 @@
                 model.scale.setScalar(3.5 / box.getSize(new THREE.Vector3()).length());
                 scene.add(model);
                 
-                // Renderizar menus
-                // Grupo 1 controla Alça E Fundo juntos
-                renderColorMenu('cores-alca-fundo', [MESH_ALCA, MESH_FUNDO]);
-                // Grupo 2 controla Interior
-                renderColorMenu('cores-interior', [MESH_INTERIOR]);
+                gerarMenuUnico();
             });
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -134,18 +123,20 @@
             window.addEventListener('resize', onWindowResize);
         }
 
-        function renderColorMenu(containerId, targetMeshes) {
-            const container = document.getElementById(containerId);
+        function gerarMenuUnico() {
+            const container = document.getElementById('menu-cores-unico');
             CORES.forEach((cor, index) => {
                 const btn = document.createElement('div');
                 btn.className = 'btn-color' + (index === 0 ? ' active' : '');
                 btn.style.backgroundColor = cor.hex;
                 
                 btn.onclick = () => {
-                    container.querySelectorAll('.btn-color').forEach(b => b.classList.remove('active'));
+                    // Interface
+                    document.querySelectorAll('.btn-color').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
-                    targetMeshes.forEach(meshId => {
+                    // Aplica a cor em todas as peças da lista ao mesmo tempo
+                    PECAS_COLORIDAS.forEach(meshId => {
                         scene.traverse(node => {
                             if (node.isMesh && node.name === meshId) {
                                 node.material.color.set(cor.hex);
