@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador 3D - Caneca Branca Dinâmica</title>
+    <title>Visualizador 3D - Caneca Branca</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -24,53 +24,39 @@
         function init() {
             const container = document.getElementById('canvas-container');
 
-            // 1. Configuração da Cena
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xffffff);
 
             camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 0, 4);
 
-            // 2. Renderizador
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.outputEncoding = THREE.sRGBEncoding;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.0; // Ajustado para 1.0 para fidelidade de cor
+            renderer.toneMappingExposure = 1.0; 
             container.appendChild(renderer.domElement);
 
-            // 3. Iluminação
             scene.add(new THREE.AmbientLight(0xffffff, 1.0));
             const light = new THREE.DirectionalLight(0xffffff, 0.8);
             light.position.set(5, 10, 7);
             scene.add(light);
 
-            // 4. Carregamento de Ativos Dinâmico
             loaderGLTF = new THREE.GLTFLoader();
             texLoader = new THREE.TextureLoader();
 
-            // --- LÓGICA DO LINK (#foto.jpg) ---
-            // Pega o nome após o #. Ex: caneca.html#arte.jpg -> nomeArquivo vira 'arte.jpg'
-            let nomeArquivo = window.location.hash.substring(1) || '01.jpg';
-            let caminhoCompleto = 'canecas/' + nomeArquivo;
+            // --- LÓGICA DINÂMICA SEM ARTE POR PADRÃO ---
+            let nomeArquivo = window.location.hash.substring(1); 
+            let estampa = null;
 
-            const estampa = texLoader.load(caminhoCompleto, 
-                // Sucesso
-                () => { console.log("Carregado: " + caminhoCompleto); },
-                // Progresso
-                undefined, 
-                // Erro: Se a foto do link não existir, tenta carregar a 01.jpg
-                () => { 
-                    console.warn("Foto não encontrada, carregando padrão 01.jpg");
-                    window.location.hash = "01.jpg"; 
-                }
-            );
+            if (nomeArquivo) {
+                const caminhoCompleto = 'canecas/' + nomeArquivo;
+                estampa = texLoader.load(caminhoCompleto);
+                estampa.flipY = false;
+                estampa.encoding = THREE.sRGBEncoding;
+            }
 
-            estampa.flipY = false;
-            estampa.encoding = THREE.sRGBEncoding;
-
-            // 5. Carregar o Modelo
             loaderGLTF.load('caneca.gltf', (gltf) => {
                 const model = gltf.scene;
 
@@ -85,8 +71,9 @@
                             side: THREE.DoubleSide
                         });
 
-                        // Aplica a estampa apenas no corpo da caneca
-                        if (node.name === "Cylinder001_2") {
+                        // Se tiver estampa no link e for o corpo, aplica.
+                        // Caso contrário (link vazio ou outras peças), fica branco.
+                        if (node.name === "Cylinder001_2" && estampa) {
                             mat.map = estampa;
                         } else {
                             mat.map = null;
@@ -104,18 +91,13 @@
                 scene.add(model);
             });
 
-            // 6. Controles
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
             controls.autoRotateSpeed = 1.5;
 
             window.addEventListener('resize', onWindowResize);
-
-            // Se o usuário mudar o # no link sem atualizar a página, ela recarrega sozinha
-            window.addEventListener('hashchange', () => {
-                window.location.reload();
-            });
+            window.addEventListener('hashchange', () => window.location.reload());
         }
 
         function onWindowResize() {
