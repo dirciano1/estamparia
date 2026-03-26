@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualizador 3D Profissional | Estamparia Gerais</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -51,10 +52,8 @@
 
             // 1. CARREGAR A ESTAMPA
             const estampaUrl = 'canecas/01.jpg'; // Verifique se o caminho está exato
-            const estampa = texLoader.load(estampaUrl, () => {
-                console.log("-> Imagem da estampa carregada com sucesso.");
-            });
-            estampa.flipY = false; 
+            const estampa = texLoader.load(estampaUrl);
+            estampa.flipY = false; // Corrige orientação UV do GLTF
             estampa.encoding = THREE.sRGBEncoding;
 
             // 2. CARREGAR O MODELO (caneca.gltf)
@@ -74,18 +73,18 @@
                             side: THREE.DoubleSide
                         });
 
-                        // LÓGICA DE ISOLAMENTO (Baseado no teu Log do Console)
-                        // Em modelos de caneca Mug3D, a peça com _1 (ou index 0)
-                        // é quase sempre o corpo cilíndrico externo (a área de impressão).
+                        // LÓGICA DE ISOLAMENTO CORRIGIDA
+                        // O log do console indicou que Cylinder001_1 mapeia para a alça/interior.
+                        // Portanto, Cylinder001_2, Cylinder001_3, etc., mapeiam para o corpo.
 
-                        // Se pegava na alça, vamos restringir apenas à peça principal.
+                        // Se for a peça da alça/interior, MANTÉM BRANCO
                         if (node.name.includes("Cylinder001_1")) {
-                            matPorcelana.map = estampa;
-                            console.log("-> Estampa aplicada apenas no corpo cilíndrico (" + node.name + ")");
-                        } else {
-                            // Alça, Interior e Fundo ficam sem o mapa (brancos)
                             matPorcelana.map = null;
-                            console.log("-> Peça " + node.name + " mantida branca (alça/interior).");
+                            console.log("-> Peça mantida branca (alça/interior): " + node.name);
+                        } else {
+                            // Todas as outras peças (o corpo cilíndrico) recebem a ESTAMPA
+                            matPorcelana.map = estampa;
+                            console.log("-> Estampa aplicada no corpo da caneca: " + node.name);
                         }
 
                         node.material = matPorcelana;
@@ -106,7 +105,8 @@
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
-            controls.minDistance = 2.5; // Limita zoom para não entrar no objeto
+            controls.autoRotateSpeed = 1.0;
+            controls.minDistance = 2.5; 
             controls.maxDistance = 6.0;
 
             window.addEventListener('resize', () => {
