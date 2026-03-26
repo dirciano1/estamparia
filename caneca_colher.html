@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caneca com Colher - Estamparia Gerais</title>
+    <title>Visualizador Caneca com Colher - Estamparia Gerais</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -11,6 +11,7 @@
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background-color: #ffffff; }
         #canvas-container { width: 100vw; height: 100vh; cursor: grab; }
+        #canvas-container:active { cursor: grabbing; }
     </style>
 </head>
 <body>
@@ -60,14 +61,16 @@
             corObjeto.convertSRGBToLinear();
 
             const loader = new THREE.GLTFLoader();
+            // Carrega o arquivo glTF fornecido 
             loader.load('caneca_colher.gltf', (gltf) => {
                 model3D = gltf.scene;
 
                 model3D.traverse((node) => {
+                    // O arquivo contém um único mesh chamado "Cylinder001" 
                     if (node.isMesh && node.name === "Cylinder001") {
-                        // Como o modelo tem múltiplos materiais no mesmo objeto:
-                        const materials = [];
                         
+                        // Criamos um array de 5 materiais para as 5 partes do modelo 
+                        const materials = [];
                         for (let i = 0; i < 5; i++) {
                             materials[i] = new THREE.MeshPhysicalMaterial({
                                 color: 0xffffff,
@@ -77,18 +80,16 @@
                             });
                         }
 
-                        // Mapeamento baseado no seu arquivo:
-                        // Material 1 (índice 1): Corpo da Caneca (onde vai a estampa)
+                        // Mapeamento de acordo com os materiais do arquivo:
+                        // Índice 1: Espaço para a estampa (Material "02 - Default") 
                         if (currentEstampa) {
                             materials[1].map = currentEstampa;
                         }
 
-                        // Materiais que recebem a cor (Alça, Interior, Colher, Fundo):
-                        // Baseado nas cores padrão do seu arquivo (Verde, Azul, Amarelo):
-                        // Índices 2, 3 e 4 são as partes coloridas no seu GLTF
-                        materials[2].color.copy(corObjeto); // Parte Verde no arquivo
-                        materials[3].color.copy(corObjeto); // Parte Azul no arquivo
-                        materials[4].color.copy(corObjeto); // Parte Amarela (Alça/Colher) no arquivo
+                        // Índices 2, 3 e 4: Alça, Interior, Colher e Fundo (Materiais "03", "04" e "05") 
+                        materials[2].color.copy(corObjeto);
+                        materials[3].color.copy(corObjeto);
+                        materials[4].color.copy(corObjeto);
 
                         node.material = materials;
                     }
