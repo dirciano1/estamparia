@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador 3D Profissional | Estamparia Gerais</title>
+    <title>Estamparia Gerais | Visualizador 3D Realista</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -53,8 +53,10 @@
             // 1. CARREGAR A ESTAMPA
             const estampaUrl = 'canecas/01.jpg'; // Verifique se o caminho está exato
             const estampa = texLoader.load(estampaUrl);
-            estampa.flipY = false; // Corrige orientação UV do GLTF
+            estampa.flipY = false; 
             estampa.encoding = THREE.sRGBEncoding;
+            estampa.wrapS = THREE.ClampToEdgeWrapping;
+            estampa.wrapT = THREE.ClampToEdgeWrapping;
 
             // 2. CARREGAR O MODELO (caneca.gltf)
             loaderGLTF.load('caneca.gltf', (gltf) => {
@@ -64,6 +66,7 @@
                 model.traverse((node) => {
                     if (node.isMesh) {
                         // Criamos o material base (Branco Porcelana Brilhante)
+                        // A estampa NÃO é aplicada aqui inicialmente.
                         const matPorcelana = new THREE.MeshPhysicalMaterial({
                             color: 0xffffff,
                             metalness: 0,
@@ -73,21 +76,40 @@
                             side: THREE.DoubleSide
                         });
 
-                        // LÓGICA DE ISOLAMENTO CORRIGIDA
-                        // O log do console indicou que Cylinder001_1 mapeia para a alça/interior.
-                        // Portanto, Cylinder001_2, Cylinder001_3, etc., mapeiam para o corpo.
+                        node.material = matPorcelana;
 
-                        // Se for a peça da alça/interior, MANTÉM BRANCO
-                        if (node.name.includes("Cylinder001_1")) {
-                            matPorcelana.map = null;
-                            console.log("-> Peça mantida branca (alça/interior): " + node.name);
-                        } else {
-                            // Todas as outras peças (o corpo cilíndrico) recebem a ESTAMPA
-                            matPorcelana.map = estampa;
-                            console.log("-> Estampa aplicada no corpo da caneca: " + node.name);
+                        // LÓGICA DE CORTE UV (Mágica para isolar a estampa)
+                        // Como o modelo é uma peça única, precisamos modificar as coordenadas UV
+                        // da geometria para dizer onde a estampa pode e não pode aparecer.
+                        
+                        // Pegamos a geometria
+                        const geometry = node.geometry;
+                        if (geometry.attributes.uv) {
+                            const uvs = geometry.attributes.uv.array;
+                            for (let i = 0; i < uvs.length; i += 2) {
+                                // uvs[i] é a coordenada X (horizontal, de 0 a 1 em volta da caneca)
+                                // uvs[i+1] é a coordenada Y (vertical, de 0 a 1 do fundo ao topo)
+
+                                // O Mug3D costuma colocar a alça e o interior nas bordas (0 ou 1)
+                                // Vamos 'empurrar' essas áreas para um pixel branco na textura.
+
+                                // Filtro Vertical (Remove estampa do fundo e do topo interno)
+                                if (uvs[i+1] < 0.1 || uvs[i+1] > 0.9) {
+                                    uvs[i] = 0; uvs[i+1] = 0; // Ponto branco na textura
+                                }
+                                
+                                // Filtro Horizontal (Remove estampa da alça e interior)
+                                // Se o valor horizontal estiver muito nas bordas, assume que é alça.
+                                if (uvs[i] > 0.94 || uvs[i] < 0.06) {
+                                    uvs[i] = 0; uvs[i+1] = 0; // Ponto branco na textura
+                                }
+                            }
+                            geometry.attributes.uv.needsUpdate = true; // Força o Three.js a ler as novas UVs
                         }
 
-                        node.material = matPorcelana;
+                        // Agora que limpamos as UVs, aplicamos a estampa
+                        node.material.map = estampa;
+                        console.log("-> Estampa aplicada com isolamento UV.");
                     }
                 });
 
