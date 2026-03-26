@@ -35,7 +35,7 @@
 <body>
 
     <div class="ui-overlay">
-        <span class="control-label">Cor da Alça, Interior e Fundo</span>
+        <span class="control-label">Cor da Alça, Interior e Fundo/Base</span>
         <div class="options" id="menu-cores-unico"></div>
     </div>
 
@@ -52,7 +52,12 @@
             { nome: 'Laranja', hex: '#F86900' }
         ];
 
-        const PECAS_COLORIDAS = ["Cylinder001_5", "Cylinder001_3", "Cylinder001_4", "Cylinder001_1"];
+        // MAPEAMENTO ATUALIZADO (Removido Cylinder001_1 para a borda ficar branca)
+        const PECAS_COLORIDAS = [
+            "Cylinder001_5", // Alça
+            "Cylinder001_3", // Fundo / Base
+            "Cylinder001_4"  // Interior
+        ];
         const MESH_CORPO = "Cylinder001_2"; 
 
         let scene, camera, renderer, controls, currentEstampa = null;
@@ -78,11 +83,8 @@
             scene.add(light);
 
             const texLoader = new THREE.TextureLoader();
-            
-            // --- LÓGICA DE CARREGAMENTO SEGURO ---
             let nomeArquivo = window.location.hash.substring(1);
             
-            // Só tenta carregar se houver algo no link após o #
             if (nomeArquivo && nomeArquivo.trim() !== "") {
                 currentEstampa = texLoader.load('canecas/' + nomeArquivo);
                 currentEstampa.flipY = false;
@@ -103,7 +105,6 @@
                             side: THREE.DoubleSide
                         });
 
-                        // Só aplica a estampa se ela foi carregada com sucesso
                         if (node.name === MESH_CORPO && currentEstampa) {
                             mat.map = currentEstampa;
                         }
@@ -124,7 +125,6 @@
             controls.autoRotate = true;
 
             window.addEventListener('resize', onWindowResize);
-            // Recarrega se o usuário mudar o link manualmente
             window.addEventListener('hashchange', () => window.location.reload());
         }
 
@@ -140,7 +140,7 @@
                     btn.classList.add('active');
                     
                     const colorObj = new THREE.Color(cor.hex);
-                    colorObj.convertSRGBToLinear();
+                    colorObj.convertSRGBToLinear(); // Correção de tom para bater com o painel
                     
                     PECAS_COLORIDAS.forEach(meshId => {
                         scene.traverse(node => {
