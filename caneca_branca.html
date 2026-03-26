@@ -30,7 +30,7 @@
             scene.background = new THREE.Color(0xffffff);
 
             camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0, 4);
+            camera.position.set(2, 1.2, 4.5); // Posição de câmera padronizada
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -47,11 +47,25 @@
 
             loaderGLTF = new THREE.GLTFLoader();
             texLoader = new THREE.TextureLoader();
-            
-            // Permite carregar imagens de domínios externos (Imgur)
             texLoader.setCrossOrigin('anonymous');
 
-            // --- LÓGICA DE PARSE DO LINK (#ID_IMGUR|#cor) ---
+            // --- GRID (CHÃO) PADRONIZADO ---
+            const gridTexture = texLoader.load('grid.png'); 
+            gridTexture.wrapS = gridTexture.wrapT = THREE.RepeatWrapping;
+            gridTexture.repeat.set(10, 10);
+            const ground = new THREE.Mesh(
+                new THREE.PlaneGeometry(5, 5),
+                new THREE.MeshBasicMaterial({ 
+                    map: gridTexture, 
+                    transparent: true, 
+                    opacity: 0.15, // Mesma opacidade da outra
+                    depthWrite: false 
+                })
+            );
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -0.96; // Alinhado com a base
+            scene.add(ground);
+
             const hash = window.location.hash.substring(1);
             const partes = hash.split('|');
             const idImgur = partes[0] || "";
@@ -59,15 +73,13 @@
 
             let estampa = null;
             if (idImgur && idImgur.trim() !== "") {
-                // Monta a URL direta do Imgur usando o ID fornecido
                 const urlImgur = `https://i.imgur.com/${idImgur}.jpeg`;
                 estampa = texLoader.load(urlImgur);
                 estampa.flipY = false;
                 estampa.encoding = THREE.sRGBEncoding;
             }
 
-            const corObjeto = new THREE.Color(corHexLink);
-            corObjeto.convertSRGBToLinear();
+            const corObjeto = new THREE.Color(corHexLink).convertSRGBToLinear();
 
             loaderGLTF.load('caneca.gltf', (gltf) => {
                 const model = gltf.scene;
@@ -97,9 +109,7 @@
 
                 const box = new THREE.Box3().setFromObject(model);
                 model.position.sub(box.getCenter(new THREE.Vector3()));
-                const size = box.getSize(new THREE.Vector3()).length();
-                model.scale.setScalar(3.5 / size);
-                
+                model.scale.setScalar(3.5 / box.getSize(new THREE.Vector3()).length());
                 scene.add(model);
             });
 
