@@ -35,7 +35,7 @@
 <body>
 
     <div class="ui-overlay">
-        <span class="control-label">Escolha a cor dos detalhes</span>
+        <span class="control-label">Cor da Alça, Interior e Fundo</span>
         <div class="options" id="menu-cores-unico"></div>
     </div>
 
@@ -52,14 +52,13 @@
             { nome: 'Laranja', hex: '#F86900' }
         ];
 
-        // Mapeamento das peças que devem mudar de cor juntas
+        // MAPEAMENTO FINAL:
         const PECAS_COLORIDAS = [
             "Cylinder001_5", // Alça
-            "Cylinder001_3", // Fundo
-            "Cylinder001_4", // Interior
-            "Cylinder001_1"  // Borda
+            "Cylinder001_3", // Fundo / Base
+            "Cylinder001_4"  // Interior
         ];
-        const MESH_CORPO = "Cylinder001_2"; // Estampa fixa
+        const MESH_CORPO = "Cylinder001_2"; // Corpo com Estampa
 
         let scene, camera, renderer, controls, currentEstampa;
 
@@ -75,7 +74,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.outputEncoding = THREE.sRGBEncoding;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.0; // Ajustado para cores mais fiéis
+            renderer.toneMappingExposure = 1.0; 
             container.appendChild(renderer.domElement);
 
             scene.add(new THREE.AmbientLight(0xffffff, 1.0));
@@ -131,15 +130,13 @@
                 btn.style.backgroundColor = cor.hex;
                 
                 btn.onclick = () => {
-                    // Interface
                     document.querySelectorAll('.btn-color').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
-                    // Ajuste técnico de cor para bater com o painel (sRGB para Linear)
+                    // Conversão de cor para bater com o painel HTML
                     const colorObj = new THREE.Color(cor.hex);
                     colorObj.convertSRGBToLinear();
                     
-                    // Aplica a cor em todas as peças da lista ao mesmo tempo
                     PECAS_COLORIDAS.forEach(meshId => {
                         scene.traverse(node => {
                             if (node.isMesh && node.name === meshId) {
