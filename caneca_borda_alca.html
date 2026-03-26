@@ -35,7 +35,7 @@
 <body>
 
     <div class="ui-overlay">
-        <span class="control-label">Cor da Alça, Interior e Fundo</span>
+        <span class="control-label">Cor da Alça e Fundo/Base</span>
         <div class="options" id="menu-cores-unico"></div>
     </div>
 
@@ -52,10 +52,10 @@
             { nome: 'Laranja', hex: '#F86900' }
         ];
 
+        // MAPEAMENTO AJUSTADO: Removido Cylinder001_4 (Interior) para que fique sempre branco
         const PECAS_COLORIDAS = [
             "Cylinder001_5", // Alça
-            "Cylinder001_3", // Fundo / Base
-            "Cylinder001_4"  // Interior
+            "Cylinder001_3"  // Fundo / Base
         ];
         const MESH_CORPO = "Cylinder001_2"; 
 
@@ -82,8 +82,6 @@
             scene.add(light);
 
             const texLoader = new THREE.TextureLoader();
-            
-            // --- LÓGICA DE LINK DINÂMICO (#foto.jpg) ---
             let nomeArquivo = window.location.hash.substring(1);
             currentEstampa = null;
 
@@ -107,7 +105,7 @@
                             side: THREE.DoubleSide
                         });
 
-                        // Só aplica se houver estampa no link
+                        // Aplica a estampa apenas no corpo
                         if (node.name === MESH_CORPO && currentEstampa) {
                             mat.map = currentEstampa;
                         }
