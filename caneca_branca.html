@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador 3D - Caneca Branca</title>
+    <title>Visualizador 3D - Caneca Branca Dinâmica</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -31,41 +31,51 @@
             camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 0, 4);
 
-            // 2. Renderizador de Alta Performance
+            // 2. Renderizador
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.outputEncoding = THREE.sRGBEncoding;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2;
+            renderer.toneMappingExposure = 1.0; // Ajustado para 1.0 para fidelidade de cor
             container.appendChild(renderer.domElement);
 
-            // 3. Iluminação de Estúdio Fixa
+            // 3. Iluminação
             scene.add(new THREE.AmbientLight(0xffffff, 1.0));
             const light = new THREE.DirectionalLight(0xffffff, 0.8);
             light.position.set(5, 10, 7);
             scene.add(light);
 
-            // 4. Carregamento de Ativos
+            // 4. Carregamento de Ativos Dinâmico
             loaderGLTF = new THREE.GLTFLoader();
             texLoader = new THREE.TextureLoader();
 
-            // Pega a estampa da URL (ex: caneca_branca.html?foto=canecas/01.jpg) 
-            // ou usa a 01.jpg por padrão
-            const urlParams = new URLSearchParams(window.location.search);
-            const fotoUrl = urlParams.get('foto') || 'canecas/01.jpg';
+            // --- LÓGICA DO LINK (#foto.jpg) ---
+            // Pega o nome após o #. Ex: caneca.html#arte.jpg -> nomeArquivo vira 'arte.jpg'
+            let nomeArquivo = window.location.hash.substring(1) || '01.jpg';
+            let caminhoCompleto = 'canecas/' + nomeArquivo;
 
-            const estampa = texLoader.load(fotoUrl);
+            const estampa = texLoader.load(caminhoCompleto, 
+                // Sucesso
+                () => { console.log("Carregado: " + caminhoCompleto); },
+                // Progresso
+                undefined, 
+                // Erro: Se a foto do link não existir, tenta carregar a 01.jpg
+                () => { 
+                    console.warn("Foto não encontrada, carregando padrão 01.jpg");
+                    window.location.hash = "01.jpg"; 
+                }
+            );
+
             estampa.flipY = false;
             estampa.encoding = THREE.sRGBEncoding;
 
-            // 5. Carregar o Modelo caneca.gltf
+            // 5. Carregar o Modelo
             loaderGLTF.load('caneca.gltf', (gltf) => {
                 const model = gltf.scene;
 
                 model.traverse((node) => {
                     if (node.isMesh) {
-                        // Criar material de Porcelana Branca
                         const mat = new THREE.MeshPhysicalMaterial({
                             color: 0xffffff,
                             metalness: 0,
@@ -75,8 +85,7 @@
                             side: THREE.DoubleSide
                         });
 
-                        // TRAVA: Só coloca a imagem se for o corpo (peça _2)
-                        // Todo o resto (alça _5, interior _4, etc) permanece branco
+                        // Aplica a estampa apenas no corpo da caneca
                         if (node.name === "Cylinder001_2") {
                             mat.map = estampa;
                         } else {
@@ -87,11 +96,8 @@
                     }
                 });
 
-                // Centralizar
                 const box = new THREE.Box3().setFromObject(model);
                 model.position.sub(box.getCenter(new THREE.Vector3()));
-                
-                // Escalar para preencher bem a tela
                 const size = box.getSize(new THREE.Vector3()).length();
                 model.scale.setScalar(3.5 / size);
                 
@@ -103,10 +109,13 @@
             controls.enableDamping = true;
             controls.autoRotate = true;
             controls.autoRotateSpeed = 1.5;
-            controls.minDistance = 2.0;
-            controls.maxDistance = 5.0;
 
             window.addEventListener('resize', onWindowResize);
+
+            // Se o usuário mudar o # no link sem atualizar a página, ela recarrega sozinha
+            window.addEventListener('hashchange', () => {
+                window.location.reload();
+            });
         }
 
         function onWindowResize() {
