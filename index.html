@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estamparia Gerais | Personalizados 3D</title>
+    <title>Estamparia Gerais | 3D Realista</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -13,74 +13,62 @@
     <style>
         :root {
             --primary: #2563eb;
-            --accent: #f59e0b;
             --dark: #1e293b;
             --light: #f8fafc;
             --white: #ffffff;
-            --shadow: 0 4px 20px rgba(0,0,0,0.12);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
-        body { background-color: var(--light); color: var(--dark); line-height: 1.6; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--light); color: var(--dark); }
 
         header {
             background: var(--white); display: flex; justify-content: space-between; align-items: center;
-            padding: 0.8rem 5%; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: var(--shadow);
-        }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .logo-img { height: 45px; border-radius: 5px; }
-        .brand-name { font-weight: 700; font-size: 1.3rem; color: var(--primary); text-decoration: none; }
-        
-        .hero {
-            height: 70vh;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('banner.png') center/cover;
-            display: flex; align-items: center; justify-content: center; text-align: center; color: white;
+            padding: 0.8rem 5%; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        .catalog { padding: 5rem 5%; max-width: 1300px; margin: 0 auto; }
-        .grid-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2.5rem; }
-        .card { background: white; border-radius: 20px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid #eee; text-align: center; }
-        .card:hover { transform: translateY(-10px); box-shadow: var(--shadow); }
-        .card img { width: 100%; height: 300px; object-fit: cover; }
+        .hero {
+            height: 60vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('banner.png') center/cover;
+            display: flex; align-items: center; justify-content: center; text-align: center; color: white; margin-top: 60px;
+        }
+
+        .catalog { padding: 4rem 5%; max-width: 1200px; margin: 0 auto; }
+        .grid-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+        .card { background: white; border-radius: 15px; overflow: hidden; cursor: pointer; border: 1px solid #eee; text-align: center; transition: 0.3s; }
+        .card:hover { transform: translateY(-10px); }
+        .card img { width: 100%; height: 280px; object-fit: cover; }
 
         /* MODAL 3D */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: white; width: 100%; max-width: 1100px; border-radius: 25px; display: flex; height: 85vh; position: relative; overflow: hidden; }
-        .close-modal { position: absolute; right: 25px; top: 15px; font-size: 40px; cursor: pointer; z-index: 10; color: #64748b; }
+        .modal-content { background: white; width: 100%; max-width: 1000px; border-radius: 20px; display: flex; height: 80vh; position: relative; overflow: hidden; }
+        .close-modal { position: absolute; right: 20px; top: 10px; font-size: 40px; cursor: pointer; z-index: 100; }
         
-        .modal-left { flex: 1.4; background: #ffffff; border-right: 1px solid #eee; position: relative; }
+        .modal-left { flex: 1.5; background: #ffffff; position: relative; }
         #container3d { width: 100%; height: 100%; cursor: grab; }
 
         .modal-right { flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center; }
-        .price-modal { font-size: 2.5rem; font-weight: 800; color: #16a34a; margin: 20px 0; }
-        .btn-whats { background: #25d366; color: white; padding: 18px; text-align: center; text-decoration: none; border-radius: 50px; font-weight: 700; transition: 0.3s; }
-        .btn-whats:hover { transform: scale(1.05); }
+        .price { font-size: 2.5rem; font-weight: 800; color: #16a34a; margin: 15px 0; }
+        .btn-whats { background: #25d366; color: white; padding: 15px; text-align: center; text-decoration: none; border-radius: 50px; font-weight: 700; }
 
-        @media (max-width: 850px) { .modal-content { flex-direction: column; overflow-y: auto; } .modal-left { height: 400px; flex: none; } }
+        @media (max-width: 800px) { .modal-content { flex-direction: column; overflow-y: auto; } .modal-left { height: 350px; flex: none; } }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-left">
-            <img src="logo.png" alt="Logo" class="logo-img">
-            <a href="#" class="brand-name">Estamparia Gerais</a>
-        </div>
-        <nav><a href="#produtos" style="text-decoration: none; color: var(--dark); font-weight: 600;">Produtos</a></nav>
+        <div style="font-weight: 700; color: var(--primary);">Estamparia Gerais</div>
+        <nav><a href="#produtos" style="text-decoration: none; color: var(--dark);">Produtos</a></nav>
     </header>
 
     <section class="hero">
-        <div>
-            <h1>Visualize sua ideia em 3D</h1>
-            <p>Sua caneca personalizada com realismo total.</p>
-        </div>
+        <h1>Simulador 3D de Canecas</h1>
     </section>
 
     <section class="catalog" id="produtos">
         <div class="grid-products">
-            <div class="card" onclick="openModal3D('canecas/01.jpg', 'Caneca de Cerâmica', '35,00')">
+            <div class="card" onclick="openModal3D('canecas/01.jpg', 'Caneca Premium', '35,00')">
                 <img src="canecas/01.jpg" alt="Caneca">
-                <div class="card-info"><h3>Caneca Premium</h3><p>R$ 35,00</p></div>
+                <div style="padding: 15px;"><h3>Caneca Personalizada</h3><p>R$ 35,00</p></div>
             </div>
         </div>
     </section>
@@ -88,14 +76,12 @@
     <div id="productModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal()">&times;</span>
-            <div class="modal-left">
-                <div id="container3d"></div>
-            </div>
+            <div class="modal-left"><div id="container3d"></div></div>
             <div class="modal-right">
-                <h2 id="modalTitle">Título do Produto</h2>
-                <p>Gire o modelo 3D. A alça e o interior são brancos liso. A estampa envolve apenas o corpo da caneca, simulando sublimação real.</p>
-                <div class="price-modal">R$ <span id="modalPrice">0,00</span></div>
-                <a href="#" id="waLink" class="btn-whats" target="_blank">Pedir pelo WhatsApp</a>
+                <h2 id="modalTitle">Título</h2>
+                <p>Arraste para girar a caneca. Interior e alça brancos, estampa apenas no corpo.</p>
+                <div class="price">R$ <span id="modalPrice">0,00</span></div>
+                <a href="#" id="waLink" class="btn-whats" target="_blank">Pedir via WhatsApp</a>
             </div>
         </div>
     </div>
@@ -118,69 +104,60 @@
             renderer.outputEncoding = THREE.sRGBEncoding;
             container.appendChild(renderer.domElement);
 
-            // ILUMINAÇÃO REFORÇADA (PBR exige mais luz)
-            scene.add(new THREE.AmbientLight(0xffffff, 2.0)); // Luz Ambiente muito forte
-            
-            const light = new THREE.DirectionalLight(0xffffff, 1.2);
-            light.position.set(5, 5, 5); // Frente/Cima/Direita
+            // ILUMINAÇÃO REFORÇADA (Para tirar o preto)
+            scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+            const light = new THREE.DirectionalLight(0xffffff, 1.0);
+            light.position.set(5, 5, 5);
             scene.add(light);
             
-            const lightBack = new THREE.DirectionalLight(0xffffff, 1.0);
-            lightBack.position.set(-5, 2, -5); // Trás/Esquerda
-            scene.add(lightBack);
-
             loaderGLTF = new THREE.GLTFLoader();
             texLoader = new THREE.TextureLoader();
 
-            // Ajuste de caminho para GitHub Pages
-            loaderGLTF.setPath('objetos/'); 
-            loaderGLTF.load('scene.gltf', (gltf) => {
+            // Ajuste automático do caminho absoluto para evitar erro 404
+            const baseUrl = window.location.href.split('#')[0].split('?')[0];
+            const finalTexturePath = baseUrl + textureUrl;
+
+            loaderGLTF.load('objetos/scene.gltf', (gltf) => {
                 const model = gltf.scene;
 
-                // Carregar estampa (textura)
-                // '../' volta uma pasta se a foto estiver fora de 'objetos'
-                const estampa = texLoader.load('../' + textureUrl); 
+                // Carrega a Estampa
+                const estampa = texLoader.load(finalTexturePath);
                 estampa.flipY = false; 
                 estampa.encoding = THREE.sRGBEncoding;
-                
-                // AJUSTE DE MAPEAMENTO (Para isolar a estampa)
-                // ClampToEdge Wrapping impede que a imagem se repita na alça/interior
-                estampa.wrapS = THREE.ClampToEdgeWrapping; 
+                // Impede que a estampa se repita na alça e interior
+                estampa.wrapS = THREE.ClampToEdgeWrapping;
                 estampa.wrapT = THREE.ClampToEdgeWrapping;
 
                 model.traverse((node) => {
                     if (node.isMesh) {
-                        console.log("Mesh encontrada: " + node.name);
-                        
-                        // FORÇAR O MATERIAL BRANCO BRILHANTE (CERÂMICA)
-                        // MeshStandardMaterial (PBR) reage melhor à luz e cor
+                        // FORÇA MATERIAL BRANCO (Resolve a caneca preta)
                         node.material = new THREE.MeshStandardMaterial({
-                            map: estampa,          // Estampa (corpo)
-                            color: 0xffffff,       // Força a cor branca (resolve a caneca preta)
-                            roughness: 0.3,        // Brilho da cerâmica
-                            metalness: 0,          // Remove qualquer efeito metálico (preto)
-                            side: THREE.DoubleSide // Garante que apareça por dentro e por fora
+                            map: estampa,
+                            color: 0xffffff,
+                            roughness: 0.3,
+                            metalness: 0,
+                            side: THREE.DoubleSide
                         });
                         node.material.needsUpdate = true;
                     }
                 });
 
-                // Centralizar e Escalar Proporcionalmente (Mantido)
+                // Centralizar e Escalar
                 const box = new THREE.Box3().setFromObject(model);
                 const size = box.getSize(new THREE.Vector3()).length();
                 const center = box.getCenter(new THREE.Vector3());
                 model.position.sub(center);
-                const scale = 3.2 / size; // A escala deve estar visível
+                const scale = 3.2 / size;
                 model.scale.set(scale, scale, scale);
                 
                 scene.add(model);
-                console.log("Visualizador 3D Blindado renderizado com sucesso!");
+            }, undefined, (err) => {
+                console.error("Erro ao carregar o modelo GLTF:", err);
             });
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
-            controls.autoRotateSpeed = 1.0;
 
             function animate() {
                 requestAnimationFrame(animate);
@@ -197,7 +174,7 @@
             setTimeout(() => { init3D(img); }, 200);
         }
 
-        function closeModal() { document.getElementById('productModal').style.display = 'none'; if(renderer) renderer.dispose(); }
+        function closeModal() { document.getElementById('productModal').style.display = 'none'; }
     </script>
 </body>
 </html>
