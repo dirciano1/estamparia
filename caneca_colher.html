@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; background-color: #f0f0f0; }
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #f4f4f4; }
         #canvas-container { width: 100vw; height: 100vh; cursor: grab; }
     </style>
 </head>
@@ -21,30 +21,46 @@
         function init() {
             const container = document.getElementById('canvas-container');
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xf0f0f0); 
+            scene.background = new THREE.Color(0xf4f4f4); 
 
             camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(2, 1.5, 5); // Câmera um pouco mais alta para ver o grid
+            camera.position.set(0, 1.2, 4); // Câmera de frente e um pouco alta para ver o grid
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.outputEncoding = THREE.sRGBEncoding;
-            renderer.shadowMap.enabled = true; // Habilita sombras
             container.appendChild(renderer.domElement);
 
-            // --- GRID (O CHÃO) ---
-            // Tamanho 10, dividido em 20 segmentos. Cores: cinza escuro e cinza claro.
-            const grid = new THREE.GridHelper(10, 20, 0xcccccc, 0xdddddd);
-            grid.position.y = -0.95; // Ajusta para ficar logo abaixo da base da caneca
-            scene.add(grid);
+            const texLoader = new THREE.TextureLoader();
+            texLoader.setCrossOrigin('anonymous');
+
+            // --- NOVO CHÃO DE GRID (IGUAL À OUTRA CANECA) ---
+            
+            // 1. Carrega uma imagem de grade. 
+            // Dica: Crie uma imagem de 128x128px branca com linhas pretas finas e salve como grid.png.
+            const gridTexture = texLoader.load('grid.png'); // Substitua pela sua imagem de grid
+            gridTexture.wrapS = THREE.RepeatWrapping;
+            gridTexture.wrapT = THREE.RepeatWrapping;
+            gridTexture.repeat.set(10, 10); // Quantas vezes a grade se repete
+
+            // 2. Cria o plano do chão
+            const groundGeometry = new THREE.PlaneGeometry(5, 5); // Tamanho 5x5 metros
+            const groundMaterial = new THREE.MeshBasicMaterial({ 
+                map: gridTexture, 
+                transparent: true, 
+                opacity: 0.2, // Deixa o grid discreto
+                depthWrite: false // Impede que o grid "atravesse" a caneca se o zoom for longe
+            });
+            const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+            groundMesh.rotation.x = -Math.PI / 2; // Gira para ficar horizontal
+            groundMesh.position.y = -0.96; // Ajusta para ficar logo abaixo da base (Parte 1)
+            scene.add(groundMesh);
 
             // --- LUZES ---
-            scene.add(new THREE.HemisphereLight(0xffffff, 0xaaaaaa, 1.0));
-            
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            scene.add(new THREE.HemisphereLight(0xffffff, 0x999999, 1.2));
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
             dirLight.position.set(5, 10, 7);
-            dirLight.castShadow = true; // A luz projeta sombra no chão
             scene.add(dirLight);
 
             // --- PROCESSAMENTO DO LINK ---
@@ -53,9 +69,6 @@
             const idImgur = partes[0] || "";
             const corHexLink = partes[1] || "#ffffff"; 
 
-            const texLoader = new THREE.TextureLoader();
-            texLoader.setCrossOrigin('anonymous');
-            
             let estampa = null;
             if (idImgur) {
                 estampa = texLoader.load(`https://i.imgur.com/${idImgur}.jpeg`);
@@ -65,15 +78,13 @@
 
             const corParametro = new THREE.Color(corHexLink).convertSRGBToLinear();
 
+            // --- CARREGAMENTO DO MODELO (SUAS 5 PARTES) ---
             const loader = new THREE.GLTFLoader();
             loader.load('caneca_colher.gltf', (gltf) => {
                 model3D = gltf.scene;
 
                 model3D.traverse((node) => {
                     if (node.isMesh) {
-                        node.castShadow = true; // Caneca projeta sombra
-                        node.receiveShadow = true;
-
                         const mat = new THREE.MeshPhysicalMaterial({
                             color: 0xffffff,
                             roughness: 0.05,
@@ -81,12 +92,16 @@
                             side: THREE.DoubleSide
                         });
 
-                        // Lógica das partes 1 a 5 (conforme seu mapeamento) 
+                        // Lógica baseada no seu mapeamento:
+                        
+                        // Parte 1 (Base) e Parte 2 (Corpo): Ficam Brancas
                         if (node.name === "Cylinder001_1" || node.name === "Cylinder001_2") {
                             mat.color.set(0xffffff);
+                            // Aplica estampa apenas na Parte 2
                             if (node.name === "Cylinder001_2" && estampa) mat.map = estampa;
                         }
 
+                        // Partes 3, 4 e 5: Mudam juntas com a cor do link
                         if (["Cylinder001_3", "Cylinder001_4", "Cylinder001_5"].includes(node.name)) {
                             mat.color.copy(corParametro);
                         }
@@ -105,8 +120,6 @@
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
-            controls.maxDistance = 10; // Limita o zoom para não sumir o grid
-            
             animate();
         }
 
