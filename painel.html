@@ -8,52 +8,25 @@
     <style>
         :root { --primary: #2563eb; --bg: #f1f5f9; --card: #ffffff; --text: #1e293b; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--text); }
-        
         .main-layout { display: flex; gap: 20px; max-width: 1200px; margin: 0 auto; min-height: 95vh; align-items: stretch; }
-
-        /* LADO ESQUERDO: FORMULÁRIO */
         .sidebar { background: var(--card); width: 380px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
         h2 { margin: 0 0 20px 0; font-size: 18px; text-align: center; color: var(--primary); }
-        
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
-        
-        select, input {
-            width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;
-            font-size: 14px; box-sizing: border-box; outline: none; font-family: inherit;
-        }
+        select, input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none; font-family: inherit; }
         select:focus, input:focus { border-color: var(--primary); }
-
         .result-area { margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1f5f9; }
         #linkGerado { font-size: 11px; background: #f8fafc; padding: 12px; border-radius: 8px; word-break: break-all; border: 1px solid #e2e8f0; display: block; margin-bottom: 10px; color: #475569; font-family: monospace; }
-        
-        .btn-copiar {
-            width: 100%; background: var(--primary); color: white; border: none; padding: 16px;
-            border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px;
-        }
-        .btn-copiar:hover { background: #1d4ed8; }
-
-        /* LADO DIREITO: PREVIEW 3D */
+        .btn-copiar { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .preview-container { flex: 1; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); position: relative; border: 4px solid white; min-height: 500px; }
         .preview-header { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: 700; z-index: 10; border: 1px solid #eee; text-transform: uppercase; color: var(--primary); pointer-events: none; }
         iframe { width: 100%; height: 100%; border: none; background: #fff; }
 
-        /* AJUSTES PARA MOBILE (CELULAR) */
         @media (max-width: 900px) {
             body { padding: 5px; }
             .main-layout { flex-direction: column; gap: 10px; }
-            .sidebar { width: 100%; box-sizing: border-box; padding: 20px; border-radius: 15px; }
-            
-            /* FORÇA O IFRAME A SER GRANDE NO CELULAR */
-            .preview-container { 
-                height: 80vh; /* 80% da altura da tela */
-                min-height: 80vh; 
-                flex: none; 
-                border-radius: 15px;
-            }
-            
-            h2 { font-size: 16px; margin-bottom: 15px; }
-            .btn-copiar { padding: 18px; font-size: 16px; } /* Botão maior para o polegar */
+            .sidebar { width: 100%; box-sizing: border-box; padding: 20px; }
+            .preview-container { height: 80vh; min-height: 80vh; flex: none; }
         }
     </style>
 </head>
@@ -69,7 +42,7 @@
         </div>
 
         <div class="form-group">
-            <label>Tipo de Produto (Página)</label>
+            <label>Tipo de Produto</label>
             <select id="modeloHtml" onchange="atualizarLink()">
                 <option value="caneca_branca.html">Caneca Branca</option>
                 <option value="caneca_pro.html">Caneca Pro (Alça + Fundo)</option>
@@ -83,7 +56,8 @@
                 <option value="#ffffff">⚪ Branco (Porcelana)</option>
                 <option value="#DF1212">🔴 Vermelho</option>
                 <option value="#1D85D0">🔵 Azul</option>
-                <option value="#E598AF">🌸 Rosa Claro</option>
+                <option value="#FFC2C2">🌸 Rosa Claro</option>
+                <option value="#E6A1B6">🍬 Rosa Médio (Novo)</option>
                 <option value="#075103">🟢 Verde</option>
                 <option value="#EDD900">🟡 Amarelo</option>
                 <option value="#F86900">🟠 Laranja</option>
@@ -91,8 +65,8 @@
         </div>
 
         <div class="form-group">
-            <label>Código da Arte</label>
-            <input type="text" id="imgCode" placeholder="Ex: 01, joao" oninput="atualizarLink()">
+            <label>Link ou ID da Arte (Imgur)</label>
+            <input type="text" id="imgCode" placeholder="Cole o link completo do Imgur aqui" oninput="limparLinkImgur(this); atualizarLink();">
         </div>
 
         <div class="result-area">
@@ -108,14 +82,35 @@
 </div>
 
 <script>
+    // FUNÇÃO PARA LIMPAR O LINK E DEIXAR SÓ O ID
+    function limparLinkImgur(input) {
+        let valor = input.value.trim();
+        
+        // Verifica se é um link (contém http ou imgur)
+        if (valor.includes("imgur.com")) {
+            // Pega o que está após a última barra "/"
+            let partes = valor.split('/');
+            let final = partes.pop(); // Pega "i2yd6uf.jpeg"
+            
+            // Pega o que está antes do ponto "."
+            let idLimpado = final.split('.')[0];
+            
+            // Remove possíveis sufixos de tamanho do Imgur (como _d ou _s)
+            idLimpado = idLimpado.split('_')[0];
+            
+            // Devolve apenas o ID para o campo
+            input.value = idLimpado;
+        }
+    }
+
     function atualizarLink() {
         const domain = document.getElementById('baseDomain').value;
         const modelo = document.getElementById('modeloHtml').value;
         const cor = document.getElementById('corHex').value;
         let img = document.getElementById('imgCode').value.trim();
 
-        const imgPart = img !== "" ? `${img}.jpg` : "";
-        const linkFinal = `${domain}${modelo}#${imgPart}|${cor}`;
+        // O link gerado para o cliente já assume que o ID vai buscar .jpeg no visualizador
+        const linkFinal = `${domain}${modelo}#${img}|${cor}`;
 
         document.getElementById('linkGerado').innerText = linkFinal;
         document.getElementById('previewIframe').src = linkFinal;
