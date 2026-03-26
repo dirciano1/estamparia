@@ -93,7 +93,7 @@
             </div>
             <div class="modal-right">
                 <h2 id="modalTitle">Título do Produto</h2>
-                <p>Use o mouse para girar. A estampa envolve apenas o corpo da caneca, simulando sublimação real.</p>
+                <p>Gire o modelo 3D. A alça e o interior são brancos liso. A estampa envolve apenas o corpo da caneca, simulando sublimação real.</p>
                 <div class="price-modal">R$ <span id="modalPrice">0,00</span></div>
                 <a href="#" id="waLink" class="btn-whats" target="_blank">Pedir pelo WhatsApp</a>
             </div>
@@ -118,70 +118,69 @@
             renderer.outputEncoding = THREE.sRGBEncoding;
             container.appendChild(renderer.domElement);
 
-            // ILUMINAÇÃO REFORÇADA
-            scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+            // ILUMINAÇÃO REFORÇADA (PBR exige mais luz)
+            scene.add(new THREE.AmbientLight(0xffffff, 2.0)); // Luz Ambiente muito forte
+            
             const light = new THREE.DirectionalLight(0xffffff, 1.2);
-            light.position.set(5, 5, 5);
+            light.position.set(5, 5, 5); // Frente/Cima/Direita
             scene.add(light);
             
-            const lightBack = new THREE.DirectionalLight(0xffffff, 0.8);
-            lightBack.position.set(-5, 2, -5);
+            const lightBack = new THREE.DirectionalLight(0xffffff, 1.0);
+            lightBack.position.set(-5, 2, -5); // Trás/Esquerda
             scene.add(lightBack);
 
             loaderGLTF = new THREE.GLTFLoader();
             texLoader = new THREE.TextureLoader();
 
-            // Ajuste de caminho para GitHub
+            // Ajuste de caminho para GitHub Pages
             loaderGLTF.setPath('objetos/'); 
             loaderGLTF.load('scene.gltf', (gltf) => {
                 const model = gltf.scene;
 
-                // Carregar estampa
+                // Carregar estampa (textura)
+                // '../' volta uma pasta se a foto estiver fora de 'objetos'
                 const estampa = texLoader.load('../' + textureUrl); 
                 estampa.flipY = false; 
                 estampa.encoding = THREE.sRGBEncoding;
-                estampa.wrapS = THREE.ClampToEdgeWrapping; // Evita repetir na alça
+                
+                // AJUSTE DE MAPEAMENTO (Para isolar a estampa)
+                // ClampToEdge Wrapping impede que a imagem se repita na alça/interior
+                estampa.wrapS = THREE.ClampToEdgeWrapping; 
                 estampa.wrapT = THREE.ClampToEdgeWrapping;
 
                 model.traverse((node) => {
                     if (node.isMesh) {
-                        // Forçar material Branco Cerâmica Blindado
-                        node.material = new THREE.MeshPhongMaterial({
-                            map: estampa,
-                            color: 0xffffff,
-                            shininess: 100,
-                            side: THREE.DoubleSide
-                        });
+                        console.log("Mesh encontrada: " + node.name);
                         
-                        // Lógica UV: Tenta manter alça e fundo brancos se a malha permitir
-                        if (node.geometry.attributes.uv) {
-                            const uvs = node.geometry.attributes.uv.array;
-                            for (let i = 0; i < uvs.length; i += 2) {
-                                // Se a coordenada UV for de borda (alça/topo/fundo), limpa a textura
-                                if (uvs[i] > 0.95 || uvs[i] < 0.05 || uvs[i+1] < 0.1 || uvs[i+1] > 0.9) {
-                                    uvs[i] = 0; uvs[i+1] = 0; 
-                                }
-                            }
-                            node.geometry.attributes.uv.needsUpdate = true;
-                        }
+                        // FORÇAR O MATERIAL BRANCO BRILHANTE (CERÂMICA)
+                        // MeshStandardMaterial (PBR) reage melhor à luz e cor
+                        node.material = new THREE.MeshStandardMaterial({
+                            map: estampa,          // Estampa (corpo)
+                            color: 0xffffff,       // Força a cor branca (resolve a caneca preta)
+                            roughness: 0.3,        // Brilho da cerâmica
+                            metalness: 0,          // Remove qualquer efeito metálico (preto)
+                            side: THREE.DoubleSide // Garante que apareça por dentro e por fora
+                        });
                         node.material.needsUpdate = true;
                     }
                 });
 
-                // Centralizar e Escalar
+                // Centralizar e Escalar Proporcionalmente (Mantido)
                 const box = new THREE.Box3().setFromObject(model);
                 const size = box.getSize(new THREE.Vector3()).length();
                 const center = box.getCenter(new THREE.Vector3());
                 model.position.sub(center);
-                const scale = 3.0 / size;
+                const scale = 3.2 / size; // A escala deve estar visível
                 model.scale.set(scale, scale, scale);
                 
                 scene.add(model);
+                console.log("Visualizador 3D Blindado renderizado com sucesso!");
             });
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
+            controls.autoRotateSpeed = 1.0;
 
             function animate() {
                 requestAnimationFrame(animate);
@@ -198,7 +197,7 @@
             setTimeout(() => { init3D(img); }, 200);
         }
 
-        function closeModal() { document.getElementById('productModal').style.display = 'none'; }
+        function closeModal() { document.getElementById('productModal').style.display = 'none'; if(renderer) renderer.dispose(); }
     </script>
 </body>
 </html>
