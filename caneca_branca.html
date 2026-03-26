@@ -30,7 +30,7 @@
             scene.background = new THREE.Color(0xffffff);
 
             camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(2, 1.2, 4.5); // Posição de câmera padronizada
+            camera.position.set(2, 1.2, 4.5); 
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -50,6 +50,7 @@
             texLoader.setCrossOrigin('anonymous');
 
             // --- GRID (CHÃO) PADRONIZADO ---
+            // Certifique-se que o grid.png está na mesma pasta que este HTML
             const gridTexture = texLoader.load('grid.png'); 
             gridTexture.wrapS = gridTexture.wrapT = THREE.RepeatWrapping;
             gridTexture.repeat.set(10, 10);
@@ -58,12 +59,12 @@
                 new THREE.MeshBasicMaterial({ 
                     map: gridTexture, 
                     transparent: true, 
-                    opacity: 0.15, // Mesma opacidade da outra
+                    opacity: 0.15, 
                     depthWrite: false 
                 })
             );
             ground.rotation.x = -Math.PI / 2;
-            ground.position.y = -0.96; // Alinhado com a base
+            ground.position.y = -0.96; 
             scene.add(ground);
 
             const hash = window.location.hash.substring(1);
@@ -81,7 +82,8 @@
 
             const corObjeto = new THREE.Color(corHexLink).convertSRGBToLinear();
 
-            loaderGLTF.load('caneca.gltf', (gltf) => {
+            // --- NOVO DIRETÓRIO CONFIGURADO ABAIXO ---
+            loaderGLTF.load('objetos/caneca_porcelanato/caneca.gltf', (gltf) => {
                 const model = gltf.scene;
 
                 model.traverse((node) => {
