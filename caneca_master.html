@@ -77,15 +77,20 @@
             light.position.set(5, 10, 7);
             scene.add(light);
 
-            // --- LÓGICA DE LINK DINÂMICO (foto|cor) ---
+            const texLoader = new THREE.TextureLoader();
+            // PERMISSÃO PARA IMAGENS EXTERNAS (IMGUR)
+            texLoader.setCrossOrigin('anonymous');
+
+            // --- LÓGICA DE LINK DINÂMICO (ID_IMGUR|cor) ---
             const hash = window.location.hash.substring(1);
             const partes = hash.split('|');
-            const nomeFoto = partes[0] || "";
-            const corLink = partes[1] || "#ffffff"; // Branco por padrão se não houver cor no link
+            const idImgur = partes[0] || "";
+            const corLink = partes[1] || "#ffffff"; 
 
-            const texLoader = new THREE.TextureLoader();
-            if (nomeFoto && nomeFoto.trim() !== "") {
-                currentEstampa = texLoader.load('canecas/' + nomeFoto);
+            if (idImgur && idImgur.trim() !== "") {
+                // Monta URL direta do Imgur
+                const urlImgur = `https://i.imgur.com/${idImgur}.jpeg`;
+                currentEstampa = texLoader.load(urlImgur);
                 currentEstampa.flipY = false;
                 currentEstampa.encoding = THREE.sRGBEncoding;
             }
@@ -94,7 +99,6 @@
             loader.load('caneca.gltf', (gltf) => {
                 model3D = gltf.scene;
                 
-                // Preparar a cor do link
                 const colorObj = new THREE.Color(corLink);
                 colorObj.convertSRGBToLinear();
 
@@ -108,12 +112,10 @@
                             side: THREE.DoubleSide
                         });
 
-                        // Se for corpo, aplica imagem
                         if (node.name === MESH_CORPO && currentEstampa) {
                             mat.map = currentEstampa;
                         }
                         
-                        // Se for parte colorida, aplica a cor vinda do link
                         if (PECAS_COLORIDAS.includes(node.name)) {
                             mat.color.copy(colorObj);
                         }
@@ -143,10 +145,7 @@
             CORES.forEach((cor) => {
                 const btn = document.createElement('div');
                 btn.className = 'btn-color';
-                
-                // Se o hex do botão for igual ao hex do link, marca como ativo
                 if(cor.hex.toLowerCase() === corAtiva.toLowerCase()) btn.classList.add('active');
-                
                 btn.style.backgroundColor = cor.hex;
                 
                 btn.onclick = () => {
