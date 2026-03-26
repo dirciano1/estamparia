@@ -74,16 +74,21 @@
             light.position.set(5, 10, 7);
             scene.add(light);
 
-            // --- LÓGICA DE PARSE DO LINK MASTER ---
-            // Formato: #foto.jpg|#hexcolor
+            // --- LÓGICA DE PARSE DO LINK IMGUR ---
+            // Formato: #ID_IMGUR|#hexcolor
             const hash = window.location.hash.substring(1);
             const partes = hash.split('|');
-            const nomeFoto = partes[0] || "";
+            const idImgur = partes[0] || "";
             const corHexLink = partes[1] || "#ffffff";
 
             const texLoader = new THREE.TextureLoader();
-            if (nomeFoto && nomeFoto.trim() !== "") {
-                currentEstampa = texLoader.load('canecas/' + nomeFoto);
+            // PERMISSÃO PARA IMAGENS EXTERNAS
+            texLoader.setCrossOrigin('anonymous');
+
+            if (idImgur && idImgur.trim() !== "") {
+                // Monta a URL direta do Imgur
+                const urlImgur = `https://i.imgur.com/${idImgur}.jpeg`;
+                currentEstampa = texLoader.load(urlImgur);
                 currentEstampa.flipY = false;
                 currentEstampa.encoding = THREE.sRGBEncoding;
             }
@@ -92,7 +97,6 @@
             loader.load('caneca.gltf', (gltf) => {
                 model3D = gltf.scene;
                 
-                // Cor vinda do link convertida para Linear
                 const corInicial = new THREE.Color(corHexLink);
                 corInicial.convertSRGBToLinear();
 
@@ -106,12 +110,10 @@
                             side: THREE.DoubleSide
                         });
 
-                        // Aplica cor do link se for peça colorida
                         if (PECAS_COLORIDAS.includes(node.name)) {
                             mat.color.copy(corInicial);
                         }
 
-                        // Aplica estampa se for o corpo
                         if (node.name === MESH_CORPO && currentEstampa) {
                             mat.map = currentEstampa;
                         }
@@ -140,7 +142,6 @@
             CORES.forEach((cor) => {
                 const btn = document.createElement('div');
                 btn.className = 'btn-color';
-                // Marca como ativo se o Hex bater com o do link
                 if(cor.hex.toLowerCase() === corAtivaHex.toLowerCase()) btn.classList.add('active');
                 
                 btn.style.backgroundColor = cor.hex;
