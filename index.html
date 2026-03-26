@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador 3D | Caneca Extraída</title>
+    <title>Estamparia Gerais | Visualizador 3D Realista</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -11,26 +11,34 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <style>
-        body { margin: 0; background: #f1f5f9; font-family: 'Poppins', sans-serif; }
+        body { margin: 0; background: #f8fafc; font-family: 'Poppins', sans-serif; overflow: hidden; }
         #canvas-container { width: 100%; height: 100vh; cursor: grab; }
         #canvas-container:active { cursor: grabbing; }
-        .info-badge {
-            position: fixed; top: 20px; left: 20px; background: white;
-            padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        
+        /* Painel flutuante opcional para controle */
+        .controls-panel {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: white; padding: 10px 20px; border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); display: flex; gap: 10px; z-index: 100;
         }
+        .btn {
+            background: #2563eb; color: white; border: none; padding: 8px 15px;
+            border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold;
+        }
+        .btn:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
 
-    <div class="info-badge">
-        <strong>Modelo 3D Profissional</strong><br>
-        Gire para ver todos os detalhes.
+    <div class="controls-panel">
+        <button class="btn" onclick="controls.autoRotate = !controls.autoRotate">Girar Lig/Desl</button>
+        <button class="btn" onclick="camera.position.set(0, 0, 4);">Resetar Vista</button>
     </div>
 
     <div id="canvas-container"></div>
 
     <script>
-        let scene, camera, renderer, controls, loader;
+        let scene, camera, renderer, controls, loaderGLTF, texLoader;
 
         function init() {
             const container = document.getElementById('canvas-container');
@@ -40,68 +48,121 @@
             scene.background = new THREE.Color(0xffffff);
 
             // 2. Câmera
-            camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0.5, 4);
+            camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 4);
 
-            // 3. Renderizador (Configurado para o máximo de realismo)
+            // 3. Renderizador de Alta Qualidade
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.outputEncoding = THREE.sRGBEncoding;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping; // Dá o tom de "foto"
-            renderer.toneMappingExposure = 1.0;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2; // Brilho do estúdio
             container.appendChild(renderer.domElement);
 
-            // 4. Luzes de Estúdio (Fundamental para o branco não ficar cinza)
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-            scene.add(ambientLight);
+            // 4. Iluminação (Estúdio de Fotografia)
+            scene.add(new THREE.AmbientLight(0xffffff, 1.0)); // Luz suave global
+            
+            const mainLight = new THREE.DirectionalLight(0xffffff, 0.7);
+            mainLight.position.set(5, 10, 7);
+            scene.add(mainLight);
 
-            const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
-            light1.position.set(5, 5, 5);
-            scene.add(light1);
+            const fillLight = new THREE.PointLight(0xffffff, 0.4);
+            fillLight.position.set(-5, 5, -5);
+            scene.add(fillLight);
 
-            const light2 = new THREE.DirectionalLight(0xffffff, 0.5);
-            light2.position.set(-5, 5, -5);
-            scene.add(light2);
+            // 5. Carregadores
+            loaderGLTF = new THREE.GLTFLoader();
+            texLoader = new THREE.TextureLoader();
 
-            // 5. Carregar a caneca extraída
-            loader = new THREE.GLTFLoader();
-            // AJUSTE: Se o seu arquivo estiver em uma pasta, mude o caminho abaixo
-            loader.load('caneca.gltf', (gltf) => {
+            // LÓGICA DE CARREGAMENTO E APLICAÇÃO
+            
+            // A. Carregar a Estampa
+            // AJUSTE: Mude para 'canecas/01.jpg' se estiver em pasta
+            const estampaUrl = 'canecas/01.jpg'; 
+            const estampa = texLoader.load(estampaUrl);
+            
+            estampa.encoding = THREE.sRGBEncoding;
+            estampa.flipY = false; // Corrige a textura invertida no GLTF
+            estampa.wrapS = THREE.ClampToEdgeWrapping;
+            estampa.wrapT = THREE.ClampToEdgeWrapping;
+
+            // B. Carregar a Caneca Branca (Extraída)
+            const modelUrl = 'caneca.gltf';
+            loaderGLTF.load(modelUrl, (gltf) => {
                 const model = gltf.scene;
 
+                // Percorrer o modelo para encontrar as partes
                 model.traverse((node) => {
                     if (node.isMesh) {
-                        // Aplicamos o efeito de Porcelana em todas as partes
-                        // Mas preservamos a textura (estampa) que já veio no arquivo
-                        const oldMaterial = node.material;
-                        
-                        node.material = new THREE.MeshPhysicalMaterial({
-                            map: oldMaterial.map, // Mantém a estampa original
+                        // MATERIAL DE CERÂMICA REALISTA (MeshPhysicalMaterial)
+                        const materialCeramica = new THREE.MeshPhysicalMaterial({
                             color: 0xffffff,
                             metalness: 0,
-                            roughness: 0.1,
-                            clearcoat: 1.0,      // Camada de verniz por cima
-                            clearcoatRoughness: 0.05,
-                            reflectivity: 0.8
+                            roughness: 0.05,
+                            reflectivity: 0.8,
+                            clearcoat: 1.0,          // Verniz de porcelana
+                            clearcoatRoughness: 0.02, // Brilho nítido
+                            side: THREE.DoubleSide
                         });
+
+                        // LÓGICA DE ISOLAMENTO DA ESTAMPA
+                        // Geralmente, o corpo cilíndrico é a maior mesh ou tem um nome específico.
+                        // O Mug3D costuma separar o corpo da alça.
+                        
+                        // Tentativa 1: Identificar pelo nome (comum em GLTF)
+                        if (node.name.toLowerCase().includes('body') || 
+                            node.name.toLowerCase().includes('corpo') ||
+                            node.name.toLowerCase().includes('print') ||
+                            node.name.toLowerCase().includes('cyl')
+                        ) {
+                            materialCeramica.map = estampa; // Aplica apenas no corpo
+                        } else {
+                            // Se o modelo Mug3D for bem estruturado, a alça e o interior
+                            // não entrarão no 'if' acima e permanecerão brancos.
+                            materialCeramica.map = null; 
+                        }
+
+                        // Tentativa 2: Se o modelo for uma malha única (vaza para alça)
+                        // Ative a lógica UV abaixo (comente a Tentativa 1 acima):
+                        /*
+                        materialCeramica.map = estampa; // Aplica em tudo
+                        if (node.geometry.attributes.uv) {
+                            const uvs = node.geometry.attributes.uv.array;
+                            for (let i = 0; i < uvs.length; i += 2) {
+                                // Se a UV estiver na alça ou bordas, move para área branca
+                                if (uvs[i] > 0.94 || uvs[i] < 0.06 || uvs[i+1] < 0.1 || uvs[i+1] > 0.9) {
+                                    uvs[i] = 0; uvs[i+1] = 0; // Ponto branco na textura
+                                }
+                            }
+                            node.geometry.attributes.uv.needsUpdate = true;
+                        }
+                        */
+
+                        node.material = materialCeramica;
                     }
                 });
 
-                // Centralização automática
+                // Centralização e Escala Automática
                 const box = new THREE.Box3().setFromObject(model);
                 const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3()).length();
                 model.position.sub(center);
+                model.scale.setScalar(3.0 / size);
                 
                 scene.add(model);
             }, undefined, (error) => {
-                console.error("Erro ao carregar o arquivo caneca.gltf:", error);
+                console.error("Erro ao carregar o modelo ou a textura:", error);
             });
 
-            // 6. Controles de Mouse
+            // 6. Controles de Mouse (OrbitControls)
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
             controls.autoRotate = true;
             controls.autoRotateSpeed = 1.0;
+            // Limitar o zoom para não "entrar" na caneca
+            controls.minDistance = 2.5;
+            controls.maxDistance = 6.0;
 
             window.addEventListener('resize', onWindowResize, false);
         }
@@ -119,6 +180,7 @@
             renderer.render(scene, camera);
         }
 
+        // Iniciar tudo
         init();
         animate();
     </script>
