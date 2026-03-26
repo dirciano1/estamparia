@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Links - Estamparia Gerais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --card: #ffffff;
+        }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
+        .container { background: var(--card); width: 100%; max-width: 500px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        h2 { margin-top: 0; color: #1e293b; font-size: 20px; text-align: center; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 8px; }
+        
+        select, input {
+            width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px;
+            font-size: 14px; box-sizing: border-box; outline: none; transition: border 0.2s;
+        }
+        select:focus, input:focus { border-color: var(--primary); }
+
+        .btn-gerar {
+            width: 100%; background: var(--primary); color: white; border: none; padding: 15px;
+            border-radius: 10px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+        }
+        .btn-gerar:hover { background: #1d4ed8; }
+
+        .result-box {
+            margin-top: 25px; padding: 15px; background: #f1f5f9; border-radius: 10px;
+            display: none; border: 1px dashed #cbd5e1;
+        }
+        #linkGerado {
+            font-size: 12px; color: #334155; word-break: break-all; margin-bottom: 10px; display: block;
+        }
+        .btn-copiar {
+            background: #10b981; color: white; border: none; padding: 8px 15px;
+            border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🚀 Gerador de Links 3D</h2>
+
+    <div class="form-group">
+        <label>Domínio Base (Edite aqui se mudar o site)</label>
+        <input type="text" id="baseDomain" value="https://dirciano1.github.io/estamparia/">
+    </div>
+
+    <div class="form-group">
+        <label>Modelo de Caneca</label>
+        <select id="modeloHtml">
+            <option value="caneca_branca.html">Caneca Branca (Tudo Branco)</option>
+            <option value="caneca_pro.html">Caneca Pro (Alça + Fundo)</option>
+            <option value="caneca_master.html">Caneca Master (Alça + Interior + Fundo)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Cor dos Detalhes</label>
+        <select id="corHex">
+            <option value="#ffffff">Branco</option>
+            <option value="#DF1212">Vermelho</option>
+            <option value="#1D85D0">Azul</option>
+            <option value="#FFC2C2">Rosa Claro</option>
+            <option value="#075103">Verde</option>
+            <option value="#EDD900">Amarelo</option>
+            <option value="#F86900">Laranja</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Código da Imagem (Ex: 01, cliente_joao)</label>
+        <input type="text" id="imgCode" placeholder="Apenas o nome, sem .jpg">
+    </div>
+
+    <button class="btn-gerar" onclick="gerarLink()">Gerar e Visualizar Link</button>
+
+    <div class="result-box" id="resultBox">
+        <label>Link para o Cliente:</label>
+        <span id="linkGerado"></span>
+        <button class="btn-copiar" onclick="copiarLink()">Copiar Link</button>
+    </div>
+</div>
+
+<script>
+    function gerarLink() {
+        const domain = document.getElementById('baseDomain').value;
+        const modelo = document.getElementById('modeloHtml').value;
+        const cor = document.getElementById('corHex').value;
+        let img = document.getElementById('imgCode').value;
+
+        // Se o código da imagem estiver vazio, coloca a barra para manter o formato
+        if(img === "") img = "";
+        
+        // Monta o link no formato: dominio/modelo.html#imagem.jpg|#cor
+        const linkFinal = `${domain}${modelo}#${img}${img !== "" ? ".jpg" : ""}|${cor}`;
+
+        document.getElementById('linkGerado').innerText = linkFinal;
+        document.getElementById('resultBox').style.display = 'block';
+    }
+
+    function copiarLink() {
+        const link = document.getElementById('linkGerado').innerText;
+        navigator.clipboard.writeText(link).then(() => {
+            alert("Link copiado para a área de transferência!");
+        });
+    }
+</script>
+
+</body>
+</html>
