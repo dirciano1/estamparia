@@ -28,6 +28,7 @@
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.outputEncoding = THREE.sRGBEncoding;
             container.appendChild(renderer.domElement);
 
@@ -36,9 +37,11 @@
             light.position.set(5, 10, 7);
             scene.add(light);
 
-            // --- LÓGICA DO LINK (#ID_IMGUR|#COR) ---
+            // --- PROCESSAMENTO DO LINK (#ID|#COR) ---
             const hash = window.location.hash.substring(1);
             const partes = hash.split('|');
+            
+            // Valores padrão: Branco (#ffffff) e Sem Imagem
             const idImgur = partes[0] || "";
             const corHexLink = partes[1] || "#ffffff"; 
 
@@ -46,53 +49,59 @@
             texLoader.setCrossOrigin('anonymous');
             
             let estampa = null;
-            if (idImgur) {
+            if (idImgur && idImgur.trim() !== "") {
                 estampa = texLoader.load(`https://i.imgur.com/${idImgur}.jpeg`);
                 estampa.flipY = false;
                 estampa.encoding = THREE.sRGBEncoding;
             }
 
-            const corObjeto = new THREE.Color(corHexLink).convertSRGBToLinear();
+            // Converte a cor para o formato do Three.js
+            const corFinal = new THREE.Color(corHexLink).convertSRGBToLinear();
 
             const loader = new THREE.GLTFLoader();
             loader.load('caneca_colher.gltf', (gltf) => {
                 model3D = gltf.scene;
 
                 model3D.traverse((node) => {
-                    if (node.isMesh) {
-                        // Criamos materiais do zero para ignorar o erro da "texture.jpg"
-                        const materiaisNovos = [];
+                    if (node.isMesh && node.name === "Cylinder001") {
                         
-                        // O seu modelo tem exatamente 5 partes (primitives)
+                        // Criamos 5 materiais novos e BRANCOS por padrão
+                        const materiaisNovos = [];
                         for (let i = 0; i < 5; i++) {
                             materiaisNovos[i] = new THREE.MeshPhysicalMaterial({
-                                color: 0xffffff,
+                                color: 0xffffff, // Inicia Branco
                                 roughness: 0.1,
                                 clearcoat: 1.0,
-                                side: THREE.DoubleSide
+                                side: THREE.DoubleSide,
+                                map: null // Garante que ignore a textura interna do arquivo
                             });
                         }
 
-                        // Mapeamento baseado no seu arquivo GLTF:
-                        // 1. Corpo da caneca (Estampa)
-                        if (estampa) materiaisNovos[1].map = estampa;
+                        // APLICAÇÃO DINÂMICA (Se houver dados no link)
+                        
+                        // 1. Aplica a estampa no corpo (índice 1)
+                        if (estampa) {
+                            materiaisNovos[1].map = estampa;
+                        }
 
-                        // 2. Partes Coloridas (Alça, Interior, Colher, Fundo)
-                        materiaisNovos[2].color.copy(corObjeto);
-                        materiaisNovos[3].color.copy(corObjeto);
-                        materiaisNovos[4].color.copy(corObjeto);
+                        // 2. Aplica a cor na Alça, Colher e Fundo (índices 2, 3 e 4)
+                        materiaisNovos[2].color.copy(corFinal);
+                        materiaisNovos[3].color.copy(corFinal);
+                        materiaisNovos[4].color.copy(corFinal);
 
                         node.material = materiaisNovos;
                     }
                 });
 
-                // Centralização e Escala
+                // Centralizar o modelo na tela
                 const box = new THREE.Box3().setFromObject(model3D);
                 const center = box.getCenter(new THREE.Vector3());
                 model3D.position.sub(center);
                 model3D.scale.setScalar(3.5 / box.getSize(new THREE.Vector3()).length());
                 
                 scene.add(model3D);
+            }, undefined, (error) => {
+                console.error("Erro: Certifique-se que 'model.bin' está na mesma pasta.");
             });
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
