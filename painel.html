@@ -3,115 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Links - Estamparia Gerais</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Painel Gerador 3D | Estamparia Gerais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
-            --card: #ffffff;
-        }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
-        .container { background: var(--card); width: 100%; max-width: 500px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        h2 { margin-top: 0; color: #1e293b; font-size: 20px; text-align: center; }
+        :root { --primary: #2563eb; --bg: #f1f5f9; --card: #ffffff; --text: #1e293b; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
         
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 8px; }
+        .main-layout { display: flex; gap: 20px; max-width: 1200px; margin: 0 auto; height: 92vh; align-items: stretch; }
+
+        /* LADO ESQUERDO: FORMULÁRIO */
+        .sidebar { background: var(--card); width: 380px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow-y: auto; }
+        h2 { margin: 0 0 20px 0; font-size: 18px; text-align: center; color: var(--primary); }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
         
         select, input {
-            width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px;
-            font-size: 14px; box-sizing: border-box; outline: none; transition: border 0.2s;
+            width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;
+            font-size: 13px; box-sizing: border-box; outline: none; font-family: inherit;
         }
         select:focus, input:focus { border-color: var(--primary); }
 
-        .btn-gerar {
-            width: 100%; background: var(--primary); color: white; border: none; padding: 15px;
-            border-radius: 10px; font-weight: 600; cursor: pointer; transition: background 0.2s;
-        }
-        .btn-gerar:hover { background: #1d4ed8; }
-
-        .result-box {
-            margin-top: 25px; padding: 15px; background: #f1f5f9; border-radius: 10px;
-            display: none; border: 1px dashed #cbd5e1;
-        }
-        #linkGerado {
-            font-size: 12px; color: #334155; word-break: break-all; margin-bottom: 10px; display: block;
-        }
+        .result-area { margin-top: auto; padding-top: 20px; border-top: 1px solid #f1f5f9; }
+        #linkGerado { font-size: 11px; background: #f8fafc; padding: 12px; border-radius: 8px; word-break: break-all; border: 1px solid #e2e8f0; display: block; margin-bottom: 10px; color: #475569; font-family: monospace; }
+        
         .btn-copiar {
-            background: #10b981; color: white; border: none; padding: 8px 15px;
-            border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600;
+            width: 100%; background: var(--primary); color: white; border: none; padding: 14px;
+            border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px;
+        }
+        .btn-copiar:hover { background: #1d4ed8; transform: translateY(-2px); }
+
+        /* LADO DIREITO: PREVIEW 3D */
+        .preview-container { flex: 1; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); position: relative; border: 4px solid white; }
+        .preview-header { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: 700; z-index: 10; border: 1px solid #eee; text-transform: uppercase; color: var(--primary); }
+        iframe { width: 100%; height: 100%; border: none; background: #fff; }
+
+        @media (max-width: 900px) {
+            .main-layout { flex-direction: column; height: auto; }
+            .sidebar { width: 100%; }
+            .preview-container { height: 450px; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🚀 Gerador de Links 3D</h2>
+<div class="main-layout">
+    <div class="sidebar">
+        <h2>🚀 Gerador Estamparia Gerais</h2>
 
-    <div class="form-group">
-        <label>Domínio Base (Edite aqui se mudar o site)</label>
-        <input type="text" id="baseDomain" value="https://dirciano1.github.io/estamparia/">
+        <div class="form-group">
+            <label>Domínio Base</label>
+            <input type="text" id="baseDomain" value="https://dirciano1.github.io/estamparia/" oninput="atualizarLink()">
+        </div>
+
+        <div class="form-group">
+            <label>Tipo de Produto (Página)</label>
+            <select id="modeloHtml" onchange="atualizarLink()">
+                <option value="caneca_branca.html">Caneca Branca (Borda/Interior Brancos)</option>
+                <option value="caneca_master.html">Caneca Master (Alça, Interior e Fundo Coloridos)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Cor Disponível</label>
+            <select id="corHex" onchange="atualizarLink()">
+                <option value="#ffffff">⚪ Branco (Porcelana)</option>
+                <option value="#DF1212">🔴 Vermelho</option>
+                <option value="#1D85D0">🔵 Azul</option>
+                <option value="#FFC2C2">🌸 Rosa Claro</option>
+                <option value="#075103">🟢 Verde</option>
+                <option value="#EDD900">🟡 Amarelo</option>
+                <option value="#F86900">🟠 Laranja</option>
+                <option value="#000000">⚫ Preto (Opcional)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Código da Arte (Ex: 01, joao, logo)</label>
+            <input type="text" id="imgCode" placeholder="Digite o nome do arquivo" oninput="atualizarLink()">
+        </div>
+
+        <div class="result-area">
+            <label>Link Gerado para Enviar:</label>
+            <code id="linkGerado">Aguardando...</code>
+            <button class="btn-copiar" onclick="copiarLink()">Copiar Link para o Cliente</button>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>Modelo de Caneca</label>
-        <select id="modeloHtml">
-            <option value="caneca_branca.html">Caneca Branca (Tudo Branco)</option>
-            <option value="caneca_pro.html">Caneca Pro (Alça + Fundo)</option>
-            <option value="caneca_master.html">Caneca Master (Alça + Interior + Fundo)</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Cor dos Detalhes</label>
-        <select id="corHex">
-            <option value="#ffffff">Branco</option>
-            <option value="#DF1212">Vermelho</option>
-            <option value="#1D85D0">Azul</option>
-            <option value="#FFC2C2">Rosa Claro</option>
-            <option value="#075103">Verde</option>
-            <option value="#EDD900">Amarelo</option>
-            <option value="#F86900">Laranja</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Código da Imagem (Ex: 01, cliente_joao)</label>
-        <input type="text" id="imgCode" placeholder="Apenas o nome, sem .jpg">
-    </div>
-
-    <button class="btn-gerar" onclick="gerarLink()">Gerar e Visualizar Link</button>
-
-    <div class="result-box" id="resultBox">
-        <label>Link para o Cliente:</label>
-        <span id="linkGerado"></span>
-        <button class="btn-copiar" onclick="copiarLink()">Copiar Link</button>
+    <div class="preview-container">
+        <div class="preview-header">👀 Prévia da Caneca</div>
+        <iframe id="previewIframe" src=""></iframe>
     </div>
 </div>
 
 <script>
-    function gerarLink() {
+    function atualizarLink() {
         const domain = document.getElementById('baseDomain').value;
         const modelo = document.getElementById('modeloHtml').value;
         const cor = document.getElementById('corHex').value;
-        let img = document.getElementById('imgCode').value;
+        let img = document.getElementById('imgCode').value.trim();
 
-        // Se o código da imagem estiver vazio, coloca a barra para manter o formato
-        if(img === "") img = "";
+        // Monta o link final no formato: dominio/modelo.html#foto.jpg|#cor
+        let linkFinal = "";
         
-        // Monta o link no formato: dominio/modelo.html#imagem.jpg|#cor
-        const linkFinal = `${domain}${modelo}#${img}${img !== "" ? ".jpg" : ""}|${cor}`;
+        // Se a imagem estiver vazia, usamos apenas o separador |
+        const imgPart = img !== "" ? `${img}.jpg` : "";
+        linkFinal = `${domain}${modelo}#${imgPart}|${cor}`;
 
+        // Atualiza o texto e a prévia
         document.getElementById('linkGerado').innerText = linkFinal;
-        document.getElementById('resultBox').style.display = 'block';
+        document.getElementById('previewIframe').src = linkFinal;
     }
 
     function copiarLink() {
         const link = document.getElementById('linkGerado').innerText;
         navigator.clipboard.writeText(link).then(() => {
-            alert("Link copiado para a área de transferência!");
+            const btn = document.querySelector('.btn-copiar');
+            const originalText = btn.innerText;
+            btn.innerText = "✅ LINK COPIADO!";
+            btn.style.background = "#10b981";
+            
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "#2563eb";
+            }, 2000);
         });
     }
+
+    // Inicializa ao abrir
+    window.onload = atualizarLink;
 </script>
 
 </body>
