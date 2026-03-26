@@ -11,7 +11,6 @@
         
         .main-layout { display: flex; gap: 20px; max-width: 1200px; margin: 0 auto; height: 92vh; align-items: stretch; }
 
-        /* LADO ESQUERDO: FORMULÁRIO */
         .sidebar { background: var(--card); width: 380px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow-y: auto; }
         h2 { margin: 0 0 20px 0; font-size: 18px; text-align: center; color: var(--primary); }
         
@@ -33,7 +32,6 @@
         }
         .btn-copiar:hover { background: #1d4ed8; transform: translateY(-2px); }
 
-        /* LADO DIREITO: PREVIEW 3D */
         .preview-container { flex: 1; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); position: relative; border: 4px solid white; }
         .preview-header { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: 700; z-index: 10; border: 1px solid #eee; text-transform: uppercase; color: var(--primary); }
         iframe { width: 100%; height: 100%; border: none; background: #fff; }
@@ -59,8 +57,9 @@
         <div class="form-group">
             <label>Tipo de Produto (Página)</label>
             <select id="modeloHtml" onchange="atualizarLink()">
-                <option value="caneca_branca.html">Caneca Branca (Borda/Interior Brancos)</option>
-                <option value="caneca_master.html">Caneca Master (Alça, Interior e Fundo Coloridos)</option>
+                <option value="caneca_branca.html">Caneca Branca (Simples)</option>
+                <option value="caneca_pro.html">Caneca Pro (Alça + Fundo)</option>
+                <option value="caneca_master.html">Caneca Master (Alça + Interior + Fundo)</option>
             </select>
         </div>
 
@@ -74,7 +73,6 @@
                 <option value="#075103">🟢 Verde</option>
                 <option value="#EDD900">🟡 Amarelo</option>
                 <option value="#F86900">🟠 Laranja</option>
-                <option value="#000000">⚫ Preto (Opcional)</option>
             </select>
         </div>
 
@@ -91,7 +89,7 @@
     </div>
 
     <div class="preview-container">
-        <div class="preview-header">👀 Prévia da Caneca</div>
+        <div class="preview-header">👀 Prévia em Tempo Real</div>
         <iframe id="previewIframe" src=""></iframe>
     </div>
 </div>
@@ -103,14 +101,10 @@
         const cor = document.getElementById('corHex').value;
         let img = document.getElementById('imgCode').value.trim();
 
-        // Monta o link final no formato: dominio/modelo.html#foto.jpg|#cor
-        let linkFinal = "";
-        
-        // Se a imagem estiver vazia, usamos apenas o separador |
+        // Formato: dominio/modelo.html#foto.jpg|#cor
         const imgPart = img !== "" ? `${img}.jpg` : "";
-        linkFinal = `${domain}${modelo}#${imgPart}|${cor}`;
+        const linkFinal = `${domain}${modelo}#${imgPart}|${cor}`;
 
-        // Atualiza o texto e a prévia
         document.getElementById('linkGerado').innerText = linkFinal;
         document.getElementById('previewIframe').src = linkFinal;
     }
@@ -130,7 +124,6 @@
         });
     }
 
-    // Inicializa ao abrir
     window.onload = atualizarLink;
 </script>
 
