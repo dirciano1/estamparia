@@ -34,7 +34,7 @@
 <body>
 
     <div class="color-selector" id="menu-cores">
-        <span>Selecione a Cor da Alça e Borda:</span>
+        <span>Cores da Alça e Fundo:</span>
     </div>
 
     <div id="canvas-container"></div>
@@ -55,7 +55,7 @@
         const ID_FUNDO = "Cylinder001_3"; 
         const ID_CORPO = "Cylinder001_2"; 
 
-        let scene, camera, renderer, controls, loaderGLTF;
+        let scene, camera, renderer, controls, loaderGLTF, texLoader;
 
         function init() {
             const container = document.getElementById('canvas-container');
@@ -69,7 +69,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.outputEncoding = THREE.sRGBEncoding;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.0; // Ajustado para não "lavar" as cores
+            renderer.toneMappingExposure = 1.0; 
             container.appendChild(renderer.domElement);
 
             scene.add(new THREE.AmbientLight(0xffffff, 1.0));
@@ -77,11 +77,17 @@
             light.position.set(5, 10, 7);
             scene.add(light);
 
-            const texLoader = new THREE.TextureLoader();
-            const urlParams = new URLSearchParams(window.location.search);
-            const estampa = texLoader.load(urlParams.get('foto') || 'canecas/01.jpg');
-            estampa.flipY = false;
-            estampa.encoding = THREE.sRGBEncoding;
+            texLoader = new THREE.TextureLoader();
+            
+            // --- LÓGICA DE LINK DINÂMICO (#foto.jpg) ---
+            let nomeArquivo = window.location.hash.substring(1);
+            let estampa = null;
+
+            if (nomeArquivo) {
+                estampa = texLoader.load('canecas/' + nomeArquivo);
+                estampa.flipY = false;
+                estampa.encoding = THREE.sRGBEncoding;
+            }
 
             loaderGLTF = new THREE.GLTFLoader();
             loaderGLTF.load('caneca.gltf', (gltf) => {
@@ -97,7 +103,13 @@
                             side: THREE.DoubleSide
                         });
 
-                        if (node.name === ID_CORPO) mat.map = estampa;
+                        // Só aplica estampa se houver arquivo no link e for a peça do corpo
+                        if (node.name === ID_CORPO && estampa) {
+                            mat.map = estampa;
+                        } else {
+                            mat.map = null;
+                        }
+                        
                         node.material = mat;
                     }
                 });
@@ -115,6 +127,7 @@
             controls.autoRotate = true;
 
             window.addEventListener('resize', onWindowResize);
+            window.addEventListener('hashchange', () => window.location.reload());
         }
 
         function gerarBotoesCores() {
@@ -130,7 +143,6 @@
                     document.querySelectorAll('.btn-color').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
-                    // Aplicar cor sincronizada
                     mudarCorParte(ID_ALCA, cor.hex);
                     mudarCorParte(ID_FUNDO, cor.hex);
                 };
@@ -142,9 +154,8 @@
         function mudarCorParte(id, hex) {
             scene.traverse(node => {
                 if (node.isMesh && node.name === id) {
-                    // CONVERSÃO DE COR: sRGB (Painel) para Linear (Motor 3D)
                     const colorObj = new THREE.Color(hex);
-                    colorObj.convertSRGBToLinear();
+                    colorObj.convertSRGBToLinear(); // Fidelidade de cor corrigida
                     
                     node.material.color.copy(colorObj);
                     node.material.needsUpdate = true;
