@@ -45,7 +45,7 @@
         .brand { 
             display: flex; align-items: center; 
             background: var(--search-bg); 
-            height: 48px; /* Aumentado */
+            height: 48px; 
             padding: 0 20px 0 0; 
             border-radius: 15px;
             position: relative;
@@ -53,7 +53,7 @@
         }
 
         .brand img { 
-            width: 75px; /* Logo maior */
+            width: 75px; 
             height: auto;
             position: absolute;
             left: -15px; top: 50%;
@@ -63,7 +63,7 @@
         }
 
         .brand h1 {
-            font-size: 1.1rem; /* Título maior */
+            font-size: 1.1rem; 
             font-weight: 800;
             margin-left: 65px; 
             letter-spacing: -0.5px;
@@ -95,7 +95,7 @@
             font-size: 0.9rem;
         }
 
-        /* HERO - 100% FULLSCREEN */
+        /* HERO */
         .hero { 
             width: 100%; 
             height: 100vh;
@@ -126,9 +126,8 @@
             box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
             transition: 0.3s;
         }
-        .hero-btn:active { transform: scale(0.95); }
 
-        /* FILTROS COM SCROLL MODERNO */
+        /* FILTROS */
         #catalogo { scroll-margin-top: var(--header-height); }
         .filter-wrapper {
             position: sticky; top: var(--header-height); z-index: 100;
@@ -138,10 +137,19 @@
 
         .filter-section { 
             display: flex; gap: 12px; overflow-x: auto; padding: 0 5%;
-            scrollbar-width: thin; -webkit-overflow-scrolling: touch;
+            -webkit-overflow-scrolling: touch;
         }
-        .filter-section::-webkit-scrollbar { height: 3px; }
-        .filter-section::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* Barra de rolagem invisível para Chrome, Safari e Opera */
+        .filter-section::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Barra de rolagem invisível para IE, Edge e Firefox */
+        .filter-section {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
 
         .chip { 
             flex: 0 0 auto; padding: 10px 22px; border-radius: 50px; 
@@ -164,7 +172,6 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.04);
             transition: 0.3s;
         }
-        .p-card:hover { transform: translateY(-5px); }
         .p-img img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
         .p-info { padding: 15px; text-align: center; }
         .p-title { font-size: 0.95rem; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
@@ -181,13 +188,17 @@
             .brand img { width: 62px; left: -12px; }
             .brand h1 { font-size: 0.9rem; margin-left: 54px; }
 
-            /* Busca compacta que expande */
-            .search-container { width: 100px; margin-left: 10px; overflow: hidden; }
-            .search-container input { padding: 0 12px; border-radius: 12px; }
+            /* Busca mobile: 120px de largura */
+            .search-container { width: 120px; margin-left: 10px; }
+            .search-container input { padding: 0 12px; border-radius: 12px; height: 40px; font-size: 0.8rem; }
+            
             .search-container:focus-within {
                 position: absolute; right: 4vw; width: 92vw; z-index: 10;
             }
             .search-container:focus-within input { background: white; border-color: var(--primary); box-shadow: 0 0 0 100px white; }
+
+            /* Padding maior no menu de filtros no mobile */
+            .filter-wrapper { padding: 25px 0; }
         }
     </style>
 </head>
