@@ -23,21 +23,21 @@
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xffffff);
 
+            // --- AJUSTE DE ZOOM INICIAL ---
+            // Aumentamos o Z de 4.5 para 8.0 para a caneca começar menor (distante)
             camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(2, 1.2, 4.5);
+            camera.position.set(3.5, 2.5, 8.0); 
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             
-            // --- AJUSTE DE FIDELIDADE DE COR ---
-            renderer.outputEncoding = THREE.sRGBEncoding; // Mantém as cores vivas
-            renderer.toneMapping = THREE.NoToneMapping;  // REMOVIDO o "ACESFilmic" para não clarear as cores
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.NoToneMapping; 
             container.appendChild(renderer.domElement);
 
-            // Luz Ambiente Forte (ilumina tudo igual) + Direcional Suave
             scene.add(new THREE.AmbientLight(0xffffff, 0.8)); 
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
             dirLight.position.set(5, 10, 7);
             scene.add(dirLight);
 
@@ -56,7 +56,6 @@
                 estampa.encoding = THREE.sRGBEncoding;
             }
 
-            // Converte a cor para o espaço sRGB para bater com o painel
             const corParametro = new THREE.Color(corHexLink);
 
             const loader = new THREE.GLTFLoader();
@@ -65,10 +64,10 @@
 
                 model3D.traverse((node) => {
                     if (node.isMesh) {
-                        const mat = new THREE.MeshStandardMaterial({ // Mudado para Standard para cores mais sólidas
+                        const mat = new THREE.MeshStandardMaterial({
                             color: 0xffffff,
                             metalness: 0.1,
-                            roughness: 0.5, // Menos brilho evita reflexos brancos que "lavam" a cor
+                            roughness: 0.4, 
                             side: THREE.DoubleSide
                         });
 
@@ -77,11 +76,9 @@
                             if (node.name === "Cylinder001_2" && estampa) mat.map = estampa;
                         }
 
-                        // Aplica a cor exatamente como vem do link
                         if (["Cylinder001_3", "Cylinder001_4", "Cylinder001_5"].includes(node.name)) {
                             mat.color.copy(corParametro);
                         }
-
                         node.material = mat;
                     }
                 });
@@ -89,13 +86,17 @@
                 const box = new THREE.Box3().setFromObject(model3D);
                 const center = box.getCenter(new THREE.Vector3());
                 model3D.position.sub(center);
-                model3D.position.y = 0; 
+                model3D.position.y = -0.5; // Abaixamos um pouco o modelo no eixo Y
                 scene.add(model3D);
             });
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
+            
+            // --- LIMITES DE ZOOM ---
+            controls.minDistance = 4; // Não deixa chegar muito perto
+            controls.maxDistance = 15; // Não deixa sumir de longe
             
             window.addEventListener('resize', onWindowResize);
             window.addEventListener('hashchange', () => window.location.reload());
