@@ -44,21 +44,24 @@
         <div class="form-group">
             <label>Tipo de Produto</label>
             <select id="modeloHtml" onchange="atualizarLink()">
-                <option value="caneca_branca.html">Caneca Branca</option>
-                <option value="caneca_pro.html">Caneca Pro (Alça + borda)</option>
-                <option value="caneca_master.html">Caneca Master (alca + interior + borda)</option>
+                <option value="caneca_colher.html">Caneca com Colher</option>
+                <option value="caneca_branca.html">Caneca Branca Comum</option>
+                <option value="caneca_pro.html">Caneca Pro (Alça + Borda)</option>
+                <option value="caneca_master.html">Caneca Master (Alça + Interior)</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label>Cor Disponível</label>
+            <label>Cor do Detalhe / Colher</label>
             <select id="corHex" onchange="atualizarLink()">
                 <option value="#ffffff">⚪ Branco (Porcelana)</option>
+                <option value="#000000">⚫ Preto Absoluto</option>
                 <option value="#DF1212">🔴 Vermelho</option>
-                <option value="#1D85D0">🔵 Azul</option>
+                <option value="#1D85D0">🔵 Azul Royal</option>
                 <option value="#FFC2C2">🌸 Rosa Claro</option>
-                <option value="#E6A1B6">🍬 Rosa Médio (Novo)</option>
-                <option value="#075103">🟢 Verde</option>
+                <option value="#E6A1B6">🍬 Rosa Médio</option>
+                <option value="#FF1493">💗 Pink Vibrante</option>
+                <option value="#075103">🟢 Verde Bandeira</option>
                 <option value="#EDD900">🟡 Amarelo</option>
                 <option value="#F86900">🟠 Laranja</option>
             </select>
@@ -66,10 +69,11 @@
 
         <div class="form-group">
             <label>Link ou ID da Arte (Imgur)</label>
-            <input type="text" id="imgCode" placeholder="Cole o link completo do Imgur aqui" oninput="limparLinkImgur(this); atualizarLink();">
+            <input type="text" id="imgCode" placeholder="Cole o link do Imgur aqui" oninput="limparLinkImgur(this); atualizarLink();">
         </div>
 
         <div class="result-area">
+            <label>Link Gerado para Enviar:</label>
             <code id="linkGerado">Aguardando...</code>
             <button class="btn-copiar" onclick="copiarLink()">Copiar Link para o Cliente</button>
         </div>
@@ -82,23 +86,14 @@
 </div>
 
 <script>
-    // FUNÇÃO PARA LIMPAR O LINK E DEIXAR SÓ O ID
+    // Limpa o link do Imgur e extrai apenas o ID necessário
     function limparLinkImgur(input) {
         let valor = input.value.trim();
-        
-        // Verifica se é um link (contém http ou imgur)
         if (valor.includes("imgur.com")) {
-            // Pega o que está após a última barra "/"
             let partes = valor.split('/');
-            let final = partes.pop(); // Pega "i2yd6uf.jpeg"
-            
-            // Pega o que está antes do ponto "."
+            let final = partes.pop(); 
             let idLimpado = final.split('.')[0];
-            
-            // Remove possíveis sufixos de tamanho do Imgur (como _d ou _s)
             idLimpado = idLimpado.split('_')[0];
-            
-            // Devolve apenas o ID para o campo
             input.value = idLimpado;
         }
     }
@@ -106,10 +101,10 @@
     function atualizarLink() {
         const domain = document.getElementById('baseDomain').value;
         const modelo = document.getElementById('modeloHtml').value;
-        const cor = document.getElementById('corHex').value;
+        const cor = document.getElementById('corHex').value.replace("#", ""); // Remove # para a URL ficar limpa
         let img = document.getElementById('imgCode').value.trim();
 
-        // O link gerado para o cliente já assume que o ID vai buscar .jpeg no visualizador
+        // Monta o link final usando o caractere # para passar os parâmetros
         const linkFinal = `${domain}${modelo}#${img}|${cor}`;
 
         document.getElementById('linkGerado').innerText = linkFinal;
@@ -131,6 +126,7 @@
         });
     }
 
+    // Inicia o link ao carregar a página
     window.onload = atualizarLink;
 </script>
 
