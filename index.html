@@ -35,6 +35,13 @@
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
+        .brand-container {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            transition: 0.3s ease;
+        }
+
         .brand { 
             display: flex; align-items: center; 
             background: var(--search-bg); 
@@ -42,10 +49,11 @@
             padding: 0 15px 0 0; 
             border-radius: 12px;
             position: relative;
+            white-space: nowrap;
         }
 
         .brand img { 
-            width: 60px; height: auto;
+            width: 55px; height: auto;
             position: absolute;
             left: -10px; top: 50%;
             transform: translateY(-50%);
@@ -54,9 +62,9 @@
         }
 
         .brand h1 {
-            font-size: 0.9rem; 
+            font-size: 0.85rem; 
             font-weight: 800;
-            margin-left: 55px; 
+            margin-left: 50px; 
         }
 
         .brand h1 span {
@@ -72,18 +80,26 @@
             100% { background-position: 200% center; }
         }
 
-        .search-container { width: 35vw; max-width: 250px; }
+        /* BUSCA EXPANSÍVEL NO MOBILE */
+        .search-container { 
+            width: 200px; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-left: 10px;
+            position: relative;
+        }
+
         .search-container input {
             width: 100%; height: 40px; padding: 0 15px; border-radius: 12px;
             border: 1px solid #cbd5e1; background: var(--search-bg); outline: none;
             font-size: 0.85rem;
+            transition: all 0.3s ease;
         }
 
         /* HERO - BANNER 100% COVER */
         .hero { 
             width: 100%; 
             height: 100vh;
-            height: 100svh; /* Versão moderna para mobile */
+            height: 100svh;
             background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url('imagens/banner.png'); 
             background-size: cover; 
             background-position: center;
@@ -110,7 +126,7 @@
             box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
         }
 
-        /* FILTROS COM SCROLL HORIZONTAL */
+        /* FILTROS COM SCROLL HORIZONTAL MODERNO */
         #catalogo { 
             scroll-margin-top: var(--header-height); 
         }
@@ -129,24 +145,16 @@
             gap: 10px; 
             overflow-x: auto; 
             padding: 0 5%;
-            scrollbar-width: thin; /* Firefox */
+            scrollbar-width: thin;
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Scrollbar Moderna e Fina */
-        .filter-section::-webkit-scrollbar {
-            height: 3px;
-        }
-        .filter-section::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .filter-section::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
+        .filter-section::-webkit-scrollbar { height: 3px; }
+        .filter-section::-webkit-scrollbar-track { background: transparent; }
+        .filter-section::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
         .chip { 
-            flex: 0 0 auto; /* Impede que os chips encolham */
+            flex: 0 0 auto;
             padding: 8px 20px; border-radius: 50px; 
             background: var(--white); border: 1px solid #e2e8f0; 
             cursor: pointer; font-size: 12px; font-weight: 700; 
@@ -154,7 +162,7 @@
         }
         .chip.active { background: var(--dark); color: var(--white); border-color: var(--dark); }
 
-        /* GRID DE PRODUTOS */
+        /* GRID */
         .container { width: 95%; max-width: 1200px; margin: 0 auto; padding: 20px 0 50px; }
         .product-grid { 
             display: grid; 
@@ -173,42 +181,54 @@
         }
 
         .p-img img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
-
         .p-info { padding: 12px; text-align: center; }
         .p-title { font-size: 0.85rem; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
-
-        .p-price-container {
-            background: rgba(22, 163, 74, 0.1); padding: 4px 10px;
-            border-radius: 50px; display: inline-block;
-        }
+        .p-price-container { background: rgba(22, 163, 74, 0.1); padding: 4px 10px; border-radius: 50px; display: inline-block; }
         .p-price { font-size: 0.9rem; font-weight: 800; color: var(--success); }
+        .btn-more { margin: 0 12px 12px; padding: 10px; background: var(--primary); color: white; font-weight: 700; border-radius: 10px; text-align: center; font-size: 0.7rem; }
 
-        .btn-more { 
-            margin: 0 12px 12px; padding: 10px; 
-            background: var(--primary); color: white; 
-            font-weight: 700; border-radius: 10px; 
-            text-align: center; font-size: 0.7rem;
-        }
-
-        /* MOBILE ESPECÍFICO */
+        /* --- LOGICA MOBILE: H1 SEMPRE VISIVEL + BUSCA COMPACTA --- */
         @media (max-width: 768px) {
+            header { padding: 0 3vw; }
             .hero { background-image: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url('imagens/banner_mobile.png'); }
-            .brand h1 { display: none; } /* Ganha espaço no mobile */
-            .brand { padding-right: 0; width: 50px; justify-content: center; }
-            .brand img { left: 5px; width: 45px; }
-            .search-container { width: 60vw; }
+
+            /* Busca começa pequena */
+            .search-container {
+                width: 110px;
+                margin-left: 5px;
+            }
+
+            /* Quando clica no input para buscar */
+            .search-container:focus-within {
+                position: absolute;
+                right: 3vw;
+                width: 94vw;
+                z-index: 10;
+            }
+
+            .search-container:focus-within input {
+                background: var(--white);
+                border-color: var(--primary);
+                box-shadow: 0 0 0 50px rgba(255,255,255,1); /* Efeito de cobrir o fundo */
+            }
+
+            /* Mantém o H1, mas reduz um pouco a letra se necessário */
+            .brand h1 { font-size: 0.75rem; margin-left: 42px; }
+            .brand img { width: 48px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="#" class="brand">
-            <img src="imagens/logo.png" alt="Logo Estamparia Gerais">
-            <h1><span>Estamparia Gerais</span></h1>
-        </a>
+        <div class="brand-container">
+            <a href="#" class="brand">
+                <img src="imagens/logo.png" alt="Logo Estamparia Gerais">
+                <h1><span>Estamparia Gerais</span></h1>
+            </a>
+        </div>
         <div class="search-container">
-            <input type="text" id="searchInput" placeholder="O que busca?" onkeyup="filterSearch()">
+            <input type="text" id="searchInput" placeholder="Buscar..." onkeyup="filterSearch()">
         </div>
     </header>
 
