@@ -16,7 +16,8 @@
             --bg: #f5f5f7; 
             --white: #ffffff;
             --search-bg: #e2e8f0; 
-            --header-height: 85px; 
+            --header-desktop: 85px;
+            --header-mobile: 75px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
@@ -31,7 +32,7 @@
             padding: 0 4vw; 
             display: flex; justify-content: space-between; align-items: center; 
             position: fixed; top: 0; width: 100%; z-index: 1000;
-            height: var(--header-height);
+            height: var(--header-desktop);
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
@@ -99,31 +100,28 @@
             box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4); margin-top: 20px;
         }
 
-        /* FILTROS - AJUSTE DA BARRA INVISÍVEL */
-        #catalogo { scroll-margin-top: var(--header-height); }
+        /* FILTROS E POSICIONAMENTO */
+        #catalogo { 
+            scroll-margin-top: var(--header-desktop); 
+        }
         
         .filter-wrapper {
-            position: sticky; top: var(--header-height); z-index: 100;
-            background: var(--bg); padding: 15px 0;
+            position: sticky; 
+            top: var(--header-desktop); 
+            z-index: 100;
+            background: var(--bg); 
+            padding: 15px 0;
             border-bottom: 1px solid rgba(0,0,0,0.05);
-            overflow: hidden; /* Garante que nada vaze */
+            overflow: hidden;
         }
 
         .filter-section { 
             display: flex; gap: 12px; overflow-x: auto; padding: 0 5%;
-            -webkit-overflow-scrolling: touch;
-            /* Esconde a barra no Firefox e IE */
             scrollbar-width: none; 
             -ms-overflow-style: none; 
         }
 
-        /* Esconde a barra no Chrome/Safari/Android */
-        .filter-section::-webkit-scrollbar {
-            width: 0px !important;
-            height: 0px !important;
-            background: transparent !important;
-            display: none !important;
-        }
+        .filter-section::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 
         .chip { 
             flex: 0 0 auto; padding: 10px 22px; border-radius: 50px; 
@@ -147,23 +145,22 @@
 
         /* --- MOBILE ADAPTATION --- */
         @media (max-width: 768px) {
-            :root { --header-height: 75px; }
+            header { height: var(--header-mobile); padding: 0 4vw; }
+            #catalogo { scroll-margin-top: var(--header-mobile); }
+            .filter-wrapper { top: var(--header-mobile); padding: 30px 0 !important; }
+
             .hero { background-image: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url('imagens/banner_mobile.png'); }
 
             .brand { height: 42px; padding-right: 15px; }
             .brand img { width: 62px; left: -12px; }
             .brand h1 { font-size: 0.9rem; margin-left: 54px; }
 
-            /* Busca mobile fixada em 120px */
-            .search-container { width: 120px !important; min-width: 120px !important; margin-left: 8px; }
+            .search-container { width: 120px !important; margin-left: 8px; }
             .search-container input { height: 38px; font-size: 0.8rem; }
             
             .search-container:focus-within {
                 position: absolute; right: 4vw; width: 92vw !important; z-index: 10;
             }
-
-            /* Padding maior na altura dos filtros conforme solicitado */
-            .filter-wrapper { padding: 30px 0 !important; }
         }
     </style>
 </head>
@@ -256,6 +253,11 @@
                 const cardCategory = card.getAttribute('data-category');
                 card.style.display = (category === 'todos' || cardCategory === category) ? 'flex' : 'none';
             });
+
+            // CORREÇÃO: Força o catálogo a ficar no topo sem mostrar o banner
+            const catalogoSection = document.getElementById('catalogo');
+            catalogoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
             AOS.refresh();
         }
 
