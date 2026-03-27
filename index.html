@@ -3,103 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estamparia Gerais | Personalização de Elite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Estamparia Gerais | Personalização 3D Premium</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <style>
         :root { 
             --primary: #2563eb; 
             --dark: #0f172a; 
-            --accent: #16a34a; 
-            --bg: #f8fafc; 
-            --text: #475569; 
+            --bg: #ffffff; 
+            --text: #64748b; 
             --white: #ffffff;
-            --radius: 16px;
+            --light-bg: #f8fafc;
+            /* Sombra 3D constante e bem espalhada */
+            --shadow-3d: 0 20px 40px rgba(15, 23, 42, 0.12);
+            --shadow-hover: 0 45px 90px rgba(15, 23, 42, 0.22);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text); overflow-x: hidden; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text); overflow-x: hidden; }
 
         /* HEADER */
         header { 
-            background: rgba(255, 255, 255, 0.9); 
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(15px);
             padding: 15px 5%; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
             position: sticky; top: 0; z-index: 1000;
         }
-        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .logo-img { width: 40px; height: 40px; }
-        .brand h1 { font-size: 20px; color: var(--dark); font-weight: 700; }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-img { width: 42px; height: 42px; border-radius: 10px; }
+        .brand h1 { font-size: 20px; color: var(--dark); font-weight: 800; letter-spacing: -1px; }
 
-        /* BUSCA E FILTROS */
-        .search-container { position: relative; width: 300px; }
+        .search-container { width: 350px; }
         .search-container input { 
-            width: 100%; padding: 10px 15px; border-radius: 30px; 
+            width: 100%; padding: 12px 20px; border-radius: 14px; 
             border: 1px solid #e2e8f0; outline: none; transition: 0.3s;
-            font-family: inherit; font-size: 14px;
+            font-size: 13px; background: var(--light-bg);
         }
-        .search-container input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .search-container input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
 
-        /* NOVO BANNER MODERNIZADO */
+        /* BANNER GIGANTE E RETO */
         .hero-banner { 
-            margin: 20px 5%;
-            height: 350px;
-            background: linear-gradient(45deg, #0f172a 0%, #1e293b 100%);
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 60px;
-            color: white;
-            position: relative;
-            overflow: hidden;
+            width: 100%; height: 550px;
+            background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)), url('imagens/banner.jpg'); 
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            color: white; text-align: center;
         }
-        .hero-text { position: relative; z-index: 2; max-width: 500px; }
-        .hero-text h2 { font-size: 40px; line-height: 1.1; margin-bottom: 15px; }
-        .hero-text p { font-size: 16px; opacity: 0.8; margin-bottom: 25px; }
-        .hero-visual { position: absolute; right: 0; top: 0; height: 100%; width: 50%; background: url('imagens/banner_decor.png') no-repeat center right; background-size: contain; opacity: 0.5; }
+        .hero-text h2 { font-size: 58px; font-weight: 800; line-height: 1; margin-bottom: 20px; letter-spacing: -2px; }
+        .hero-text p { font-size: 18px; opacity: 0.9; margin-bottom: 35px; max-width: 600px; margin-inline: auto; }
+        .hero-btn { 
+            background: var(--primary); color: white; padding: 16px 45px; 
+            text-decoration: none; font-weight: 700; border-radius: 50px;
+            display: inline-block; border: 2px solid var(--primary); transition: 0.3s;
+        }
+        .hero-btn:hover { background: white; color: var(--primary); transform: translateY(-5px); }
 
-        /* FILTROS (PALAVRAS CHAVE) */
-        .filter-section { padding: 20px 5%; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-        .filter-label { font-size: 14px; font-weight: 600; color: var(--dark); margin-right: 10px; }
+        /* FILTROS */
+        .filter-bar { padding: 40px 5% 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
         .filter-chip { 
-            padding: 8px 20px; border-radius: 50px; background: white; 
-            border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s;
-            font-size: 14px; font-weight: 500; color: var(--text);
+            padding: 10px 24px; border: 1px solid #e2e8f0; background: white; 
+            cursor: pointer; transition: 0.3s; font-size: 13px; font-weight: 600; 
+            border-radius: 50px; color: var(--dark); text-transform: uppercase;
         }
-        .filter-chip:hover, .filter-chip.active { 
-            background: var(--primary); border-color: var(--primary); color: white; 
-        }
+        .filter-chip.active { background: var(--dark); color: white; border-color: var(--dark); }
 
-        /* GRID DE PRODUTOS */
+        /* GRID E CARDS MODERNOS */
         .product-grid { 
-            padding: 20px 5% 80px; 
+            padding: 100px 5% 120px; /* Padding extra no topo para a sombra e o pulo do card */
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
-            gap: 25px; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 50px; 
         }
-        .p-card { 
-            background: white; border-radius: var(--radius); overflow: hidden; 
-            transition: 0.3s; border: 1px solid #f1f5f9; text-decoration: none; color: inherit;
-        }
-        .p-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .p-img { width: 100%; height: 240px; display: flex; align-items: center; justify-content: center; background: #fff; padding: 20px; }
-        .p-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
-        .p-info { padding: 20px; border-top: 1px solid #f8fafc; }
-        .p-category { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); font-weight: 700; margin-bottom: 5px; display: block; }
-        .p-title { font-size: 16px; font-weight: 600; color: var(--dark); margin-bottom: 10px; }
-        .p-price { font-size: 18px; font-weight: 700; color: var(--accent); }
+        .p-card { 
+            background: white; border-radius: 32px; 
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            border: 1px solid rgba(15, 23, 42, 0.05); 
+            box-shadow: var(--shadow-3d);
+            display: flex; flex-direction: column; 
+            position: relative;
+            text-decoration: none; color: inherit;
+        }
 
-        @media (max-width: 850px) {
-            .hero-banner { height: auto; padding: 40px 30px; flex-direction: column; text-align: center; }
-            .hero-visual { display: none; }
-            header { flex-direction: column; gap: 15px; }
-            .search-container { width: 100%; }
+        .p-card:hover { 
+            transform: translateY(-35px); /* Movimento agressivo pra cima */
+            box-shadow: var(--shadow-hover);
+            z-index: 10;
+        }
+        
+        /* Imagem mais compacta e baixa */
+        .p-img { width: 100%; height: 210px; display: flex; align-items: center; justify-content: center; padding: 30px; }
+        .p-img img { max-width: 100%; max-height: 100%; object-fit: contain; transition: 0.5s; }
+        .p-card:hover .p-img img { transform: scale(1.1); }
+        
+        .p-info { padding: 15px 30px 25px; text-align: center; }
+        .p-category { font-size: 11px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .p-title { font-size: 19px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+        .p-price { font-size: 22px; font-weight: 800; color: var(--dark); margin-bottom: 25px; }
+
+        /* Botão Azul -> Branco no Hover */
+        .btn-more { 
+            margin: 0 30px 30px; padding: 15px; 
+            background: var(--primary); color: white; 
+            font-weight: 700; font-size: 13px; text-transform: uppercase; 
+            border-radius: 16px; transition: 0.4s; text-align: center;
+            border: 2px solid var(--primary);
+        }
+        .p-card:hover .btn-more { 
+            background: white; color: var(--primary); 
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .hero-text h2 { font-size: 38px; }
+            .hero-banner { height: 400px; }
+            .search-container { width: 100%; margin-top: 15px; order: 3; }
+            header { flex-wrap: wrap; }
+            .product-grid { padding-top: 60px; gap: 40px; }
         }
     </style>
 </head>
@@ -110,98 +134,87 @@
             <img src="imagens/logo.png" alt="Logo" class="logo-img"> 
             <h1>Estamparia Gerais</h1>
         </a>
-        
         <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Buscar produto..." onkeyup="filterSearch()">
+            <input type="text" id="searchInput" placeholder="O que você deseja criar?" onkeyup="filterSearch()">
         </div>
     </header>
 
-    <div class="hero-banner">
-        <div class="hero-text">
-            <h2>Crie seu estilo,<br>nós estampamos.</h2>
-            <p>Personalização premium com visualização 3D realista para você não ter dúvidas na hora de comprar.</p>
-            <a href="#catalogo" style="background: var(--white); color: var(--dark); padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 14px;">Explorar agora</a>
+    <section class="hero-banner">
+        <div class="hero-text" data-aos="fade-up">
+            <h2>Dê vida à sua imaginação.</h2>
+            <p>O simulador 3D mais moderno para suas canecas e acessórios exclusivos.</p>
+            <a href="#catalogo" class="hero-btn">Começar a criar</a>
         </div>
-        <div class="hero-visual"></div>
-    </div>
+    </section>
 
-    <div class="filter-section" id="catalogo">
-        <span class="filter-label">Filtrar por:</span>
+    <div class="filter-bar" id="catalogo" data-aos="fade-up">
         <button class="filter-chip active" onclick="filterCategory('todos')">Todos</button>
         <button class="filter-chip" onclick="filterCategory('caneca')">Canecas</button>
         <button class="filter-chip" onclick="filterCategory('camisa')">Camisas</button>
-        <button class="filter-chip" onclick="filterCategory('azuleijo')">Azuleijos</button>
         <button class="filter-chip" onclick="filterCategory('chaveiro')">Chaveiros</button>
-        <button class="filter-chip" onclick="filterCategory('chinelo')">Chinelos</button>
     </div>
 
     <main class="product-grid" id="productGrid">
-        <a href="paginas/caneca_branca.html" class="p-card" data-category="caneca" data-name="caneca branca classica">
-            <div class="p-img"><img src="imagens/caneca_branca.png"></div>
+        
+        <a href="paginas/caneca_branca.html" class="p-card" data-category="caneca" data-name="caneca branca porcelana" data-aos="fade-up">
+            <div class="p-img"><img src="imagens/caneca_branca.png" alt="Caneca Branca"></div>
             <div class="p-info">
-                <span class="p-category">Caneca</span>
+                <span class="p-category">Cerâmica Premium</span>
                 <h3 class="p-title">Caneca Branca Clássica</h3>
                 <div class="p-price">R$ 35,00</div>
             </div>
+            <div class="btn-more">Veja mais modelos</div>
         </a>
 
-        <a href="paginas/caneca_pro.html" class="p-card" data-category="caneca" data-name="caneca alça e borda colorida">
-            <div class="p-img"><img src="imagens/caneca_pro/01.png"></div>
+        <a href="paginas/caneca_pro.html" class="p-card" data-category="caneca" data-name="caneca alça e borda colorida" data-aos="fade-up" data-aos-delay="100">
+            <div class="p-img"><img src="imagens/caneca_pro/01.png" alt="Caneca Alça & Borda"></div>
             <div class="p-info">
-                <span class="p-category">Caneca</span>
-                <h3 class="p-title">Alça & Borda Colorida</h3>
+                <span class="p-category">Edição Color</span>
+                <h3 class="p-title">Caneca Alça & Borda</h3>
                 <div class="p-price">R$ 45,00</div>
             </div>
+            <div class="btn-more">Veja mais modelos</div>
         </a>
 
-        <a href="paginas/chaveiro.html" class="p-card" data-category="chaveiro" data-name="chaveiro personalizado metal">
-            <div class="p-img"><img src="imagens/chaveiro.png"></div>
+        <a href="paginas/chaveiro.html" class="p-card" data-category="chaveiro" data-name="chaveiro metal personalizado" data-aos="fade-up" data-aos-delay="200">
+            <div class="p-img"><img src="imagens/chaveiro.png" alt="Chaveiro"></div>
             <div class="p-info">
-                <span class="p-category">Chaveiro</span>
+                <span class="p-category">Acessórios</span>
                 <h3 class="p-title">Chaveiro de Metal</h3>
                 <div class="p-price">R$ 15,00</div>
             </div>
+            <div class="btn-more">Veja mais modelos</div>
         </a>
+
     </main>
 
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Lógica de Filtro por Categoria
+        AOS.init({ duration: 1000, once: true });
+
         function filterCategory(category) {
             const cards = document.querySelectorAll('.p-card');
             const chips = document.querySelectorAll('.filter-chip');
-            
-            // Atualiza botões
-            chips.forEach(chip => {
-                chip.classList.remove('active');
-                if(chip.innerText.toLowerCase().includes(category)) chip.classList.add('active');
-                if(category === 'todos' && chip.innerText === 'Todos') chip.classList.add('active');
-            });
+            chips.forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
 
-            // Filtra Cards
             cards.forEach(card => {
                 if (category === 'todos' || card.getAttribute('data-category') === category) {
-                    card.style.display = 'block';
+                    card.style.display = 'flex';
                 } else {
                     card.style.display = 'none';
                 }
             });
+            AOS.refresh();
         }
 
-        // Lógica de Busca por Texto
         function filterSearch() {
             const input = document.getElementById('searchInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.p-card');
-
-            cards.forEach(card => {
+            document.querySelectorAll('.p-card').forEach(card => {
                 const name = card.getAttribute('data-name').toLowerCase();
-                if (name.includes(input)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+                card.style.display = name.includes(input) ? 'flex' : 'none';
             });
         }
     </script>
-
 </body>
 </html>
