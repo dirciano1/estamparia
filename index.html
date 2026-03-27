@@ -3,150 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estamparia Gerais | Personalização Premium</title>
+    <title>Estamparia Gerais | Personalizados 3D</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root { --primary: #2563eb; --accent: #16a34a; --bg: #f8fafc; --text: #1e293b; --border: #e2e8f0; }
+        :root { 
+            --primary: #2563eb; 
+            --dark: #0f172a; 
+            --accent: #16a34a; 
+            --bg: #f8fafc; 
+            --text: #334155; 
+            --white: #ffffff;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text); }
+        body { background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text); line-height: 1.6; }
 
-        /* HEADER */
-        header { background: white; padding: 20px 5%; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .logo { font-weight: 700; font-size: 24px; color: var(--primary); letter-spacing: -1px; }
+        /* HEADER & NAV */
+        header { 
+            background: var(--white); 
+            padding: 15px 8%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-img { width: 45px; height: 45px; object-fit: contain; }
+        .brand h1 { font-size: 22px; color: var(--dark); font-weight: 700; letter-spacing: -1px; }
 
-        /* CATALOGO */
-        .catalog { padding: 40px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-        .product-card { background: white; border-radius: 20px; overflow: hidden; cursor: pointer; transition: 0.4s; border: 1px solid var(--border); }
-        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .product-card img { width: 100%; height: 280px; object-fit: contain; background: #fff; display: block; }
-        .product-info { padding: 20px; text-align: center; border-top: 1px solid var(--border); }
+        nav ul { display: flex; list-style: none; gap: 25px; }
+        nav a { text-decoration: none; color: var(--text); font-weight: 500; font-size: 14px; transition: 0.3s; }
+        nav a:hover { color: var(--primary); }
+
+        /* BANNER HERO */
+        .hero { 
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            padding: 80px 8%;
+            color: var(--white);
+            text-align: center;
+            border-radius: 0 0 50px 50px;
+            margin-bottom: 50px;
+        }
+        .hero h2 { font-size: 42px; font-weight: 700; margin-bottom: 15px; }
+        .hero p { font-size: 18px; opacity: 0.9; max-width: 600px; margin: 0 auto 30px; }
+        .hero-btn { 
+            background: var(--accent); 
+            color: white; 
+            padding: 15px 35px; 
+            text-decoration: none; 
+            border-radius: 30px; 
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+        .hero-btn:hover { transform: translateY(-3px); background: #15803d; }
+
+        /* SEÇÃO DE PRODUTOS */
+        .container { padding: 0 8% 80px; }
+        .section-title { margin-bottom: 40px; }
+        .section-title h2 { font-size: 28px; color: var(--dark); position: relative; padding-bottom: 10px; }
+        .section-title h2::after { content: ''; width: 60px; height: 4px; background: var(--primary); position: absolute; bottom: 0; left: 0; border-radius: 2px; }
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 30px; 
+        }
+
+        .card { 
+            background: var(--white); 
+            border-radius: 20px; 
+            overflow: hidden; 
+            transition: 0.4s; 
+            border: 1px solid #eef2f6;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card:hover { 
+            transform: translateY(-10px); 
+            box-shadow: 0 20px 30px rgba(0,0,0,0.08); 
+        }
         
-        /* MODAL */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal-content { width: 95%; max-width: 1250px; height: 85vh; display: flex; background: white; border-radius: 25px; overflow: hidden; position: relative; }
-        
-        .close { position: absolute; right: 20px; top: 15px; font-size: 35px; cursor: pointer; color: #94a3b8; z-index: 100; }
+        .card-img-box { width: 100%; height: 280px; background: #fff; padding: 20px; display: flex; align-items: center; justify-content: center; }
+        .card-img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        /* LADO ESQUERDO: IFRAME E THUMBS */
-        .modal-visual { flex: 1.6; display: flex; flex-direction: column; background: #fff; }
-        #iframe3d { width: 100%; flex-grow: 1; border: none; }
-        
-        .modal-thumbs { padding: 15px; display: flex; gap: 10px; justify-content: center; background: #f8fafc; border-top: 1px solid var(--border); }
-        .modal-thumbs img { width: 60px; height: 60px; border-radius: 10px; border: 2px solid var(--border); cursor: pointer; transition: 0.2s; object-fit: cover; }
-        .modal-thumbs img.active { border-color: var(--primary); transform: scale(1.1); }
+        .card-body { padding: 20px; text-align: center; border-top: 1px solid #f1f5f9; }
+        .card-body h3 { font-size: 18px; margin-bottom: 8px; color: var(--dark); }
+        .card-body .price { font-weight: 700; color: var(--accent); font-size: 20px; display: block; margin-bottom: 15px; }
+        .btn-view { 
+            display: inline-block; 
+            padding: 10px 25px; 
+            border: 2px solid var(--primary); 
+            color: var(--primary); 
+            border-radius: 25px; 
+            font-weight: 600; 
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .card:hover .btn-view { background: var(--primary); color: white; }
 
-        /* LADO DIREITO: INFO */
-        .modal-details { flex: 1; padding: 40px; display: flex; flex-direction: column; background: #fff; border-left: 1px solid var(--border); overflow-y: auto; }
-        .custom-note { background: #f0f7ff; border-left: 4px solid var(--primary); padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 13px; color: #1e40af; line-height: 1.5; }
-        
-        .btn-action { background: var(--accent); color: white; padding: 18px; text-align: center; text-decoration: none; border-radius: 12px; font-weight: 700; margin-top: auto; transition: 0.3s; }
-        .btn-action:hover { background: #128c7e; }
+        /* FOOTER */
+        footer { background: var(--dark); color: white; padding: 40px 8%; text-align: center; font-size: 14px; opacity: 0.8; }
 
-        @media (max-width: 900px) {
-            .modal-content { flex-direction: column; height: 95vh; }
-            .modal-visual { height: 50%; flex: none; }
-            .modal-details { padding: 20px; }
+        @media (max-width: 768px) {
+            header { padding: 15px 5%; flex-direction: column; gap: 15px; }
+            .hero h2 { font-size: 30px; }
+            .grid { gap: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <header><div class="logo">ESTAMPARIA GERAIS</div></header>
+    <header>
+        <a href="index.html" class="brand">
+            <img src="imagens/logo.png" alt="Logo" class="logo-img"> 
+            <h1>Estamparia Gerais</h1>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="#produtos">Produtos</a></li>
+                <li><a href="#">Sobre</a></li>
+                <li><a href="#">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <section class="catalog">
-        <div class="product-card" onclick="openModal('Caneca Premium Borda & Alça', '45,00', [
-            {img: 'imagens/caneca_pro/01.png', iframe: 'https://dirciano1.github.io/estamparia/caneca_pro.html#Jce3aS0|#DF1212'},
-            {img: 'imagens/caneca_pro/02.png', iframe: 'https://dirciano1.github.io/estamparia/caneca_pro.html#LinkDaCaneca02'},
-            {img: 'imagens/caneca_pro/03.png', iframe: 'https://dirciano1.github.io/estamparia/caneca_pro.html#LinkDaCaneca03'},
-            {img: 'imagens/caneca_pro/04.png', iframe: 'https://dirciano1.github.io/estamparia/caneca_pro.html#LinkDaCaneca04'}
-        ])">
-            <img src="imagens/caneca_pro/01.png" alt="Caneca Premium">
-            <div class="product-info">
-                <h3>Premium Alça & Borda</h3>
-                <p style="color: var(--accent); font-weight: 700;">R$ 45,00</p>
-            </div>
-        </div>
+    <section class="hero">
+        <h2>Sua ideia, em 3D.</h2>
+        <p>Personalize canecas exclusivas com visualização em tempo real. Qualidade premium para presentear ou para o seu negócio.</p>
+        <a href="#produtos" class="hero-btn">Ver Coleção Completa</a>
     </section>
 
-    <div id="productModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            
-            <div class="modal-visual">
-                <iframe id="iframe3d" src=""></iframe>
-                
-                <div class="modal-thumbs" id="thumbContainer"></div>
-            </div>
-
-            <div class="modal-details">
-                <h2 id="mTitle">Nome do Produto</h2>
-                <h3 id="mPrice" style="color: var(--accent); margin-top: 10px;">R$ 0,00</h3>
-
-                <div class="custom-note">
-                    <strong>Personalização Profissional:</strong><br>
-                    As imagens ao lado são modelos demonstrativos. Personalizamos sua caneca com 
-                    <strong>fotos, frases, logotipos ou qualquer arte</strong> que você desejar. 
-                    Qualidade fotográfica e brilho superior!
-                </div>
-
-                <p style="font-size: 13px; color: #64748b; margin-bottom: 10px;">
-                    * Utilize o simulador acima para girar e ver detalhes da caneca.
-                </p>
-
-                <a href="#" id="waButton" class="btn-action" target="_blank">Encomendar via WhatsApp</a>
-            </div>
+    <main class="container" id="produtos">
+        <div class="section-title">
+            <h2>Nossos Destaques</h2>
         </div>
-    </div>
 
-    <script>
-        function openModal(titulo, preco, itens) {
-            const modal = document.getElementById('productModal');
-            const iframe = document.getElementById('iframe3d');
-            const thumbContainer = document.getElementById('thumbContainer');
-            
-            document.getElementById('mTitle').innerText = titulo;
-            document.getElementById('mPrice').innerText = `R$ ${preco}`;
-            
-            // Define o primeiro iframe da lista como inicial
-            iframe.src = itens[0].iframe;
-            
-            // Limpa e gera as miniaturas
-            thumbContainer.innerHTML = '';
-            itens.forEach((item, index) => {
-                const img = document.createElement('img');
-                img.src = item.img;
-                if(index === 0) img.className = 'active';
-                
-                img.onclick = function() {
-                    // Troca o link do iframe
-                    iframe.src = item.iframe;
-                    
-                    // Atualiza classe ativa nas miniaturas
-                    document.querySelectorAll('.modal-thumbs img').forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                };
-                thumbContainer.appendChild(img);
-            });
+        <div class="grid">
+            <a href="paginas/caneca_branca.html" class="card">
+                <div class="card-img-box">
+                    <img src="imagens/caneca_branca.png" alt="Caneca Branca">
+                </div>
+                <div class="card-body">
+                    <h3>Caneca Branca Clássica</h3>
+                    <span class="price">R$ 35,00</span>
+                    <span class="btn-view">Personalizar em 3D</span>
+                </div>
+            </a>
 
-            // Link WhatsApp
-            const msg = `Olá! Gostaria de uma caneca ${titulo} personalizada.`;
-            document.getElementById('waButton').href = `https://wa.me/5500000000000?text=${encodeURIComponent(msg)}`;
+            <a href="paginas/caneca_pro.html" class="card">
+                <div class="card-img-box">
+                    <img src="imagens/caneca_pro/01.png" alt="Caneca Pro">
+                </div>
+                <div class="card-body">
+                    <h3>Caneca Alça & Borda</h3>
+                    <span class="price">R$ 45,00</span>
+                    <span class="btn-view">Personalizar em 3D</span>
+                </div>
+            </a>
 
-            modal.style.display = 'flex';
-        }
+            <a href="paginas/caneca_colher.html" class="card">
+                <div class="card-img-box">
+                    <img src="imagens/caneca_colher.png" alt="Caneca com Colher">
+                </div>
+                <div class="card-body">
+                    <h3>Caneca com Colher</h3>
+                    <span class="price">R$ 55,00</span>
+                    <span class="btn-view">Personalizar em 3D</span>
+                </div>
+            </a>
+        </div>
+    </main>
 
-        function closeModal() {
-            document.getElementById('productModal').style.display = 'none';
-            document.getElementById('iframe3d').src = ''; // Para o iframe ao fechar
-        }
+    <footer>
+        &copy; 2026 Estamparia Gerais - Todos os direitos reservados.
+    </footer>
 
-        // Fechar se clicar fora do conteúdo
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('productModal')) {
-                closeModal();
-            }
-        }
-    </script>
 </body>
 </html>
