@@ -30,22 +30,20 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             
-            // Configurações de Renderização
-            renderer.outputEncoding = THREE.sRGBEncoding;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2; 
+            // --- AJUSTE DE FIDELIDADE DE COR ---
+            renderer.outputEncoding = THREE.sRGBEncoding; // Mantém as cores vivas
+            renderer.toneMapping = THREE.NoToneMapping;  // REMOVIDO o "ACESFilmic" para não clarear as cores
             container.appendChild(renderer.domElement);
 
-            // Iluminação
-            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            // Luz Ambiente Forte (ilumina tudo igual) + Direcional Suave
+            scene.add(new THREE.AmbientLight(0xffffff, 0.8)); 
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
             dirLight.position.set(5, 10, 7);
             scene.add(dirLight);
 
             const texLoader = new THREE.TextureLoader();
             texLoader.setCrossOrigin('anonymous');
 
-            // --- LÓGICA DO HASH (ID Imgur | Cor Hex) ---
             const hash = window.location.hash.substring(1);
             const partes = hash.split('|');
             const idImgur = partes[0] || "";
@@ -58,35 +56,28 @@
                 estampa.encoding = THREE.sRGBEncoding;
             }
 
+            // Converte a cor para o espaço sRGB para bater com o painel
             const corParametro = new THREE.Color(corHexLink);
 
-            // --- CARREGAMENTO DO MODELO (Caminho Ajustado) ---
             const loader = new THREE.GLTFLoader();
-            // Ajustado para o diretório informado: objetos/caneca_colher/
             loader.load('objetos/caneca_colher/caneca_colher.gltf', (gltf) => {
                 model3D = gltf.scene;
 
                 model3D.traverse((node) => {
                     if (node.isMesh) {
-                        const mat = new THREE.MeshPhysicalMaterial({
+                        const mat = new THREE.MeshStandardMaterial({ // Mudado para Standard para cores mais sólidas
                             color: 0xffffff,
                             metalness: 0.1,
-                            roughness: 0.1,
-                            clearcoat: 1.0,
-                            clearcoatRoughness: 0.05,
+                            roughness: 0.5, // Menos brilho evita reflexos brancos que "lavam" a cor
                             side: THREE.DoubleSide
                         });
 
-                        // Mapeamento baseado nos nomes das meshes do seu arquivo
-                        // Parte 1 (Base/Fundo) e Parte 2 (Corpo da estampa)
                         if (node.name === "Cylinder001_1" || node.name === "Cylinder001_2") {
                             mat.color.set(0xffffff);
-                            if (node.name === "Cylinder001_2" && estampa) {
-                                mat.map = estampa;
-                            }
+                            if (node.name === "Cylinder001_2" && estampa) mat.map = estampa;
                         }
 
-                        // Parte 3 (Borda), 4 (Interior) e 5 (Colher+Alça) - Aplicam a cor escolhida
+                        // Aplica a cor exatamente como vem do link
                         if (["Cylinder001_3", "Cylinder001_4", "Cylinder001_5"].includes(node.name)) {
                             mat.color.copy(corParametro);
                         }
@@ -95,28 +86,19 @@
                     }
                 });
 
-                // Centralização e Escala
                 const box = new THREE.Box3().setFromObject(model3D);
                 const center = box.getCenter(new THREE.Vector3());
                 model3D.position.sub(center);
-                
-                // Ajuste fino da posição vertical para não "voar"
                 model3D.position.y = 0; 
-                
                 scene.add(model3D);
-            }, undefined, (error) => {
-                console.error("Erro ao carregar o modelo:", error);
             });
 
-            // Controles
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
-            controls.autoRotateSpeed = 0.8;
             
             window.addEventListener('resize', onWindowResize);
             window.addEventListener('hashchange', () => window.location.reload());
-            
             animate();
         }
 
