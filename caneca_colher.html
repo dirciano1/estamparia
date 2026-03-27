@@ -21,7 +21,7 @@
         function init() {
             const container = document.getElementById('canvas-container');
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xffffff);
+            scene.background = new THREE.Color(0x999999);
 
             // --- AJUSTE DE ZOOM INICIAL ---
             // Aumentamos o Z de 4.5 para 8.0 para a caneca começar menor (distante)
@@ -36,8 +36,8 @@
             renderer.toneMapping = THREE.NoToneMapping; 
             container.appendChild(renderer.domElement);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.8)); 
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5)); 
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.3);
             dirLight.position.set(5, 10, 7);
             scene.add(dirLight);
 
