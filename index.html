@@ -33,14 +33,9 @@
             position: fixed; top: 0; width: 100%; z-index: 1000;
             height: var(--header-height);
             border-bottom: 1px solid rgba(0,0,0,0.05);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
 
-        .brand-container {
-            display: flex;
-            align-items: center;
-            transition: 0.3s ease;
-        }
+        .brand-container { display: flex; align-items: center; }
 
         .brand { 
             display: flex; align-items: center; 
@@ -53,8 +48,7 @@
         }
 
         .brand img { 
-            width: 75px; 
-            height: auto;
+            width: 75px; height: auto;
             position: absolute;
             left: -15px; top: 50%;
             transform: translateY(-50%);
@@ -82,13 +76,7 @@
             100% { background-position: 200% center; }
         }
 
-        /* BUSCA */
-        .search-container { 
-            width: 220px; 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-left: 15px;
-        }
-
+        .search-container { width: 220px; transition: all 0.4s ease; margin-left: 15px; }
         .search-container input {
             width: 100%; height: 45px; padding: 0 15px; border-radius: 12px;
             border: 1px solid #cbd5e1; background: var(--search-bg); outline: none;
@@ -97,58 +85,44 @@
 
         /* HERO */
         .hero { 
-            width: 100%; 
-            height: 100vh;
-            height: 100svh;
+            width: 100%; height: 100vh; height: 100svh;
             background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url('imagens/banner.png'); 
-            background-size: cover; 
-            background-position: center;
+            background-size: cover; background-position: center;
             display: flex; align-items: center; justify-content: center;
             color: white; text-align: center;
         }
 
-        .hero-content h2 { 
-            font-size: clamp(2.2rem, 9vw, 4rem); 
-            font-weight: 800; 
-            text-shadow: 0 4px 25px rgba(0,0,0,0.6);
-            line-height: 1.1;
-        }
-
-        .hero-content p {
-            font-size: clamp(1rem, 4.5vw, 1.4rem);
-            margin: 15px 0 30px;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-        }
-
+        .hero-content h2 { font-size: clamp(2.2rem, 9vw, 4rem); font-weight: 800; text-shadow: 0 4px 25px rgba(0,0,0,0.6); }
         .hero-btn { 
             background: var(--primary); color: white; padding: 1.2rem 3rem; 
             font-weight: 700; border-radius: 50px; display: inline-block; 
-            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
-            transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4); margin-top: 20px;
         }
 
-        /* FILTROS */
+        /* FILTROS - AJUSTE DA BARRA INVISÍVEL */
         #catalogo { scroll-margin-top: var(--header-height); }
+        
         .filter-wrapper {
             position: sticky; top: var(--header-height); z-index: 100;
             background: var(--bg); padding: 15px 0;
             border-bottom: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden; /* Garante que nada vaze */
         }
 
         .filter-section { 
             display: flex; gap: 12px; overflow-x: auto; padding: 0 5%;
             -webkit-overflow-scrolling: touch;
+            /* Esconde a barra no Firefox e IE */
+            scrollbar-width: none; 
+            -ms-overflow-style: none; 
         }
 
-        /* Barra de rolagem invisível para Chrome, Safari e Opera */
+        /* Esconde a barra no Chrome/Safari/Android */
         .filter-section::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* Barra de rolagem invisível para IE, Edge e Firefox */
-        .filter-section {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            width: 0px !important;
+            height: 0px !important;
+            background: transparent !important;
+            display: none !important;
         }
 
         .chip { 
@@ -161,44 +135,35 @@
 
         /* GRID */
         .container { width: 95%; max-width: 1300px; margin: 0 auto; padding: 25px 0 60px; }
-        .product-grid { 
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; 
-        }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
         @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(4, 1fr); } }
 
-        .p-card { 
-            background: var(--white); border-radius: 22px; 
-            display: flex; flex-direction: column; overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-            transition: 0.3s;
-        }
+        .p-card { background: var(--white); border-radius: 22px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.04); display: flex; flex-direction: column; }
         .p-img img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
         .p-info { padding: 15px; text-align: center; }
         .p-title { font-size: 0.95rem; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
-        .p-price { font-size: 1rem; font-weight: 800; color: var(--success); }
+        .p-price { font-size: 1.1rem; font-weight: 800; color: var(--success); display: block; margin-bottom: 12px; }
         .btn-more { margin: 0 15px 15px; padding: 12px; background: var(--primary); color: white; font-weight: 700; border-radius: 12px; text-align: center; font-size: 0.75rem; }
 
         /* --- MOBILE ADAPTATION --- */
         @media (max-width: 768px) {
             :root { --header-height: 75px; }
-            header { padding: 0 4vw; }
             .hero { background-image: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url('imagens/banner_mobile.png'); }
 
             .brand { height: 42px; padding-right: 15px; }
             .brand img { width: 62px; left: -12px; }
             .brand h1 { font-size: 0.9rem; margin-left: 54px; }
 
-            /* Busca mobile: 120px de largura */
-            .search-container { width: 120px; margin-left: 10px; }
-            .search-container input { padding: 0 12px; border-radius: 12px; height: 40px; font-size: 0.8rem; }
+            /* Busca mobile fixada em 120px */
+            .search-container { width: 120px !important; min-width: 120px !important; margin-left: 8px; }
+            .search-container input { height: 38px; font-size: 0.8rem; }
             
             .search-container:focus-within {
-                position: absolute; right: 4vw; width: 92vw; z-index: 10;
+                position: absolute; right: 4vw; width: 92vw !important; z-index: 10;
             }
-            .search-container:focus-within input { background: white; border-color: var(--primary); box-shadow: 0 0 0 100px white; }
 
-            /* Padding maior no menu de filtros no mobile */
-            .filter-wrapper { padding: 25px 0; }
+            /* Padding maior na altura dos filtros conforme solicitado */
+            .filter-wrapper { padding: 30px 0 !important; }
         }
     </style>
 </head>
