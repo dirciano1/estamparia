@@ -1,107 +1,239 @@
-<style>
-    :root { 
-        --primary: #2563eb; 
-        --dark: #0f172a; 
-        --bg: #ffffff; 
-        /* Sombra 3D que agora projeta para todos os lados, inclusive para cima */
-        --shadow-3d: 0 -5px 25px rgba(0,0,0,0.04), 0 15px 35px rgba(15, 23, 42, 0.12);
-        --shadow-hover: 0 40px 80px rgba(15, 23, 42, 0.25);
-    }
-
-    .product-grid { 
-        padding: 100px 5% 120px;
-        display: grid; 
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-        gap: 50px; 
-    }
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estamparia Gerais | Personalização Premium 3D</title>
     
-    .p-card { 
-        background: white; 
-        border-radius: 32px; 
-        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
-        /* Borda sutil no topo para não misturar com o fundo */
-        border: 1px solid rgba(0,0,0,0.08); 
-        box-shadow: var(--shadow-3d);
-        display: flex; 
-        flex-direction: column; 
-        position: relative;
-        text-decoration: none; 
-        color: inherit;
-        overflow: visible;
-    }
-
-    .p-card:hover { 
-        transform: translateY(-30px);
-        box-shadow: var(--shadow-hover);
-        border-color: var(--primary);
-    }
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
-    /* IMAGEM: Agora maior e com menos espaço sobrando */
-    .p-img { 
-        width: 100%; 
-        height: 280px; /* Aumentado para destacar o produto */
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        padding: 10px; /* Reduzido o espaço interno */
-        background: #fdfdfd;
-        border-radius: 32px 32px 0 0;
-    }
-    .p-img img { 
-        max-width: 95%; 
-        max-height: 95%; 
-        object-fit: contain; 
-        transition: 0.5s;
-        /* Efeito de flutuação na própria imagem */
-        filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
-    }
-    
-    .p-info { padding: 20px 30px; text-align: center; }
-    .p-category { font-size: 11px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; }
-    .p-title { font-size: 19px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
-    .p-price { font-size: 22px; font-weight: 800; color: var(--dark); margin-bottom: 20px; }
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --dark: #0f172a; 
+            --bg: #ffffff; 
+            --text: #64748b; 
+            --white: #ffffff;
+            --light-bg: #f8fafc;
+            /* Sombra 3D constante e bem espalhada */
+            --shadow-3d: 0 20px 40px rgba(15, 23, 42, 0.12);
+            --shadow-hover: 0 45px 90px rgba(15, 23, 42, 0.22);
+        }
 
-    .btn-more { 
-        margin: 0 30px 30px; 
-        padding: 15px; 
-        background: var(--primary); 
-        color: white; 
-        font-weight: 700; 
-        font-size: 13px; 
-        text-transform: uppercase; 
-        border-radius: 16px; 
-        transition: 0.4s; 
-        text-align: center;
-        border: 2px solid var(--primary);
-    }
-    .p-card:hover .btn-more { 
-        background: white; 
-        color: var(--primary); 
-    }
-</style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text); overflow-x: hidden; }
 
-<main class="product-grid">
-    <a href="paginas/caneca_branca.html" class="p-card">
-        <div class="p-img">
-            <img src="imagens/caneca_branca.png" alt="Caneca Branca">
-        </div>
-        <div class="p-info">
-            <span class="p-category">Cerâmica Premium</span>
-            <h3 class="p-title">Caneca Branca Clássica</h3>
-            <div class="p-price">R$ 35,00</div>
-        </div>
-        <div class="btn-more">Veja mais modelos</div>
-    </a>
+        /* HEADER */
+        header { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(15px);
+            padding: 15px 5%; 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-img { width: 42px; height: 42px; border-radius: 10px; }
+        .brand h1 { font-size: 20px; color: var(--dark); font-weight: 800; letter-spacing: -1px; }
 
-    <a href="paginas/caneca_pro.html" class="p-card">
-        <div class="p-img">
-            <img src="imagens/caneca_pro/01.png" alt="Caneca Alça & Borda">
+        .search-container { width: 350px; }
+        .search-container input { 
+            width: 100%; padding: 12px 20px; border-radius: 14px; 
+            border: 1px solid #e2e8f0; outline: none; transition: 0.3s;
+            font-size: 13px; background: var(--light-bg);
+        }
+        .search-container input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+
+        /* BANNER GIGANTE E RETO */
+        .hero-banner { 
+            width: 100%; height: 550px;
+            /* SUBSTITUA O LINK ABAIXO PELA SUA IMAGEM DE BANNER */
+            background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)), url('imagens/banner.jpg'); 
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            color: white; text-align: center;
+        }
+        .hero-text h2 { font-size: 58px; font-weight: 800; line-height: 1; margin-bottom: 20px; letter-spacing: -2px; }
+        .hero-text p { font-size: 18px; opacity: 0.9; margin-bottom: 35px; max-width: 600px; margin-inline: auto; }
+        .hero-btn { 
+            background: var(--primary); color: white; padding: 16px 45px; 
+            text-decoration: none; font-weight: 700; border-radius: 50px;
+            display: inline-block; border: 2px solid var(--primary); transition: 0.3s;
+        }
+        .hero-btn:hover { background: white; color: var(--primary); transform: translateY(-5px); }
+
+        /* FILTROS */
+        .filter-bar { padding: 40px 5% 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+        .filter-chip { 
+            padding: 10px 24px; border: 1px solid #e2e8f0; background: white; 
+            cursor: pointer; transition: 0.3s; font-size: 13px; font-weight: 600; 
+            border-radius: 50px; color: var(--dark); text-transform: uppercase;
+        }
+        .filter-chip.active { background: var(--dark); color: white; border-color: var(--dark); }
+
+        /* GRID E CARDS MODERNOS COMPACTOS */
+        .product-grid { 
+            padding: 100px 5% 120px; /* Espaço para a sombra e movimento */
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 50px; 
+        }
+        
+        .p-card { 
+            background: white; border-radius: 32px; 
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            border: 1px solid rgba(15, 23, 42, 0.05); 
+            box-shadow: var(--shadow-3d);
+            display: flex; flex-direction: column; 
+            position: relative;
+            text-decoration: none; color: inherit;
+        }
+
+        .p-card:hover { 
+            transform: translateY(-35px); /* Movimento agressivo pra cima */
+            box-shadow: var(--shadow-hover);
+            z-index: 10;
+        }
+        
+        /* Imagem mais compacta e baixa (Card mais baixo) */
+        .p-img { width: 100%; height: 210px; display: flex; align-items: center; justify-content: center; padding: 30px; }
+        .p-img img { max-width: 100%; max-height: 100%; object-fit: contain; transition: 0.5s; }
+        .p-card:hover .p-img img { transform: scale(1.1); }
+        
+        .p-info { padding: 15px 30px 25px; text-align: center; }
+        .p-category { font-size: 11px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .p-title { font-size: 19px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+        .p-price { font-size: 22px; font-weight: 800; color: var(--dark); margin-bottom: 25px; }
+
+        /* Botão Azul -> Branco no Hover */
+        .btn-more { 
+            margin: 0 30px 30px; padding: 15px; 
+            background: var(--primary); color: white; 
+            font-weight: 700; font-size: 13px; text-transform: uppercase; 
+            border-radius: 16px; transition: 0.4s; text-align: center;
+            border: 2px solid var(--primary);
+        }
+        .p-card:hover .btn-more { 
+            background: white; color: var(--primary); 
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .hero-text h2 { font-size: 38px; }
+            .hero-banner { height: 400px; }
+            .search-container { width: 100%; margin-top: 15px; order: 3; }
+            header { flex-wrap: wrap; }
+            .product-grid { padding-top: 60px; gap: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="brand">
+            <img src="imagens/logo.png" alt="Logo" class="logo-img"> 
+            <h1>Estamparia Gerais</h1>
+        </a>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="O que você deseja criar?" onkeyup="filterSearch()">
         </div>
-        <div class="p-info">
-            <span class="p-category">Edição Color</span>
-            <h3 class="p-title">Caneca Alça & Borda</h3>
-            <div class="p-price">R$ 45,00</div>
+    </header>
+
+    <section class="hero-banner">
+        <div class="hero-text" data-aos="fade-up">
+            <h2>Dê vida à sua imaginação.</h2>
+            <p>O simulador 3D mais moderno para suas canecas e acessórios exclusivos.</p>
+            <a href="#catalogo" class="hero-btn">Começar a criar</a>
         </div>
-        <div class="btn-more">Veja mais modelos</div>
-    </a>
-</main>
+    </section>
+
+    <div class="filter-bar" id="catalogo" data-aos="fade-up">
+        <button class="filter-chip active" onclick="filterCategory('todos')">Todos</button>
+        <button class="filter-chip" onclick="filterCategory('caneca')">Canecas</button>
+        <button class="filter-chip" onclick="filterCategory('camisa')">Camisas</button>
+        <button class="filter-chip" onclick="filterCategory('chaveiro')">Chaveiros</button>
+    </div>
+
+    <main class="product-grid" id="productGrid">
+        
+        <a href="paginas/caneca_branca.html" class="p-card" data-category="caneca" data-name="caneca branca porcelana" data-aos="fade-up">
+            <div class="p-img">
+                <img src="imagens/caneca_branca.png" alt="Caneca Branca">
+            </div>
+            <div class="p-info">
+                <span class="p-category">Cerâmica Premium</span>
+                <h3 class="p-title">Caneca Branca Clássica</h3>
+                <div class="p-price">R$ 35,00</div>
+            </div>
+            <div class="btn-more">Veja mais modelos</div>
+        </a>
+
+        <a href="paginas/caneca_pro.html" class="p-card" data-category="caneca" data-name="caneca alça e borda colorida" data-aos="fade-up" data-aos-delay="100">
+            <div class="p-img">
+                <img src="imagens/caneca_pro/01.png" alt="Caneca Alça & Borda">
+            </div>
+            <div class="p-info">
+                <span class="p-category">Edição Color</span>
+                <h3 class="p-title">Caneca Alça & Borda</h3>
+                <div class="p-price">R$ 45,00</div>
+            </div>
+            <div class="btn-more">Veja mais modelos</div>
+        </a>
+
+        <a href="paginas/chaveiro.html" class="p-card" data-category="chaveiro" data-name="chaveiro metal personalizado" data-aos="fade-up" data-aos-delay="200">
+            <div class="p-img">
+                <img src="imagens/chaveiro.png" alt="Chaveiro">
+            </div>
+            <div class="p-info">
+                <span class="p-category">Acessórios</span>
+                <h3 class="p-title">Chaveiro de Metal</h3>
+                <div class="p-price">R$ 15,00</div>
+            </div>
+            <div class="btn-more">Veja mais modelos</div>
+        </a>
+
+    </main>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Inicializa animações AOS
+        AOS.init({ duration: 1000, once: true });
+
+        // Lógica de Filtro por Categoria
+        function filterCategory(category) {
+            const cards = document.querySelectorAll('.p-card');
+            const chips = document.querySelectorAll('.filter-chip');
+            
+            // Atualiza botões
+            chips.forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Filtra Cards
+            cards.forEach(card => {
+                if (category === 'todos' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            AOS.refresh(); // Reinicia animações ao filtrar
+        }
+
+        // Lógica de Busca por Texto
+        function filterSearch() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.p-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                if (name.includes(input)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
