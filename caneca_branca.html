@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador 3D - Caneca Imgur</title>
+    <title>Visualizador 3D - Estamparia Gerais</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -21,7 +21,8 @@
     <script>
         let scene, camera, renderer, controls, loaderGLTF, texLoader;
 
-        const PECAS_COLORIDAS = ["Cylinder001_5", "Cylinder001_3"]; // Alça e Fundo
+        // Peças que recebem a cor escolhida no painel
+        const PECAS_COLORIDAS = ["Cylinder001_5", "Cylinder001_3"]; 
 
         function init() {
             const container = document.getElementById('canvas-container');
@@ -29,19 +30,23 @@
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xffffff);
 
+            // --- AJUSTE DE ZOOM INICIAL (50%) ---
+            // Aumentado Z para 8.0 para a caneca começar mais distante
             camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(2, 1.2, 4.5); 
+            camera.position.set(3.5, 2.5, 8.0); 
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // --- AJUSTE DE FIDELIDADE DE COR ---
             renderer.outputEncoding = THREE.sRGBEncoding;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.0; 
+            renderer.toneMapping = THREE.NoToneMapping; // Sem lavagem de cor (Azul fica real)
             container.appendChild(renderer.domElement);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 1.0));
-            const light = new THREE.DirectionalLight(0xffffff, 0.8);
+            // Iluminação balanceada
+            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+            const light = new THREE.DirectionalLight(0xffffff, 0.5);
             light.position.set(5, 10, 7);
             scene.add(light);
 
@@ -49,58 +54,40 @@
             texLoader = new THREE.TextureLoader();
             texLoader.setCrossOrigin('anonymous');
 
-            // --- GRID (CHÃO) PADRONIZADO ---
-            // Certifique-se que o grid.png está na mesma pasta que este HTML
-            const gridTexture = texLoader.load('grid.png'); 
-            gridTexture.wrapS = gridTexture.wrapT = THREE.RepeatWrapping;
-            gridTexture.repeat.set(10, 10);
-            const ground = new THREE.Mesh(
-                new THREE.PlaneGeometry(5, 5),
-                new THREE.MeshBasicMaterial({ 
-                    map: gridTexture, 
-                    transparent: true, 
-                    opacity: 0.15, 
-                    depthWrite: false 
-                })
-            );
-            ground.rotation.x = -Math.PI / 2;
-            ground.position.y = -0.96; 
-            scene.add(ground);
-
+            // --- LÓGICA DO HASH ---
             const hash = window.location.hash.substring(1);
             const partes = hash.split('|');
             const idImgur = partes[0] || "";
-            const corHexLink = partes[1] || "#ffffff";
+            const corHexLink = partes[1] ? (partes[1].startsWith('#') ? partes[1] : "#" + partes[1]) : "#ffffff";
 
             let estampa = null;
             if (idImgur && idImgur.trim() !== "") {
-                const urlImgur = `https://i.imgur.com/${idImgur}.jpeg`;
-                estampa = texLoader.load(urlImgur);
+                estampa = texLoader.load(`https://i.imgur.com/${idImgur}.jpeg`);
                 estampa.flipY = false;
                 estampa.encoding = THREE.sRGBEncoding;
             }
 
-            const corObjeto = new THREE.Color(corHexLink).convertSRGBToLinear();
+            const corObjeto = new THREE.Color(corHexLink);
 
-            // --- NOVO DIRETÓRIO CONFIGURADO ABAIXO ---
+            // --- CARREGAMENTO DO MODELO ---
             loaderGLTF.load('objetos/caneca_porcelanato/caneca.gltf', (gltf) => {
                 const model = gltf.scene;
 
                 model.traverse((node) => {
                     if (node.isMesh) {
-                        const mat = new THREE.MeshPhysicalMaterial({
+                        const mat = new THREE.MeshStandardMaterial({
                             color: 0xffffff,
-                            metalness: 0,
-                            roughness: 0.05,
-                            clearcoat: 1.0,
-                            clearcoatRoughness: 0.02,
+                            metalness: 0.1,
+                            roughness: 0.4, // Brilho controlado para não desbotar a cor
                             side: THREE.DoubleSide
                         });
 
+                        // Aplica a cor nas peças específicas (Alça/Fundo)
                         if (PECAS_COLORIDAS.includes(node.name)) {
                             mat.color.copy(corObjeto);
                         }
 
+                        // Aplica a estampa no corpo da caneca
                         if (node.name === "Cylinder001_2" && estampa) {
                             mat.map = estampa;
                         }
@@ -110,15 +97,20 @@
                 });
 
                 const box = new THREE.Box3().setFromObject(model);
-                model.position.sub(box.getCenter(new THREE.Vector3()));
-                model.scale.setScalar(3.5 / box.getSize(new THREE.Vector3()).length());
+                const center = box.getCenter(new THREE.Vector3());
+                model.position.sub(center);
+                model.position.y = -0.5; // Centraliza verticalmente melhor
+                
                 scene.add(model);
             });
 
+            // --- CONTROLES E LIMITES ---
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.autoRotate = true;
-            controls.autoRotateSpeed = 1.5;
+            controls.autoRotateSpeed = 1.0;
+            controls.minDistance = 4;  // Limite de zoom próximo
+            controls.maxDistance = 15; // Limite de zoom afastado
 
             window.addEventListener('resize', onWindowResize);
             window.addEventListener('hashchange', () => window.location.reload());
