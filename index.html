@@ -166,7 +166,7 @@
             text-align: center; display: block; font-size: 0.75rem;
         }
 
-        /* --- CONFIGURAÇÕES EXCLUSIVAS PARA MOBILE --- */
+/* --- CONFIGURAÇÕES EXCLUSIVAS PARA MOBILE --- */
 @media (max-width: 768px) { 
     /* 1. Garante o Header Fixo e Menor */
     header { 
@@ -180,7 +180,6 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        /* Estabilizador para alguns navegadores mobile */
         -webkit-transform: translate3d(0,0,0);
     }
 
@@ -208,7 +207,7 @@
     .search-container { 
         width: 38vw; 
         min-width: 110px; 
-        margin-right: 25px; /* Espaço solicitado no canto direito */
+        margin-right: 25px; 
     }
 
     .search-container input { 
@@ -218,14 +217,17 @@
         border-radius: 10px;
     }
 
-    /* 6. Banner Natural (Não estica horizontalmente) */
+    /* 6. Banner Mobile com Imagem Específica */
     .hero { 
         height: auto; 
         min-height: 50vh;
-        aspect-ratio: 9 / 16; /* Proporção de foto vertical (Instagram style) */
+        aspect-ratio: 9 / 16; 
+        /* Troca para a imagem mobile conforme solicitado */
+        background-image: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%), 
+                          url('imagens/banner_mobile.png');
         background-size: cover;
         background-position: center center;
-        padding-top: 70px; /* Compensa o header fixo */
+        padding-top: 70px; 
     }
 
     .hero-content {
@@ -250,7 +252,7 @@
 
     /* 7. Ajuste de Rolagem (Scroll) */
     #catalogo { 
-        scroll-margin-top: 0px; /* Ponto exato para não cobrir o título */
+        scroll-margin-top: 0px; 
     }
 
     /* 8. Grid de Produtos (2 por linha) */
@@ -288,12 +290,14 @@
 /* Ajuste extra para celulares muito pequenos (iPhone SE, etc) */
 @media (max-width: 380px) {
     .brand h1 {
-        display: none; /* Esconde o texto, deixa só a logo para não apertar a busca */
+        display: none; 
     }
     .search-container {
         width: 50vw;
     }
-}
+
+    }
+
     </style>
 </head>
 <body>
