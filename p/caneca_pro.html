@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caneca Alça & Borda - Estamparia Gerais</title>
+    <title>Caneca Premium | Estamparia Gerais</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
@@ -15,47 +15,54 @@
             --bg: #f5f5f7; 
             --white: #ffffff;
             --search-bg: #e2e8f0; 
-            --header-desktop: 85px;
-            --header-mobile: 75px;
+            --header-desktop: 70px; /* Reduzido */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: #64748b; padding-top: var(--header-desktop); }
         
-        /* HEADER IGUAL AO INICIAL */
+        /* Travando a rolagem no desktop para manter fixo na tela */
+        body { 
+            background: var(--bg); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #64748b; 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* HEADER COM CONTATO */
         header { 
             background: rgba(255, 255, 255, 0.98); 
             backdrop-filter: blur(20px);
             padding: 0 4vw; 
             display: flex; justify-content: space-between; align-items: center; 
-            position: fixed; top: 0; width: 100%; z-index: 1000;
             height: var(--header-desktop);
             border-bottom: 1px solid rgba(0,0,0,0.05);
+            flex-shrink: 0;
         }
 
         .brand-container { display: flex; align-items: center; }
         .brand { 
             display: flex; align-items: center; 
             background: var(--search-bg); 
-            height: 48px; 
-            padding: 0 20px 0 0; 
-            border-radius: 15px;
+            height: 40px; 
+            padding: 0 15px 0 0; 
+            border-radius: 12px;
             position: relative;
             text-decoration: none;
         }
         .brand img { 
-            width: 92px; height: auto;
+            width: 75px; height: auto;
             position: absolute;
-            left: -15px; top: 50%;
+            left: -12px; top: 50%;
             transform: translateY(-50%);
-            filter: drop-shadow(0px 8px 15px rgba(0,0,0,0.2));
             z-index: 2;
         }
         .brand h1 {
-            font-size: 1.1rem; 
+            font-size: 0.95rem; 
             font-weight: 800;
-            margin-left: 65px; 
-            letter-spacing: -0.5px;
+            margin-left: 55px; 
             color: var(--dark);
         }
         .brand h1 span {
@@ -65,94 +72,111 @@
             -webkit-text-fill-color: transparent;
             animation: colorsPassing 4s linear infinite;
         }
+
         @keyframes colorsPassing {
             0% { background-position: 0% center; }
             100% { background-position: 200% center; }
         }
 
-        /* LAYOUT DE PRODUTO */
-        .product-container {
-            max-width: 1300px;
-            margin: 40px auto;
-            padding: 0 20px;
+        .header-contact {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-decoration: none;
+            border: 1.5px solid var(--primary);
+            padding: 8px 18px;
+            border-radius: 50px;
+            transition: 0.3s;
+        }
+        .header-contact:hover { background: var(--primary); color: white; }
+
+        /* ÁREA PRINCIPAL AJUSTADA */
+        .main-content {
+            flex: 1;
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 40px;
+            grid-template-columns: 1fr 400px; /* Coluna da direita fixa e menor */
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            align-items: center; /* Centraliza verticalmente */
         }
 
-        /* ESQUERDA: VISUALIZAÇÃO */
+        /* LADO ESQUERDO: VISUALIZAÇÃO COMPACTA */
         .viewer-section {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
+            height: 100%;
+            justify-content: center;
         }
 
         #main-iframe {
             width: 100%;
-            aspect-ratio: 1/1;
+            height: 400px; /* Altura controlada */
             border: none;
-            border-radius: 30px;
+            border-radius: 20px;
             background: var(--white);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
         .thumbs-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(3, 80px); /* Miniaturas bem menores */
+            gap: 12px;
+            justify-content: center;
         }
 
         .thumb-item {
-            aspect-ratio: 1/1;
+            width: 80px;
+            height: 80px;
             background: var(--white);
-            border-radius: 15px;
+            border-radius: 12px;
             cursor: pointer;
             overflow: hidden;
             border: 2px solid transparent;
-            transition: 0.3s;
+            transition: 0.2s;
         }
-
-        .thumb-item:hover { border-color: var(--primary); }
+        .thumb-item:hover { border-color: var(--primary); scale: 1.05; }
         .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* DIREITA: DESCRIÇÃO */
+        /* LADO DIREITO: DESCRIÇÃO COMPACTA */
         .details-section {
             background: var(--white);
-            padding: 40px;
-            border-radius: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-            height: fit-content;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
         .tag {
-            background: #eff6ff;
             color: var(--primary);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            display: inline-block;
-            margin-bottom: 15px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
         }
 
         .product-title {
-            font-size: 2rem;
+            font-size: 1.4rem;
             color: var(--dark);
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .price-tag {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             color: var(--success);
             font-weight: 800;
-            margin: 20px 0;
+            margin-bottom: 15px;
             display: block;
         }
 
         .description {
-            line-height: 1.6;
-            margin-bottom: 30px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
         }
 
         .buy-btn {
@@ -161,24 +185,19 @@
             background: var(--primary);
             color: white;
             text-align: center;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 14px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             text-decoration: none;
             transition: 0.3s;
         }
 
-        .buy-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
-        }
-
-        /* RESPONSIVIDADE */
+        /* MOBILE ADAPTATION */
         @media (max-width: 968px) {
-            .product-container { grid-template-columns: 1fr; }
-            body { padding-top: var(--header-mobile); }
-            header { height: var(--header-mobile); }
+            body { overflow: auto; height: auto; }
+            .main-content { grid-template-columns: 1fr; }
+            #main-iframe { height: 350px; }
         }
     </style>
 </head>
@@ -191,40 +210,39 @@
                 <h1><span>Estamparia Gerais</span></h1>
             </a>
         </div>
+        <a href="https://wa.me/SEUNUMERO" class="header-contact">Falar com Consultor</a>
     </header>
 
-    <main class="product-container">
+    <main class="main-content">
         <section class="viewer-section">
             <iframe id="main-iframe" src="https://dirciano1.github.io/estamparia/app/caneca_pro.html#|#DF1212"></iframe>
             
             <div class="thumbs-grid">
                 <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#|#DF1212')">
-                    <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png" alt="Caneca Vermelha">
+                    <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png">
                 </div>
                 <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#|#DF1212')">
-                    <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png" alt="Caneca Azul">
+                    <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png">
                 </div>
                 <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#|#DF1212')">
-                    <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png" alt="Caneca Verde">
+                    <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png">
                 </div>
             </div>
         </section>
 
         <section class="details-section">
-            <span class="tag">CANECAS PREMIUM</span>
-            <h2 class="product-title">Caneca Alça & Borda Colorida</h2>
-            <p>Personalize com sua foto, frase ou logotipo. Material de cerâmica de alta qualidade com acabamento brilhante e cores vibrantes.</p>
+            <span class="tag">Coleção Premium</span>
+            <h2 class="product-title">Caneca Alça & Borda</h2>
             
-            <span class="price-tag">R$ 45,00</span>
-
             <div class="description">
-                <strong>Especificações:</strong><br>
-                • Material: Cerâmica AAA<br>
-                • Capacidade: 325ml<br>
-                • Resistente a Micro-ondas e Lava-louças
+                Cerâmica AAA com brilho intenso. Perfeita para presentear ou para o seu café diário com estilo único.
+                <br><br>
+                <strong>Detalhes:</strong> 325ml, alta resistência ao calor e acabamento impecável.
             </div>
 
-            <a href="https://wa.me/SEUNUMERO" target="_blank" class="buy-btn">Personalizar Agora</a>
+            <span class="price-tag">R$ 45,00</span>
+
+            <a href="https://wa.me/SEUNUMERO" target="_blank" class="buy-btn">Encomendar via WhatsApp</a>
         </section>
     </main>
 
