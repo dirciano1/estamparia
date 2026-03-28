@@ -25,8 +25,7 @@
             background: var(--bg); 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             color: #64748b; 
-            height: 100vh; 
-            overflow: hidden; 
+            min-height: 100vh; 
             display: flex;
             flex-direction: column;
         }
@@ -39,15 +38,17 @@
             height: var(--header-desktop);
             border-bottom: 1px solid rgba(0,0,0,0.05);
             flex-shrink: 0;
+            z-index: 100;
         }
 
         .brand { display: flex; align-items: center; background: var(--search-bg); height: 38px; padding: 0 15px 0 0; border-radius: 12px; position: relative; text-decoration: none; }
         .brand img { width: 75px; position: absolute; left: -12px; top: 50%; transform: translateY(-50%); z-index: 2; }
         .brand h1 { font-size: 0.9rem; font-weight: 800; margin-left: 55px; color: var(--dark); }
         .brand h1 span { background: linear-gradient(90deg, #ff007a, #ff9500, #34c759, #007aff, #ff007a); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: colorsPassing 4s linear infinite; }
+        
         @keyframes colorsPassing { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
 
-        .header-contact { font-weight: 700; font-size: 0.8rem; color: var(--primary); text-decoration: none; border: 2px solid var(--primary); padding: 8px 18px; border-radius: 50px; transition: 0.3s; }
+        .header-contact { font-weight: 700; font-size: 0.8rem; color: var(--primary); text-decoration: none; border: 2px solid var(--primary); padding: 8px 18px; border-radius: 50px; transition: 0.3s; white-space: nowrap; }
         .header-contact:hover { background: var(--primary); color: white; }
 
         .main-content {
@@ -85,7 +86,7 @@
         .iframe-wrapper {
             position: relative;
             flex: 1;
-            min-height: 300px;
+            min-height: 400px; /* Aumentado para melhor visualização */
             border-radius: 25px;
             background: linear-gradient(145deg, #ffffff, #e6e9ef);
             padding: 5px;
@@ -119,13 +120,7 @@
             justify-content: center;
         }
         .thumb-item:hover { border-color: var(--primary); transform: translateY(-3px); }
-
-        .thumb-item img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: contain; 
-            padding: 10%; /* Ajuste de zoom (90%) */
-        }
+        .thumb-item img { width: 100%; height: 100%; object-fit: contain; padding: 10%; }
 
         .details-section {
             background: var(--white);
@@ -134,10 +129,10 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 20px; /* Melhorado para mobile */
         }
 
-        .product-title { font-size: 1.8rem; color: var(--dark); font-weight: 800; height: 40px; display: flex; align-items: center; letter-spacing: -1px; }
+        .product-title { font-size: 1.8rem; color: var(--dark); font-weight: 800; line-height: 1.2; letter-spacing: -1px; }
 
         .promo-box {
             background: #f0f7ff;
@@ -148,9 +143,9 @@
         .promo-box strong { color: var(--primary); text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px; }
         .promo-box p { font-size: 0.85rem; color: #1e40af; line-height: 1.4; font-weight: 600; }
 
-        .description { font-size: 0.85rem; line-height: 1.5; color: #64748b; }
+        .description { font-size: 0.9rem; line-height: 1.5; color: #64748b; }
         
-        .price-center { text-align: center; }
+        .price-center { text-align: center; margin: 10px 0; }
         .price-tag { font-size: 3.2rem; color: var(--success); font-weight: 800; letter-spacing: -2px; }
 
         .buy-btn {
@@ -168,10 +163,34 @@
             box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15);
             transition: 0.3s;
         }
-        .buy-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
 
-        @media (max-height: 800px) {
-            .main-content { padding: 15px 20px; }
+        /* --- RESPONSIVIDADE MOBILE --- */
+        @media (max-width: 850px) {
+            body { overflow: auto; height: auto; } /* Permite rolar a página */
+            
+            header { height: 60px; padding: 0 15px; }
+            .brand h1 { font-size: 0.75rem; margin-left: 45px; }
+            .brand img { width: 60px; }
+            .header-contact { padding: 6px 12px; font-size: 0.7rem; }
+
+            .main-content {
+                grid-template-columns: 1fr; /* Um elemento por linha */
+                gap: 20px;
+                padding: 15px;
+            }
+
+            .iframe-wrapper { min-height: 350px; }
+            
+            .thumbs-grid { height: 90px; gap: 8px; }
+
+            .details-section { padding: 25px; border-radius: 20px; }
+            
+            .product-title { font-size: 1.5rem; }
+            
+            .price-tag { font-size: 2.5rem; }
+        }
+
+        @media (max-height: 800px) and (min-width: 851px) {
             .thumbs-grid { height: 110px; }
             .iframe-wrapper { min-height: 250px; }
         }
@@ -186,7 +205,7 @@
                 <h1><span>Estamparia Gerais</span></h1>
             </a>
         </div>
-        <a href="https://wa.me/5500000000000" class="header-contact">Falar com Consultor</a>
+        <a href="https://wa.me/5500000000000" class="header-contact">Consultor</a>
     </header>
 
     <main class="main-content">
@@ -236,7 +255,7 @@
             </div>
 
             <a href="https://wa.me/5500000000000" target="_blank" class="buy-btn">
-                <i class="fab fa-whatsapp"></i> Comprar
+                <i class="fab fa-whatsapp"></i> Comprar Agora
             </a>
         </section>
     </main>
