@@ -14,7 +14,10 @@
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
         select, input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none; font-family: inherit; }
+        input[type="color"] { height: 50px; padding: 5px; cursor: pointer; }
         select:focus, input:focus { border-color: var(--primary); }
+        .color-row { display: flex; gap: 10px; }
+        .color-row .form-group { flex: 1; }
         .result-area { margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1f5f9; }
         #linkGerado { font-size: 11px; background: #f8fafc; padding: 12px; border-radius: 8px; word-break: break-all; border: 1px solid #e2e8f0; display: block; margin-bottom: 10px; color: #475569; font-family: monospace; }
         .btn-copiar { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; }
@@ -51,24 +54,20 @@
             </select>
         </div>
 
-        <div class="form-group">
-            <label>Cor do Detalhe</label>
-            <select id="corHex" onchange="atualizarLink()">
-                <option value="#ffffff">⚪ Branco (Porcelana)</option>
-                <option value="#000000">⚫ Preto</option>
-                <option value="#DF1212">🔴 Vermelho</option>
-                <option value="#1D85D0">🔵 Azul</option>
-                <option value="#FFC2C2">🌸 Rosa Claro</option>
-                <option value="EBA0BF">🍬 Rosa Médio</option>
-                <option value="#075103">🟢 Verde</option>
-                <option value="#EDD900">🟡 Amarelo</option>
-                <option value="#F86900">🟠 Laranja</option>
-            </select>
+        <div class="color-row">
+            <div class="form-group">
+                <label>Cor do Detalhe</label>
+                <input type="color" id="corHex" value="#ffffff" oninput="atualizarLink()">
+            </div>
+            <div class="form-group">
+                <label>Cor do Fundo</label>
+                <input type="color" id="corFundo" value="#999999" oninput="atualizarLink()">
+            </div>
         </div>
 
         <div class="form-group">
-            <label>Link ou ID da Arte (Imgur)</label>
-            <input type="text" id="imgCode" placeholder="Cole o link do Imgur aqui" oninput="limparLinkImgur(this); atualizarLink();">
+            <label>ID da Arte (Imgur)</label>
+            <input type="text" id="imgCode" placeholder="Cole o link ou ID aqui" oninput="limparLinkImgur(this); atualizarLink();">
         </div>
 
         <div class="result-area">
@@ -99,11 +98,12 @@
     function atualizarLink() {
         const domain = document.getElementById('baseDomain').value;
         const modelo = document.getElementById('modeloHtml').value;
-        const cor = document.getElementById('corHex').value; // Mantém o # aqui
-        let img = document.getElementById('imgCode').value.trim();
+        const corDetalhe = document.getElementById('corHex').value.replace('#', '');
+        const corFundo = document.getElementById('corFundo').value.replace('#', '');
+        let img = document.getElementById('imgCode').value.trim() || "vazio";
 
-        // Agora gera o formato ID|#COR corretamente
-        const linkFinal = `${domain}${modelo}#${img}|${cor}`;
+        // Formato: dominio/modelo.html#ID|COR_DETALHE|COR_FUNDO
+        const linkFinal = `${domain}${modelo}#${img}|${corDetalhe}|${corFundo}`;
 
         document.getElementById('linkGerado').innerText = linkFinal;
         document.getElementById('previewIframe').src = linkFinal;
@@ -124,6 +124,7 @@
         });
     }
 
+    // Inicializa o link ao carregar a página
     window.onload = atualizarLink;
 </script>
 
