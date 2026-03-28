@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caneca Alça & Borda - Estamparia Gerais</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --success: #16a34a;
+            --dark: #111111; 
+            --bg: #f5f5f7; 
+            --white: #ffffff;
+            --search-bg: #e2e8f0; 
+            --header-desktop: 85px;
+            --header-mobile: 75px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: #64748b; padding-top: var(--header-desktop); }
+        
+        /* HEADER IGUAL AO INICIAL */
+        header { 
+            background: rgba(255, 255, 255, 0.98); 
+            backdrop-filter: blur(20px);
+            padding: 0 4vw; 
+            display: flex; justify-content: space-between; align-items: center; 
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            height: var(--header-desktop);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .brand-container { display: flex; align-items: center; }
+        .brand { 
+            display: flex; align-items: center; 
+            background: var(--search-bg); 
+            height: 48px; 
+            padding: 0 20px 0 0; 
+            border-radius: 15px;
+            position: relative;
+            text-decoration: none;
+        }
+        .brand img { 
+            width: 92px; height: auto;
+            position: absolute;
+            left: -15px; top: 50%;
+            transform: translateY(-50%);
+            filter: drop-shadow(0px 8px 15px rgba(0,0,0,0.2));
+            z-index: 2;
+        }
+        .brand h1 {
+            font-size: 1.1rem; 
+            font-weight: 800;
+            margin-left: 65px; 
+            letter-spacing: -0.5px;
+            color: var(--dark);
+        }
+        .brand h1 span {
+            background: linear-gradient(90deg, #ff007a, #ff9500, #34c759, #007aff, #ff007a);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: colorsPassing 4s linear infinite;
+        }
+        @keyframes colorsPassing {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* LAYOUT DE PRODUTO */
+        .product-container {
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+        }
+
+        /* ESQUERDA: VISUALIZAÇÃO */
+        .viewer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #main-iframe {
+            width: 100%;
+            aspect-ratio: 1/1;
+            border: none;
+            border-radius: 30px;
+            background: var(--white);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+
+        .thumbs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .thumb-item {
+            aspect-ratio: 1/1;
+            background: var(--white);
+            border-radius: 15px;
+            cursor: pointer;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .thumb-item:hover { border-color: var(--primary); }
+        .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* DIREITA: DESCRIÇÃO */
+        .details-section {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+
+        .tag {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .product-title {
+            font-size: 2rem;
+            color: var(--dark);
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            color: var(--success);
+            font-weight: 800;
+            margin: 20px 0;
+            display: block;
+        }
+
+        .description {
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .buy-btn {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 968px) {
+            .product-container { grid-template-columns: 1fr; }
+            body { padding-top: var(--header-mobile); }
+            header { height: var(--header-mobile); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-container">
+            <a href="../index.html" class="brand">
+                <img src="https://dirciano1.github.io/estamparia/imagens/logo.png" alt="Logo">
+                <h1><span>Estamparia Gerais</span></h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="product-container">
+        <section class="viewer-section">
+            <iframe id="main-iframe" src="https://dirciano1.github.io/estamparia/app/caneca_pro.html#|#DF1212"></iframe>
+            
+            <div class="thumbs-grid">
+                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#|#DF1212')">
+                    <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png" alt="Caneca Vermelha">
+                </div>
+                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#|#DF1212')">
+                    <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png" alt="Caneca Azul">
+                </div>
+                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#|#DF1212')">
+                    <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png" alt="Caneca Verde">
+                </div>
+            </div>
+        </section>
+
+        <section class="details-section">
+            <span class="tag">CANECAS PREMIUM</span>
+            <h2 class="product-title">Caneca Alça & Borda Colorida</h2>
+            <p>Personalize com sua foto, frase ou logotipo. Material de cerâmica de alta qualidade com acabamento brilhante e cores vibrantes.</p>
+            
+            <span class="price-tag">R$ 45,00</span>
+
+            <div class="description">
+                <strong>Especificações:</strong><br>
+                • Material: Cerâmica AAA<br>
+                • Capacidade: 325ml<br>
+                • Resistente a Micro-ondas e Lava-louças
+            </div>
+
+            <a href="https://wa.me/SEUNUMERO" target="_blank" class="buy-btn">Personalizar Agora</a>
+        </section>
+    </main>
+
+    <script>
+        function changeModel(url) {
+            document.getElementById('main-iframe').src = url;
+        }
+    </script>
+
+</body>
+</html>
