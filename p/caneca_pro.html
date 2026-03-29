@@ -16,7 +16,7 @@
             --bg: #f5f5f7; 
             --white: #ffffff;
             --search-bg: #e2e8f0; 
-            --header-desktop: 70px;
+            --header-h: 60px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,169 +25,137 @@
             background: var(--bg); 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             color: #64748b; 
-            min-height: 100vh; 
+            height: 100vh; 
             display: flex;
             flex-direction: column;
+            overflow: hidden; /* Remove o scroll principal */
         }
         
         header { 
             background: rgba(255, 255, 255, 0.98); 
-            backdrop-filter: blur(20px);
             padding: 0 4vw; 
             display: flex; justify-content: space-between; align-items: center; 
-            height: var(--header-desktop);
+            height: var(--header-h);
             border-bottom: 1px solid rgba(0,0,0,0.05);
             flex-shrink: 0;
-            z-index: 100;
         }
 
-        .brand { display: flex; align-items: center; background: var(--search-bg); height: 38px; padding: 0 15px 0 0; border-radius: 12px; position: relative; text-decoration: none; }
-        .brand img { width: 75px; position: absolute; left: -12px; top: 50%; transform: translateY(-50%); z-index: 2; }
-        .brand h1 { font-size: 0.9rem; font-weight: 800; margin-left: 55px; color: var(--dark); }
-        .brand h1 span { background: linear-gradient(90deg, #ff007a, #ff9500, #34c759, #007aff, #ff007a); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: colorsPassing 4s linear infinite; }
-        
-        @keyframes colorsPassing { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+        .brand { display: flex; align-items: center; background: var(--search-bg); height: 34px; padding: 0 15px 0 0; border-radius: 10px; position: relative; text-decoration: none; }
+        .brand img { width: 65px; position: absolute; left: -10px; top: 50%; transform: translateY(-50%); }
+        .brand h1 { font-size: 0.85rem; font-weight: 800; margin-left: 55px; color: var(--dark); }
+        .brand h1 span { background: linear-gradient(90deg, #ff007a, #34c759, #007aff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .header-contact { font-weight: 700; font-size: 0.8rem; color: var(--primary); text-decoration: none; border: 2px solid var(--primary); padding: 8px 18px; border-radius: 50px; transition: 0.3s; white-space: nowrap; }
-        .header-contact:hover { background: var(--primary); color: white; }
+        .header-contact { font-weight: 700; font-size: 0.75rem; color: var(--primary); text-decoration: none; border: 2px solid var(--primary); padding: 6px 15px; border-radius: 50px; }
 
         .main-content {
             flex: 1;
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
-            gap: 40px;
-            max-width: 1250px;
+            gap: 20px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 30px 20px;
+            padding: 15px;
+            width: 100%;
             align-items: stretch;
+            min-height: 0; /* Importante para o scroll interno se necessário */
         }
 
         .viewer-section { 
             display: flex; 
             flex-direction: column; 
-            gap: 15px;
+            gap: 10px;
+            min-height: 0;
         }
 
-        .viewer-title-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            height: 40px;
-        }
-        .viewer-title-container span {
-            font-size: 1rem;
-            font-weight: 800;
-            color: var(--dark);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .viewer-line { flex: 1; height: 1px; background: var(--primary); opacity: 0.3; }
+        .viewer-title-container { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .viewer-title-container span { font-size: 0.8rem; font-weight: 800; color: var(--dark); text-transform: uppercase; }
+        .viewer-line { flex: 1; height: 1px; background: var(--primary); opacity: 0.2; }
 
         .iframe-wrapper {
             position: relative;
-            flex: 1;
-            min-height: 400px; /* Restaurado original */
-            border-radius: 25px;
+            flex: 1; /* Faz o iframe ocupar o máximo de espaço disponível sem estourar */
+            border-radius: 20px;
             background: linear-gradient(145deg, #ffffff, #e6e9ef);
-            padding: 5px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             overflow: hidden;
         }
 
-        #main-iframe { width: 100%; height: 100%; border: none; border-radius: 20px; opacity: 0; transition: opacity 0.5s ease; }
-
-        .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        #main-iframe { width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.5s ease; }
 
         .thumbs-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
-            gap: 12px;
-            height: 125px; /* Restaurado original */
+            gap: 10px;
+            height: 15vh; /* Altura baseada na tela */
+            max-height: 100px;
+            flex-shrink: 0;
         }
         
-        .thumb-item { 
-            width: 100%; 
-            height: 100%; 
-            border-radius: 15px; 
-            cursor: pointer; 
-            border: 2px solid transparent; 
-            transition: 0.3s; 
-            overflow: hidden; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06); 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .thumb-item:hover { border-color: var(--primary); transform: translateY(-3px); }
-        .thumb-item img { width: 100%; height: 100%; object-fit: contain; padding: 10%; }
+        .thumb-item { border-radius: 12px; cursor: pointer; background: white; border: 2px solid transparent; transition: 0.2s; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .thumb-item:hover { border-color: var(--primary); }
+        .thumb-item img { width: 80%; height: 80%; object-fit: contain; }
 
         /* Lado Direito */
         .details-section {
             background: var(--white);
-            padding: 35px;
-            border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Garante que comece e termine igual ao lado esquerdo */
+            justify-content: space-between;
+            min-height: 0;
         }
 
-        .product-title { font-size: 1.8rem; color: var(--dark); font-weight: 800; line-height: 1.2; letter-spacing: -1px; margin-bottom: 10px; }
+        .product-title { font-size: 1.4rem; color: var(--dark); font-weight: 800; margin-bottom: 5px; }
 
         .promo-box {
             background: #f0f7ff;
             border-left: 4px solid var(--primary);
-            padding: 15px;
-            border-radius: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
-        .promo-box strong { color: var(--primary); text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px; }
-        .promo-box p { font-size: 0.85rem; color: #1e40af; line-height: 1.4; font-weight: 600; }
+        .promo-box strong { color: var(--primary); font-size: 0.65rem; text-transform: uppercase; display: block; }
+        .promo-box p { font-size: 0.75rem; color: #1e40af; font-weight: 600; }
 
-        /* Estilo Cores */
-        .color-selector-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; margin-bottom: 8px; }
-        .color-options { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
-        .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0; transition: 0.2s; }
-        .color-dot:hover { transform: scale(1.15); box-shadow: 0 0 0 2px var(--primary); }
+        .color-selector-label { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+        .color-options { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+        .color-dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0; }
 
-        .description { font-size: 0.9rem; line-height: 1.5; color: #64748b; }
+        .description { font-size: 0.8rem; line-height: 1.4; color: #64748b; margin-bottom: 10px; }
         
-        .price-center { text-align: center; margin: 10px 0; }
-        .price-tag { font-size: 3.2rem; color: var(--success); font-weight: 800; letter-spacing: -2px; }
+        .price-tag { font-size: 2.5rem; color: var(--success); font-weight: 800; text-align: center; display: block; margin-bottom: 10px; }
 
         .buy-btn {
             background: var(--primary);
             color: white;
-            height: 65px;
-            border-radius: 20px;
+            height: 50px;
+            border-radius: 15px;
             font-weight: 700;
-            font-size: 1.2rem;
             text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15);
+            gap: 8px;
             transition: 0.3s;
         }
 
         @media (max-width: 850px) {
-            .main-content { grid-template-columns: 1fr; gap: 20px; padding: 15px; }
-            .iframe-wrapper { min-height: 350px; }
-            .thumbs-grid { height: 90px; }
-            .details-section { padding: 25px; }
+            body { overflow: auto; height: auto; }
+            .main-content { grid-template-columns: 1fr; }
+            .iframe-wrapper { height: 300px; }
+            .thumbs-grid { height: 80px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand-container">
-            <a href="../index.html" class="brand">
-                <img src="https://dirciano1.github.io/estamparia/imagens/logo.png" alt="Logo">
-                <h1><span>Estamparia Gerais</span></h1>
-            </a>
-        </div>
+        <a href="../index.html" class="brand">
+            <img src="https://dirciano1.github.io/estamparia/imagens/logo.png" alt="Logo">
+            <h1><span>Estamparia Gerais</span></h1>
+        </a>
         <a href="https://wa.me/5500000000000" class="header-contact">Consultor</a>
     </header>
 
@@ -200,57 +168,51 @@
             </div>
             
             <div class="iframe-wrapper">
-                <div class="loader" id="loader"></div>
-                <iframe id="main-iframe" src="https://dirciano1.github.io/estamparia/app/caneca_pro.html#Jce3aS0|D30E15|ffebee" onload="hideLoader()"></iframe>
+                <iframe id="main-iframe" src="https://dirciano1.github.io/estamparia/app/caneca_pro.html#Jce3aS0|D30E15|ffebee" onload="this.style.opacity='1'"></iframe>
             </div>
             
             <div class="thumbs-grid">
-                <div class="thumb-item" style="background-color: #ffebee;" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#Jce3aS0|D30E15|ffebee')">
+                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#Jce3aS0|D30E15|ffebee')">
                     <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png">
                 </div>
-                <div class="thumb-item" style="background-color: #e3f2fd;" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#OyXbJgI|151B4E|e3f2fd')">
+                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#OyXbJgI|151B4E|e3f2fd')">
                     <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro2.png">
                 </div>
-                <div class="thumb-item" style="background-color: #f1f8e9;" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#ySivcZC|00625F|f1f8e9')">
+                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#ySivcZC|00625F|f1f8e9')">
                     <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro3.png">
                 </div>
-                <div class="thumb-item" style="background-color: #fff3e0;" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#FMSt1mZ|FF6600|fff3e0')">
+                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#FMSt1mZ|FF6600|fff3e0')">
                     <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro4.png">
                 </div>
             </div>
         </section>
 
         <section class="details-section">
-            <div class="details-top">
+            <div>
                 <h2 class="product-title">Caneca Alça & Borda Colorida</h2>
                 <div class="promo-box">
                     <strong>Personalização Grátis</strong>
-                    <p>Artes exclusivas com suas fotos e frases favoritas SEM CUSTO ADICIONAL!</p>
+                    <p>Artes exclusivas sem custo adicional!</p>
                 </div>
 
                 <div class="color-selector-label">Cores Disponíveis:</div>
                 <div class="color-options">
-                    <div class="color-dot" style="background: #8CC63F;" onclick="mudarCorIframe('8CC63F')" title="Verde Limão"></div>
-                    <div class="color-dot" style="background: #F4ACC4;" onclick="mudarCorIframe('F4ACC4')" title="Rosa Claro"></div>
-                    <div class="color-dot" style="background: #1A1A1B;" onclick="mudarCorIframe('1A1A1B')" title="Preto"></div>
-                    <div class="color-dot" style="background: #151B4E;" onclick="mudarCorIframe('151B4E')" title="Azul Marinho"></div>
-                    <div class="color-dot" style="background: #FF6600;" onclick="mudarCorIframe('FF6600')" title="Laranja"></div>
-                    <div class="color-dot" style="background: #FFD700;" onclick="mudarCorIframe('FFD700')" title="Amarelo"></div>
-                    <div class="color-dot" style="background: #D30E15;" onclick="mudarCorIframe('D30E15')" title="Vermelho"></div>
-                    <div class="color-dot" style="background: #009CDE;" onclick="mudarCorIframe('009CDE')" title="Azul Celeste"></div>
-                    <div class="color-dot" style="background: #00625F;" onclick="mudarCorIframe('00625F')" title="Verde Petróleo"></div>
+                    <div class="color-dot" style="background: #8CC63F;" onclick="mudarCorIframe('8CC63F')"></div>
+                    <div class="color-dot" style="background: #F4ACC4;" onclick="mudarCorIframe('F4ACC4')"></div>
+                    <div class="color-dot" style="background: #1A1A1B;" onclick="mudarCorIframe('1A1A1B')"></div>
+                    <div class="color-dot" style="background: #151B4E;" onclick="mudarCorIframe('151B4E')"></div>
+                    <div class="color-dot" style="background: #FF6600;" onclick="mudarCorIframe('FF6600')"></div>
+                    <div class="color-dot" style="background: #FFD700;" onclick="mudarCorIframe('FFD700')"></div>
+                    <div class="color-dot" style="background: #D30E15;" onclick="mudarCorIframe('D30E15')"></div>
+                    <div class="color-dot" style="background: #009CDE;" onclick="mudarCorIframe('009CDE')"></div>
+                    <div class="color-dot" style="background: #00625F;" onclick="mudarCorIframe('00625F')"></div>
                 </div>
 
-                <p class="description">
-                    Produzida em cerâmica de alta resistência com acabamento em alto brilho. Cores vivas que não desbotam e duram para sempre.
-                </p>
+                <p class="description">Cerâmica de alta resistência, acabamento em alto brilho e cores vivas.</p>
             </div>
 
-            <div class="details-bottom">
-                <div class="price-center">
-                    <span class="price-tag">R$ 45,00</span>
-                </div>
-
+            <div>
+                <span class="price-tag">R$ 45,00</span>
                 <a href="https://wa.me/5500000000000" target="_blank" class="buy-btn">
                     <i class="fab fa-whatsapp"></i> Comprar Agora
                 </a>
@@ -259,17 +221,10 @@
     </main>
 
     <script>
-        function hideLoader() {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('main-iframe').style.opacity = '1';
-        }
-
         function changeModel(url) {
             const iframe = document.getElementById('main-iframe');
-            const loader = document.getElementById('loader');
             iframe.style.opacity = '0';
-            loader.style.display = 'block';
-            iframe.src = url;
+            setTimeout(() => { iframe.src = url; }, 200);
         }
 
         function mudarCorIframe(novaCor) {
