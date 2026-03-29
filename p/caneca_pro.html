@@ -57,6 +57,7 @@
             margin: 0 auto;
             padding: 20px;
             width: 100%;
+            align-items: stretch;
         }
 
         /* --- LADO ESQUERDO --- */
@@ -82,7 +83,7 @@
         .iframe-wrapper {
             position: relative;
             flex: 1; 
-            min-height: 400px;
+            min-height: 380px; /* Ajuste para igualar ao container da direita */
             border-radius: 20px;
             background: #fff;
             box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 10px 25px rgba(0,0,0,0.05);
@@ -91,27 +92,26 @@
 
         #main-iframe { width: 100%; height: 100%; border: none; }
 
-        /* Botão Flutuante sobre o Iframe */
+        /* Botão Flutuante (Ajustado para o topo no Mobile) */
         .floating-scroll-btn {
             position: absolute;
-            bottom: 20px;
+            top: 20px; /* Movido para o começo do fundo rosa */
             left: 50%;
             transform: translateX(-50%);
             z-index: 10;
-            background: rgba(37, 99, 235, 0.9);
+            background: rgba(37, 99, 235, 0.85);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 18px;
             border-radius: 50px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: none; /* Escondido no desktop */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: none; 
             align-items: center;
-            gap: 8px;
-            white-space: nowrap;
+            gap: 6px;
             backdrop-filter: blur(4px);
             animation: bounce 2s infinite;
         }
@@ -126,7 +126,7 @@
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 12px;
-            height: 110px;
+            height: 100px; /* Reduzido levemente para alinhar o fundo */
             flex-shrink: 0;
         }
         
@@ -137,16 +137,13 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
         
-        .thumb-item.active {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px var(--primary);
-        }
+        .thumb-item.active { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary); }
         .thumb-item img { width: 85%; height: 85%; object-fit: contain; }
 
         /* --- LADO DIREITO --- */
         .details-section {
             background: var(--white);
-            padding: 40px;
+            padding: 35px;
             border-radius: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             display: flex;
@@ -155,28 +152,24 @@
             text-align: center;
         }
 
-        .product-title .line1 { display: block; font-size: 1.9rem; font-weight: 800; letter-spacing: -1px; color: var(--dark); }
-        .product-title .line2 { display: block; font-size: 1.2rem; font-weight: 600; color: #64748b; }
+        .product-title .line1 { display: block; font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; color: var(--dark); }
+        .product-title .line2 { display: block; font-size: 1.1rem; font-weight: 600; color: #64748b; }
 
         .promo-box {
             background: #f0f7ff; border-left: 4px solid var(--primary);
-            padding: 18px; border-radius: 12px; max-width: 95%; margin: 15px auto; text-align: left;
+            padding: 15px; border-radius: 12px; max-width: 95%; margin: 10px auto; text-align: left;
         }
-        .promo-box strong { color: var(--primary); font-size: 0.75rem; text-transform: uppercase; display: block; }
-        .promo-box p { font-size: 0.85rem; color: #1e40af; font-weight: 600; }
+        .promo-box strong { color: var(--primary); font-size: 0.7rem; text-transform: uppercase; display: block; }
+        .promo-box p { font-size: 0.8rem; color: #1e40af; font-weight: 600; }
 
-        .color-selector-label { font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; display: block; color: #94a3b8; }
-        .color-options { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-        
-        .color-dot { 
-            width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid white; 
-            box-shadow: 0 0 0 1px #e2e8f0; transition: 0.2s;
-        }
+        .color-selector-label { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; color: #94a3b8; }
+        .color-options { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .color-dot { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0; }
 
-        .price-tag { font-size: 3.8rem; color: var(--success); font-weight: 800; display: block; margin: 15px 0; }
+        .price-tag { font-size: 3.5rem; color: var(--success); font-weight: 800; display: block; }
 
         .buy-btn {
-            background: var(--primary); color: white; height: 65px; border-radius: 20px; font-weight: 700;
+            background: var(--primary); color: white; height: 60px; border-radius: 18px; font-weight: 700;
             text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px;
             box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
         }
@@ -184,35 +177,15 @@
         /* --- AJUSTES MOBILE --- */
         @media (max-width: 850px) {
             body { overflow-y: auto; overflow-x: hidden; }
-            
-            .main-content { 
-                grid-template-columns: 1fr; 
-                padding: 10px;
-                gap: 20px;
-            }
-
-            .viewer-section { 
-                height: calc(95vh - var(--header-h)); 
-                gap: 10px;
-            }
-
+            .main-content { grid-template-columns: 1fr; padding: 10px; gap: 15px; }
+            .viewer-section { height: calc(95vh - var(--header-h)); gap: 10px; }
             .floating-scroll-btn { display: flex; }
-
-            .iframe-wrapper { flex: 1; min-height: 0; position: relative; }
-
-            .thumbs-grid { height: 90px; gap: 8px; }
-
-            .details-section { 
-                padding: 30px 15px; 
-                gap: 25px;
-                margin-bottom: 40px;
-                scroll-margin-top: 10px;
-            }
-
+            .iframe-wrapper { flex: 1; min-height: 0; }
+            .thumbs-grid { height: 90px; }
+            .details-section { padding: 30px 15px; margin-bottom: 30px; }
             .product-title .line1 { font-size: 1.4rem; white-space: nowrap; }
-            .color-options { gap: 8px; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding: 5px; }
+            .color-options { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; }
             .color-dot { width: 22px; height: 22px; flex-shrink: 0; }
-            .price-tag { font-size: 3rem; }
         }
 
         @media (min-width: 851px) {
@@ -238,7 +211,6 @@
             
             <div class="iframe-wrapper">
                 <iframe id="main-iframe" src="https://dirciano1.github.io/estamparia/app/caneca_pro.html#Jce3aS0|D30E15|ffebee"></iframe>
-                
                 <button class="floating-scroll-btn" onclick="document.getElementById('venda').scrollIntoView();">
                     Ver preço e comprar <i class="fas fa-chevron-down"></i>
                 </button>
@@ -266,10 +238,9 @@
                     <span class="line1">Caneca de Porcelana</span>
                     <span class="line2">Com Alça e Borda Colorida</span>
                 </h2>
-                
                 <div class="promo-box">
                     <strong>Personalização Grátis</strong>
-                    <p>Artes exclusivas com suas fotos e frases favoritas SEM CUSTO!</p>
+                    <p>Artes exclusivas sem custo adicional!</p>
                 </div>
             </div>
 
@@ -288,7 +259,6 @@
                         <div class="color-dot" style="background: #00625F;" onclick="mudarCorIframe('00625F')"></div>
                     </div>
                 </div>
-                <p class="description">Cerâmica de alta resistência, acabamento em alto brilho e cores vivas.</p>
             </div>
 
             <div class="bottom-block">
