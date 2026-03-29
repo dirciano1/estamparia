@@ -7,6 +7,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root { 
@@ -18,6 +19,7 @@
             --search-bg: #e2e8f0; 
             --header-desktop: 85px;
             --header-mobile: 75px;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
@@ -25,7 +27,7 @@
         
         a { text-decoration: none; color: inherit; }
 
-        /* HEADER */
+        /* --- HEADER --- */
         header { 
             background: rgba(255, 255, 255, 0.98); 
             backdrop-filter: blur(20px);
@@ -36,34 +38,22 @@
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        .brand-container { display: flex; align-items: center; }
-
         .brand { 
             display: flex; align-items: center; 
             background: var(--search-bg); 
-            height: 48px; 
-            padding: 0 20px 0 0; 
-            border-radius: 15px;
-            position: relative;
-            white-space: nowrap;
+            height: 48px; padding: 0 20px 0 0; 
+            border-radius: 15px; position: relative;
         }
 
         .brand img { 
             width: 92px; height: auto;
-            position: absolute;
-            left: -15px; top: 50%;
+            position: absolute; left: -15px; top: 50%;
             transform: translateY(-50%);
             filter: drop-shadow(0px 8px 15px rgba(0,0,0,0.2));
             z-index: 2;
         }
 
-        .brand h1 {
-            font-size: 1.1rem; 
-            font-weight: 800;
-            margin-left: 65px; 
-            letter-spacing: -0.5px;
-        }
-
+        .brand h1 { font-size: 1.1rem; font-weight: 800; margin-left: 65px; color: var(--dark); }
         .brand h1 span {
             background: linear-gradient(90deg, #ff007a, #ff9500, #34c759, #007aff, #ff007a);
             background-size: 200% auto;
@@ -72,21 +62,19 @@
             animation: colorsPassing 4s linear infinite;
         }
 
-        @keyframes colorsPassing {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
+        @keyframes colorsPassing { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
 
-        .search-container { width: 220px; transition: all 0.4s ease; margin-left: 15px; }
+        .search-container { width: 220px; transition: all 0.4s ease; }
         .search-container input {
             width: 100%; height: 45px; padding: 0 15px; border-radius: 12px;
             border: 1px solid #cbd5e1; background: var(--search-bg); outline: none;
-            font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
+        .search-container input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
 
-        /* HERO */
+        /* --- HERO --- */
         .hero { 
-            width: 100%; height: 100vh; height: 100svh;
+            width: 100%; height: 100vh;
             background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url('imagens/banner.png'); 
             background-size: cover; background-position: center;
             display: flex; align-items: center; justify-content: center;
@@ -97,70 +85,69 @@
         .hero-btn { 
             background: var(--primary); color: white; padding: 1.2rem 3rem; 
             font-weight: 700; border-radius: 50px; display: inline-block; 
-            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4); margin-top: 20px;
+            margin-top: 25px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
         }
+        .hero-btn:hover { transform: translateY(-5px); background: #1d4ed8; box-shadow: 0 15px 35px rgba(37, 99, 235, 0.5); }
 
-        /* FILTROS E POSICIONAMENTO */
-        #catalogo { 
-            scroll-margin-top: var(--header-desktop); 
-        }
-        
+        /* --- FILTROS --- */
+        #catalogo { scroll-margin-top: var(--header-desktop); }
         .filter-wrapper {
-            position: sticky; 
-            top: var(--header-desktop); 
-            z-index: 100;
-            background: var(--bg); 
-            padding: 15px 0;
+            position: sticky; top: var(--header-desktop); z-index: 100;
+            background: var(--bg); padding: 20px 0;
             border-bottom: 1px solid rgba(0,0,0,0.05);
-            overflow: hidden;
         }
-
-        .filter-section { 
-            display: flex; gap: 12px; overflow-x: auto; padding: 0 5%;
-            scrollbar-width: none; 
-            -ms-overflow-style: none; 
-        }
-
-        .filter-section::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+        .filter-section { display: flex; gap: 12px; overflow-x: auto; padding: 0 5%; scrollbar-width: none; }
+        .filter-section::-webkit-scrollbar { display: none; }
 
         .chip { 
             flex: 0 0 auto; padding: 10px 22px; border-radius: 50px; 
             background: var(--white); border: 1px solid #e2e8f0; 
             cursor: pointer; font-size: 13px; font-weight: 700; 
-            text-transform: uppercase; color: var(--dark); 
+            transition: all 0.3s ease;
         }
-        .chip.active { background: var(--dark); color: var(--white); border-color: var(--dark); }
+        .chip:hover:not(.active) { border-color: var(--primary); color: var(--primary); transform: scale(1.05); }
+        .chip.active { background: var(--dark); color: var(--white); border-color: var(--dark); transform: scale(1.05); }
 
-        /* GRID */
+        /* --- PRODUCT GRID & CARDS --- */
         .container { width: 95%; max-width: 1300px; margin: 0 auto; padding: 25px 0 60px; }
-        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(4, 1fr); } }
 
-        .p-card { background: var(--white); border-radius: 22px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.04); display: flex; flex-direction: column; }
-        .p-img img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
-        .p-info { padding: 15px; text-align: center; }
+        .p-card { 
+            background: var(--white); border-radius: 22px; overflow: hidden; 
+            box-shadow: var(--shadow); display: flex; flex-direction: column; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid transparent;
+        }
+
+        .p-card:hover { transform: translateY(-12px); border-color: rgba(37, 99, 235, 0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+
+        .p-img { overflow: hidden; position: relative; }
+        .p-img img { width: 100%; aspect-ratio: 1/1; object-fit: cover; transition: transform 0.6s ease; }
+        .p-card:hover .p-img img { transform: scale(1.1); }
+
+        .p-info { padding: 18px; text-align: center; }
         .p-title { font-size: 0.95rem; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
-        .p-price { font-size: 1.1rem; font-weight: 800; color: var(--success); display: block; margin-bottom: 12px; }
-        .btn-more { margin: 0 15px 15px; padding: 12px; background: var(--primary); color: white; font-weight: 700; border-radius: 12px; text-align: center; font-size: 0.75rem; }
+        .p-price { font-size: 1.15rem; font-weight: 800; color: var(--success); display: block; margin-bottom: 15px; }
+
+        .btn-more { 
+            margin: 0 18px 18px; padding: 12px; 
+            background: var(--primary); color: white; 
+            font-weight: 700; border-radius: 12px; 
+            text-align: center; font-size: 0.8rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--primary);
+        }
+        .p-card:hover .btn-more { background: white; color: var(--primary); }
 
         /* --- MOBILE ADAPTATION --- */
         @media (max-width: 768px) {
-            header { height: var(--header-mobile); padding: 0 4vw; }
+            header { height: var(--header-mobile); }
             #catalogo { scroll-margin-top: var(--header-mobile); }
-            .filter-wrapper { top: var(--header-mobile); padding: 30px 0 !important; }
-
-            .hero { background-image: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url('imagens/banner_mobile.png'); }
-
-            .brand { height: 42px; padding-right: 15px; }
-            .brand img { width: 78px; left: -12px; }
-            .brand h1 { font-size: 0.9rem; margin-left: 54px; }
-
-            .search-container { width: 120px !important; margin-left: 8px; }
-            .search-container input { height: 42px; font-size: 0.8rem; }
-            
-            .search-container:focus-within {
-                position: absolute; right: 4vw; width: 92vw !important; z-index: 10;
-            }
+            .filter-wrapper { top: var(--header-mobile); }
+            .search-container { width: 120px; }
+            .search-container:focus-within { position: absolute; right: 4vw; width: 92vw; z-index: 10; }
         }
     </style>
 </head>
@@ -169,7 +156,7 @@
     <header>
         <div class="brand-container">
             <a href="#" class="brand">
-                <img src="imagens/logo.png" alt="Logo Estamparia Gerais">
+                <img src="imagens/logo.png" alt="Logo">
                 <h1><span>Estamparia Gerais</span></h1>
             </a>
         </div>
@@ -200,8 +187,9 @@
 
         <div class="container">
             <main class="product-grid" id="productGrid">
-                <a href="p/caneca_pro.html" class="p-card" data-category="caneca" data-name="caneca alça borda colorida">
-                    <div class="p-img"><img src="imagens/icaneca_pro.png"></div>
+                
+                <a href="p/caneca_pro.html" class="p-card" data-category="caneca" data-name="caneca alça borda colorida" data-aos="fade-up">
+                    <div class="p-img"><img src="imagens/icaneca_pro.png" alt="Caneca"></div>
                     <div class="p-info">
                         <h3 class="p-title">Caneca Alça & Borda</h3>
                         <span class="p-price">R$ 45,00</span>
@@ -209,8 +197,8 @@
                     <div class="btn-more">Veja Modelos</div>
                 </a>
 
-                <a href="#" class="p-card" data-category="caneca" data-name="caneca branca clássica">
-                    <div class="p-img"><img src="imagens/icaneca_pro.png"></div>
+                <a href="#" class="p-card" data-category="caneca" data-name="caneca branca clássica" data-aos="fade-up" data-aos-delay="100">
+                    <div class="p-img"><img src="imagens/icaneca_pro.png" alt="Caneca Branca"></div>
                     <div class="p-info">
                         <h3 class="p-title">Caneca Branca</h3>
                         <span class="p-price">R$ 35,00</span>
@@ -218,8 +206,8 @@
                     <div class="btn-more">Veja Modelos</div>
                 </a>
 
-                <a href="#" class="p-card" data-category="camisa" data-name="camiseta personalizada">
-                    <div class="p-img"><img src="imagens/icaneca_pro.png"></div>
+                <a href="#" class="p-card" data-category="camisa" data-name="camiseta personalizada" data-aos="fade-up" data-aos-delay="200">
+                    <div class="p-img"><img src="imagens/icaneca_pro.png" alt="Camiseta"></div>
                     <div class="p-info">
                         <h3 class="p-title">Camiseta Algodão</h3>
                         <span class="p-price">R$ 59,90</span>
@@ -227,21 +215,23 @@
                     <div class="btn-more">Veja Modelos</div>
                 </a>
 
-                <a href="#" class="p-card" data-category="chaveiro" data-name="chaveiro personalizado">
-                    <div class="p-img"><img src="icaneca_pro.png"></div>
+                <a href="#" class="p-card" data-category="chaveiro" data-name="chaveiro personalizado" data-aos="fade-up" data-aos-delay="300">
+                    <div class="p-img"><img src="imagens/icaneca_pro.png" alt="Chaveiro"></div>
                     <div class="p-info">
                         <h3 class="p-title">Chaveiro Metal</h3>
                         <span class="p-price">R$ 15,00</span>
                     </div>
                     <div class="btn-more">Veja Modelos</div>
                 </a>
+
             </main>
         </div>
     </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({ duration: 1000, once: true });
+        // Inicializa animações de entrada
+        AOS.init({ duration: 800, once: true });
 
         function filterCategory(category, element) {
             const cards = document.querySelectorAll('.p-card');
@@ -251,13 +241,14 @@
             
             cards.forEach(card => {
                 const cardCategory = card.getAttribute('data-category');
-                card.style.display = (category === 'todos' || cardCategory === category) ? 'flex' : 'none';
+                if (category === 'todos' || cardCategory === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
             });
 
-            // CORREÇÃO: Força o catálogo a ficar no topo sem mostrar o banner
-            const catalogoSection = document.getElementById('catalogo');
-            catalogoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
+            // Refresh do AOS para as animações funcionarem nos itens filtrados
             AOS.refresh();
         }
 
