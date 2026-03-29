@@ -65,13 +65,11 @@
             display: flex; 
             flex-direction: column; 
             gap: 15px;
+            max-height: calc(100vh - var(--header-h) - 40px);
         }
 
         .viewer-title-container {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            gap: 15px;
+            display: flex; align-items: center; text-align: center; gap: 15px; flex-shrink: 0;
         }
         .viewer-title-container::before, .viewer-title-container::after {
             content: ""; flex: 1; height: 1px; background: #cbd5e1;
@@ -83,26 +81,25 @@
         .iframe-wrapper {
             position: relative;
             flex: 1; 
-            min-height: 380px; /* Ajuste para igualar ao container da direita */
             border-radius: 20px;
             background: #fff;
             box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 10px 25px rgba(0,0,0,0.05);
             overflow: hidden;
+            min-height: 0;
         }
 
         #main-iframe { width: 100%; height: 100%; border: none; }
 
-        /* Botão Flutuante (Ajustado para o topo no Mobile) */
         .floating-scroll-btn {
             position: absolute;
-            top: 20px; /* Movido para o começo do fundo rosa */
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 10;
             background: rgba(37, 99, 235, 0.85);
             color: white;
             border: none;
-            padding: 8px 18px;
+            padding: 10px 20px;
             border-radius: 50px;
             font-size: 10px;
             font-weight: 800;
@@ -126,24 +123,25 @@
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 12px;
-            height: 100px; /* Reduzido levemente para alinhar o fundo */
+            height: 90px;
             flex-shrink: 0;
         }
         
         .thumb-item { 
-            border-radius: 15px; cursor: pointer; background: white; 
+            border-radius: 12px; cursor: pointer; background: white; 
             border: 2px solid #fff; transition: 0.3s; 
             display: flex; align-items: center; justify-content: center; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            height: 100%;
         }
         
         .thumb-item.active { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary); }
-        .thumb-item img { width: 85%; height: 85%; object-fit: contain; }
+        .thumb-item img { width: 80%; height: 80%; object-fit: contain; }
 
         /* --- LADO DIREITO --- */
         .details-section {
             background: var(--white);
-            padding: 35px;
+            padding: 30px;
             border-radius: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             display: flex;
@@ -157,7 +155,7 @@
 
         .promo-box {
             background: #f0f7ff; border-left: 4px solid var(--primary);
-            padding: 15px; border-radius: 12px; max-width: 95%; margin: 10px auto; text-align: left;
+            padding: 15px; border-radius: 12px; max-width: 95%; margin: 0 auto; text-align: left;
         }
         .promo-box strong { color: var(--primary); font-size: 0.7rem; text-transform: uppercase; display: block; }
         .promo-box p { font-size: 0.8rem; color: #1e40af; font-weight: 600; }
@@ -174,18 +172,38 @@
             box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
         }
 
-        /* --- AJUSTES MOBILE --- */
+        /* --- AJUSTES MOBILE PADRONIZADOS 90VH --- */
         @media (max-width: 850px) {
             body { overflow-y: auto; overflow-x: hidden; }
-            .main-content { grid-template-columns: 1fr; padding: 10px; gap: 15px; }
-            .viewer-section { height: calc(90vh - var(--header-h)); gap: 10px; }
+            .main-content { grid-template-columns: 1fr; padding: 15px; gap: 30px; }
+            
+            /* Lado Esquerdo com 90vh */
+            .viewer-section { 
+                height: 90vh; 
+                gap: 15px; 
+                max-height: none; 
+                padding-bottom: 10px;
+            }
             .floating-scroll-btn { display: flex; }
-            .iframe-wrapper { flex: 1; min-height: 0; }
-            .thumbs-grid { height: 90px; }
-            .details-section { padding: 30px 15px; margin-bottom: 30px; }
-            .product-title .line1 { font-size: 1.4rem; white-space: nowrap; }
-            .color-options { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; }
-            .color-dot { width: 22px; height: 22px; flex-shrink: 0; }
+            .iframe-wrapper { flex: 1; }
+            .thumbs-grid { height: 100px; }
+
+            /* Lado Direito com 90vh (Fim do aperto) */
+            .details-section { 
+                height: 90vh; 
+                padding: 40px 20px; 
+                justify-content: space-between; /* Espalha os itens */
+                margin-bottom: 40px;
+            }
+            
+            .product-title .line1 { font-size: 1.5rem; white-space: nowrap; margin-bottom: 5px; }
+            .promo-box { margin: 15px auto; }
+            
+            .color-options { flex-wrap: nowrap; overflow-x: auto; justify-content: space-between; gap: 8px; padding: 10px 0; }
+            .color-dot { width: 24px; height: 24px; flex-shrink: 0; }
+            
+            .description { margin: 15px 0; font-size: 0.9rem; }
+            .price-tag { font-size: 3.5rem; margin-bottom: 10px; }
         }
 
         @media (min-width: 851px) {
@@ -259,6 +277,7 @@
                         <div class="color-dot" style="background: #00625F;" onclick="mudarCorIframe('00625F')"></div>
                     </div>
                 </div>
+                <p class="description">Cerâmica de alta resistência, alto brilho e cores vivas.</p>
             </div>
 
             <div class="bottom-block">
