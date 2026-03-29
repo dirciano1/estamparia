@@ -28,7 +28,7 @@
             height: 100vh; 
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Remove o scroll principal */
+            overflow: hidden; 
         }
         
         header { 
@@ -43,7 +43,6 @@
         .brand { display: flex; align-items: center; background: var(--search-bg); height: 34px; padding: 0 15px 0 0; border-radius: 10px; position: relative; text-decoration: none; }
         .brand img { width: 65px; position: absolute; left: -10px; top: 50%; transform: translateY(-50%); }
         .brand h1 { font-size: 0.85rem; font-weight: 800; margin-left: 55px; color: var(--dark); }
-        .brand h1 span { background: linear-gradient(90deg, #ff007a, #34c759, #007aff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         .header-contact { font-weight: 700; font-size: 0.75rem; color: var(--primary); text-decoration: none; border: 2px solid var(--primary); padding: 6px 15px; border-radius: 50px; }
 
@@ -51,101 +50,125 @@
             flex: 1;
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
-            gap: 20px;
-            max-width: 1200px;
+            gap: 25px;
+            max-width: 1250px;
             margin: 0 auto;
-            padding: 15px;
+            padding: 20px;
             width: 100%;
             align-items: stretch;
-            min-height: 0; /* Importante para o scroll interno se necessário */
-        }
-
-        .viewer-section { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px;
             min-height: 0;
         }
 
-        .viewer-title-container { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-        .viewer-title-container span { font-size: 0.8rem; font-weight: 800; color: var(--dark); text-transform: uppercase; }
-        .viewer-line { flex: 1; height: 1px; background: var(--primary); opacity: 0.2; }
+        /* --- LADO ESQUERDO (VISUALIZADOR) --- */
+        .viewer-section { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px;
+            min-height: 0;
+        }
 
         .iframe-wrapper {
             position: relative;
-            flex: 1; /* Faz o iframe ocupar o máximo de espaço disponível sem estourar */
+            flex: 1; 
             border-radius: 20px;
-            background: linear-gradient(145deg, #ffffff, #e6e9ef);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            background: #fff;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 10px 25px rgba(0,0,0,0.05); /* Borda suave */
             overflow: hidden;
         }
 
-        #main-iframe { width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.5s ease; }
+        #main-iframe { width: 100%; height: 100%; border: none; }
 
         .thumbs-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
-            gap: 10px;
-            height: 15vh; /* Altura baseada na tela */
-            max-height: 100px;
+            gap: 12px;
+            height: 110px;
             flex-shrink: 0;
         }
         
-        .thumb-item { border-radius: 12px; cursor: pointer; background: white; border: 2px solid transparent; transition: 0.2s; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .thumb-item:hover { border-color: var(--primary); }
-        .thumb-item img { width: 80%; height: 80%; object-fit: contain; }
+        .thumb-item { 
+            border-radius: 15px; 
+            cursor: pointer; 
+            background: white; 
+            border: 1px solid rgba(0,0,0,0.08); /* Borda mais visível nas thumbs */
+            transition: 0.2s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .thumb-item:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .thumb-item img { width: 85%; height: 85%; object-fit: contain; }
 
-        /* Lado Direito */
+        /* --- LADO DIREITO (INFORMAÇÕES) --- */
         .details-section {
             background: var(--white);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 35px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: space-between; /* Espalha os blocos para tirar o vazio branco */
             min-height: 0;
         }
 
-        .product-title { font-size: 1.4rem; color: var(--dark); font-weight: 800; margin-bottom: 5px; }
+        /* Título em duas linhas */
+        .product-title { color: var(--dark); line-height: 1.1; margin-bottom: 5px; }
+        .product-title .line1 { display: block; font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+        .product-title .line2 { display: block; font-size: 1.2rem; font-weight: 600; color: #64748b; }
 
         .promo-box {
             background: #f0f7ff;
             border-left: 4px solid var(--primary);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0; /* Espaçamento extra */
         }
-        .promo-box strong { color: var(--primary); font-size: 0.65rem; text-transform: uppercase; display: block; }
-        .promo-box p { font-size: 0.75rem; color: #1e40af; font-weight: 600; }
+        .promo-box strong { color: var(--primary); font-size: 0.75rem; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .promo-box p { font-size: 0.85rem; color: #1e40af; font-weight: 600; line-height: 1.4; }
 
-        .color-selector-label { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
-        .color-options { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-        .color-dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0; }
+        .color-selector-container { margin: 15px 0; }
+        .color-selector-label { font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; color: #94a3b8; }
+        .color-options { display: flex; gap: 10px; flex-wrap: wrap; }
+        .color-dot { 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            border: 2px solid white; 
+            box-shadow: 0 0 0 1px #e2e8f0; 
+            transition: 0.2s;
+        }
+        .color-dot:hover { transform: scale(1.2); box-shadow: 0 0 0 2px var(--primary); }
 
-        .description { font-size: 0.8rem; line-height: 1.4; color: #64748b; margin-bottom: 10px; }
+        .description { font-size: 0.9rem; line-height: 1.5; color: #64748b; margin-bottom: 20px; }
         
-        .price-tag { font-size: 2.5rem; color: var(--success); font-weight: 800; text-align: center; display: block; margin-bottom: 10px; }
+        .price-container { text-align: center; margin-bottom: 5px; }
+        .price-tag { font-size: 3.5rem; color: var(--success); font-weight: 800; letter-spacing: -2px; display: block; }
 
         .buy-btn {
             background: var(--primary);
             color: white;
-            height: 50px;
-            border-radius: 15px;
+            height: 60px;
+            border-radius: 18px;
             font-weight: 700;
+            font-size: 1.1rem;
             text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
             transition: 0.3s;
         }
+        .buy-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
 
         @media (max-width: 850px) {
             body { overflow: auto; height: auto; }
             .main-content { grid-template-columns: 1fr; }
-            .iframe-wrapper { height: 300px; }
-            .thumbs-grid { height: 80px; }
+            .iframe-wrapper { height: 350px; }
+            .details-section { padding: 25px; }
         }
     </style>
 </head>
@@ -168,7 +191,7 @@
             </div>
             
             <div class="iframe-wrapper">
-                <iframe id="main-iframe" src="https://dirciano1.github.io/estamparia/app/caneca_pro.html#Jce3aS0|D30E15|ffebee" onload="this.style.opacity='1'"></iframe>
+                <iframe id="main-iframe" src="https://dirciano1.github.io/estamparia/app/caneca_pro.html#Jce3aS0|D30E15|ffebee"></iframe>
             </div>
             
             <div class="thumbs-grid">
@@ -188,31 +211,39 @@
         </section>
 
         <section class="details-section">
-            <div>
-                <h2 class="product-title">Caneca Alça & Borda Colorida</h2>
+            <div class="details-top">
+                <h2 class="product-title">
+                    <span class="line1">Caneca de Porcelana</span>
+                    <span class="line2">Com Alça e Borda Colorida</span>
+                </h2>
+                
                 <div class="promo-box">
                     <strong>Personalização Grátis</strong>
-                    <p>Artes exclusivas sem custo adicional!</p>
+                    <p>Artes exclusivas com suas fotos e frases favoritas SEM CUSTO ADICIONAL!</p>
                 </div>
 
-                <div class="color-selector-label">Cores Disponíveis:</div>
-                <div class="color-options">
-                    <div class="color-dot" style="background: #8CC63F;" onclick="mudarCorIframe('8CC63F')"></div>
-                    <div class="color-dot" style="background: #F4ACC4;" onclick="mudarCorIframe('F4ACC4')"></div>
-                    <div class="color-dot" style="background: #1A1A1B;" onclick="mudarCorIframe('1A1A1B')"></div>
-                    <div class="color-dot" style="background: #151B4E;" onclick="mudarCorIframe('151B4E')"></div>
-                    <div class="color-dot" style="background: #FF6600;" onclick="mudarCorIframe('FF6600')"></div>
-                    <div class="color-dot" style="background: #FFD700;" onclick="mudarCorIframe('FFD700')"></div>
-                    <div class="color-dot" style="background: #D30E15;" onclick="mudarCorIframe('D30E15')"></div>
-                    <div class="color-dot" style="background: #009CDE;" onclick="mudarCorIframe('009CDE')"></div>
-                    <div class="color-dot" style="background: #00625F;" onclick="mudarCorIframe('00625F')"></div>
+                <div class="color-selector-container">
+                    <span class="color-selector-label">Escolha sua cor favorita:</span>
+                    <div class="color-options">
+                        <div class="color-dot" style="background: #8CC63F;" onclick="mudarCorIframe('8CC63F')"></div>
+                        <div class="color-dot" style="background: #F4ACC4;" onclick="mudarCorIframe('F4ACC4')"></div>
+                        <div class="color-dot" style="background: #1A1A1B;" onclick="mudarCorIframe('1A1A1B')"></div>
+                        <div class="color-dot" style="background: #151B4E;" onclick="mudarCorIframe('151B4E')"></div>
+                        <div class="color-dot" style="background: #FF6600;" onclick="mudarCorIframe('FF6600')"></div>
+                        <div class="color-dot" style="background: #FFD700;" onclick="mudarCorIframe('FFD700')"></div>
+                        <div class="color-dot" style="background: #D30E15;" onclick="mudarCorIframe('D30E15')"></div>
+                        <div class="color-dot" style="background: #009CDE;" onclick="mudarCorIframe('009CDE')"></div>
+                        <div class="color-dot" style="background: #00625F;" onclick="mudarCorIframe('00625F')"></div>
+                    </div>
                 </div>
 
-                <p class="description">Cerâmica de alta resistência, acabamento em alto brilho e cores vivas.</p>
+                <p class="description">Cerâmica de alta resistência, acabamento em alto brilho e cores vivas que não desbotam.</p>
             </div>
 
-            <div>
-                <span class="price-tag">R$ 45,00</span>
+            <div class="details-bottom">
+                <div class="price-container">
+                    <span class="price-tag">R$ 45,00</span>
+                </div>
                 <a href="https://wa.me/5500000000000" target="_blank" class="buy-btn">
                     <i class="fab fa-whatsapp"></i> Comprar Agora
                 </a>
@@ -222,9 +253,7 @@
 
     <script>
         function changeModel(url) {
-            const iframe = document.getElementById('main-iframe');
-            iframe.style.opacity = '0';
-            setTimeout(() => { iframe.src = url; }, 200);
+            document.getElementById('main-iframe').src = url;
         }
 
         function mudarCorIframe(novaCor) {
