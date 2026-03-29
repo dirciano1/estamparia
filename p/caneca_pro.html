@@ -59,12 +59,33 @@
             min-height: 0;
         }
 
-        /* --- LADO ESQUERDO --- */
+        /* --- LADO ESQUERDO (Amostra 3D) --- */
         .viewer-section { 
             display: flex; 
             flex-direction: column; 
             gap: 15px;
             min-height: 0;
+        }
+
+        /* Estilo moderno para o título com riscos */
+        .viewer-title-container {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            gap: 15px;
+        }
+        .viewer-title-container::before, .viewer-title-container::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #cbd5e1;
+        }
+        .viewer-title-container span {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
 
         .iframe-wrapper {
@@ -74,6 +95,7 @@
             background: #fff;
             box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 10px 25px rgba(0,0,0,0.05);
             overflow: hidden;
+            transition: background 0.5s ease;
         }
 
         #main-iframe { width: 100%; height: 100%; border: none; }
@@ -99,7 +121,6 @@
             position: relative;
         }
         
-        /* Classe para destacar a miniatura selecionada */
         .thumb-item.active {
             border-color: var(--primary);
             box-shadow: 0 0 0 2px var(--primary), 0 8px 20px rgba(0,0,0,0.1);
@@ -176,9 +197,7 @@
     <main class="main-content">
         <section class="viewer-section">
             <div class="viewer-title-container">
-                <div class="viewer-line"></div>
                 <span>Amostra 3D</span>
-                <div class="viewer-line"></div>
             </div>
             
             <div class="iframe-wrapper">
@@ -216,15 +235,15 @@
                 <div class="color-selector-container">
                     <span class="color-selector-label">Escolha sua cor favorita:</span>
                     <div class="color-options">
-                        <div class="color-dot" style="background: #8CC63F;" onclick="mudarCorIframe('8CC63F')"></div>
-                        <div class="color-dot" style="background: #F4ACC4;" onclick="mudarCorIframe('F4ACC4')"></div>
-                        <div class="color-dot" style="background: #1A1A1B;" onclick="mudarCorIframe('1A1A1B')"></div>
-                        <div class="color-dot" style="background: #151B4E;" onclick="mudarCorIframe('151B4E')"></div>
-                        <div class="color-dot" style="background: #FF6600;" onclick="mudarCorIframe('FF6600')"></div>
-                        <div class="color-dot" style="background: #FFD700;" onclick="mudarCorIframe('FFD700')"></div>
-                        <div class="color-dot" style="background: #D30E15;" onclick="mudarCorIframe('D30E15')"></div>
-                        <div class="color-dot" style="background: #009CDE;" onclick="mudarCorIframe('009CDE')"></div>
-                        <div class="color-dot" style="background: #00625F;" onclick="mudarCorIframe('00625F')"></div>
+                        <div class="color-dot" style="background: #8CC63F;" onclick="mudarCorIframe('8CC63F')" title="Verde Limão"></div>
+                        <div class="color-dot" style="background: #F4ACC4;" onclick="mudarCorIframe('F4ACC4')" title="Rosa Claro"></div>
+                        <div class="color-dot" style="background: #1A1A1B;" onclick="mudarCorIframe('1A1A1B')" title="Preto"></div>
+                        <div class="color-dot" style="background: #151B4E;" onclick="mudarCorIframe('151B4E')" title="Azul Marinho"></div>
+                        <div class="color-dot" style="background: #FF6600;" onclick="mudarCorIframe('FF6600')" title="Laranja"></div>
+                        <div class="color-dot" style="background: #FFD700;" onclick="mudarCorIframe('FFD700')" title="Amarelo"></div>
+                        <div class="color-dot" style="background: #D30E15;" onclick="mudarCorIframe('D30E15')" title="Vermelho"></div>
+                        <div class="color-dot" style="background: #009CDE;" onclick="mudarCorIframe('009CDE')" title="Azul Celeste"></div>
+                        <div class="color-dot" style="background: #00625F;" onclick="mudarCorIframe('00625F')" title="Verde Petróleo"></div>
                     </div>
                 </div>
 
@@ -243,13 +262,23 @@
     </main>
 
     <script>
-        // Função para pintar as thumbs automaticamente com a cor de fundo do link
+        // Mapeamento de cores de fundo (pastéis) para as novas cores
+        const mapaFundos = {
+            '8CC63F': 'f1f8e9', // Verde Limão -> Fundo Verde Claro
+            'F4ACC4': 'ffebee', // Rosa Claro -> Fundo Rosa Claro
+            '1A1A1B': 'f1f5f9', // Preto -> Fundo Cinza Azulado
+            '151B4E': 'e3f2fd', // Azul Marinho -> Fundo Azul Claro
+            'FF6600': 'fff3e0', // Laranja -> Fundo Laranja Claro
+            'FFD700': 'fffde7', // Amarelo -> Fundo Amarelo Claro
+            'D30E15': 'ffebee', // Vermelho -> Fundo Vermelho Pastel
+            '009CDE': 'e0f7fa', // Azul Celeste -> Fundo Cyan Claro
+            '00625F': 'e0f2f1'  // Verde Petróleo -> Fundo Teal Claro
+        };
+
         function pintarThumbs() {
             const thumbs = document.querySelectorAll('.thumb-item');
             thumbs.forEach(thumb => {
-                // Pega a URL que está no onclick
                 const onclickAttr = thumb.getAttribute('onclick');
-                // Extrai a cor hexadecimal do fundo (última parte após o último '|')
                 const match = onclickAttr.match(/\|([a-fA-F0-9]{3,6})'/);
                 if (match && match[1]) {
                     thumb.style.backgroundColor = '#' + match[1];
@@ -258,10 +287,8 @@
         }
 
         function changeModel(el, url) {
-            // Remove classe ativa de todas e coloca na clicada
             document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
             el.classList.add('active');
-            
             document.getElementById('main-iframe').src = url;
         }
 
@@ -271,12 +298,18 @@
             if (urlAtual.includes('#')) {
                 let partes = urlAtual.split('#');
                 let params = partes[1].split('|');
+                
+                // params[0] = ID da imagem
+                // params[1] = Cor do detalhe
+                // params[2] = Cor do fundo (ajustamos conforme o mapa)
+                
                 params[1] = novaCor; 
+                params[2] = mapaFundos[novaCor] || 'ffffff'; 
+
                 iframe.src = partes[0] + '#' + params.join('|');
             }
         }
 
-        // Executa ao carregar a página
         window.onload = pintarThumbs;
     </script>
 </body>
