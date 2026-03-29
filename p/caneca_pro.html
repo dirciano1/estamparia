@@ -55,11 +55,11 @@
             flex: 1;
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
-            gap: 30px;
+            gap: 40px;
             max-width: 1250px;
             margin: 0 auto;
-            padding: 20px;
-            align-items: start; /* Alinha ao topo para evitar esticamento desnecessário */
+            padding: 30px 20px;
+            align-items: stretch;
         }
 
         .viewer-section { 
@@ -85,7 +85,8 @@
 
         .iframe-wrapper {
             position: relative;
-            height: 450px; 
+            flex: 1;
+            min-height: 400px; /* Restaurado original */
             border-radius: 25px;
             background: linear-gradient(145deg, #ffffff, #e6e9ef);
             padding: 5px;
@@ -102,7 +103,7 @@
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 12px;
-            height: 110px; 
+            height: 125px; /* Restaurado original */
         }
         
         .thumb-item { 
@@ -121,63 +122,60 @@
         .thumb-item:hover { border-color: var(--primary); transform: translateY(-3px); }
         .thumb-item img { width: 100%; height: 100%; object-fit: contain; padding: 10%; }
 
-        /* --- SEÇÃO DIREITA AJUSTADA --- */
+        /* Lado Direito */
         .details-section {
             background: var(--white);
-            padding: 25px; /* Reduzido de 35px */
+            padding: 35px;
             border-radius: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            gap: 12px; /* Espaçamento menor entre elementos */
+            justify-content: space-between; /* Garante que comece e termine igual ao lado esquerdo */
         }
 
-        .product-title { font-size: 1.6rem; color: var(--dark); font-weight: 800; line-height: 1.2; letter-spacing: -1px; margin-bottom: 5px; }
+        .product-title { font-size: 1.8rem; color: var(--dark); font-weight: 800; line-height: 1.2; letter-spacing: -1px; margin-bottom: 10px; }
 
         .promo-box {
             background: #f0f7ff;
             border-left: 4px solid var(--primary);
-            padding: 12px;
+            padding: 15px;
             border-radius: 12px;
-            margin-bottom: 5px;
         }
-        .promo-box strong { color: var(--primary); text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 2px; }
-        .promo-box p { font-size: 0.8rem; color: #1e40af; line-height: 1.3; font-weight: 600; }
+        .promo-box strong { color: var(--primary); text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px; }
+        .promo-box p { font-size: 0.85rem; color: #1e40af; line-height: 1.4; font-weight: 600; }
 
-        /* Estilo do Seletor de Cores */
-        .color-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 10px; }
-        .color-options { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-        .color-dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0; transition: 0.2s; }
+        /* Estilo Cores */
+        .color-selector-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; margin-bottom: 8px; }
+        .color-options { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+        .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0; transition: 0.2s; }
         .color-dot:hover { transform: scale(1.15); box-shadow: 0 0 0 2px var(--primary); }
-        .color-dot.active { box-shadow: 0 0 0 2px var(--primary); }
 
-        .description { font-size: 0.85rem; line-height: 1.4; color: #64748b; margin-top: 5px; }
+        .description { font-size: 0.9rem; line-height: 1.5; color: #64748b; }
         
         .price-center { text-align: center; margin: 10px 0; }
-        .price-tag { font-size: 2.8rem; color: var(--success); font-weight: 800; letter-spacing: -2px; }
+        .price-tag { font-size: 3.2rem; color: var(--success); font-weight: 800; letter-spacing: -2px; }
 
         .buy-btn {
             background: var(--primary);
             color: white;
-            height: 55px; /* Reduzido de 65px */
-            border-radius: 18px;
+            height: 65px;
+            border-radius: 20px;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 8px 15px rgba(37, 99, 235, 0.15);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15);
             transition: 0.3s;
         }
 
-        /* --- RESPONSIVIDADE MOBILE --- */
         @media (max-width: 850px) {
             .main-content { grid-template-columns: 1fr; gap: 20px; padding: 15px; }
-            .iframe-wrapper { height: 350px; }
+            .iframe-wrapper { min-height: 350px; }
             .thumbs-grid { height: 90px; }
-            .details-section { padding: 20px; }
+            .details-section { padding: 25px; }
         }
     </style>
 </head>
@@ -223,38 +221,40 @@
         </section>
 
         <section class="details-section">
-            <div>
+            <div class="details-top">
                 <h2 class="product-title">Caneca Alça & Borda Colorida</h2>
                 <div class="promo-box">
                     <strong>Personalização Grátis</strong>
                     <p>Artes exclusivas com suas fotos e frases favoritas SEM CUSTO ADICIONAL!</p>
                 </div>
+
+                <div class="color-selector-label">Cores Disponíveis:</div>
+                <div class="color-options">
+                    <div class="color-dot" style="background: #8CC63F;" onclick="mudarCorIframe('8CC63F')" title="Verde Limão"></div>
+                    <div class="color-dot" style="background: #F4ACC4;" onclick="mudarCorIframe('F4ACC4')" title="Rosa Claro"></div>
+                    <div class="color-dot" style="background: #1A1A1B;" onclick="mudarCorIframe('1A1A1B')" title="Preto"></div>
+                    <div class="color-dot" style="background: #151B4E;" onclick="mudarCorIframe('151B4E')" title="Azul Marinho"></div>
+                    <div class="color-dot" style="background: #FF6600;" onclick="mudarCorIframe('FF6600')" title="Laranja"></div>
+                    <div class="color-dot" style="background: #FFD700;" onclick="mudarCorIframe('FFD700')" title="Amarelo"></div>
+                    <div class="color-dot" style="background: #D30E15;" onclick="mudarCorIframe('D30E15')" title="Vermelho"></div>
+                    <div class="color-dot" style="background: #009CDE;" onclick="mudarCorIframe('009CDE')" title="Azul Celeste"></div>
+                    <div class="color-dot" style="background: #00625F;" onclick="mudarCorIframe('00625F')" title="Verde Petróleo"></div>
+                </div>
+
+                <p class="description">
+                    Produzida em cerâmica de alta resistência com acabamento em alto brilho. Cores vivas que não desbotam e duram para sempre.
+                </p>
             </div>
 
-            <div class="color-label">Cores Disponíveis:</div>
-            <div class="color-options">
-                <div class="color-dot" style="background: #8CC63F;" onclick="mudarCorIframe('8CC63F')" title="Verde Limão"></div>
-                <div class="color-dot" style="background: #F4ACC4;" onclick="mudarCorIframe('F4ACC4')" title="Rosa Claro"></div>
-                <div class="color-dot" style="background: #1A1A1B;" onclick="mudarCorIframe('1A1A1B')" title="Preto"></div>
-                <div class="color-dot" style="background: #151B4E;" onclick="mudarCorIframe('151B4E')" title="Azul Marinho"></div>
-                <div class="color-dot" style="background: #FF6600;" onclick="mudarCorIframe('FF6600')" title="Laranja"></div>
-                <div class="color-dot" style="background: #FFD700;" onclick="mudarCorIframe('FFD700')" title="Amarelo"></div>
-                <div class="color-dot" style="background: #D30E15;" onclick="mudarCorIframe('D30E15')" title="Vermelho"></div>
-                <div class="color-dot" style="background: #009CDE;" onclick="mudarCorIframe('009CDE')" title="Azul Celeste"></div>
-                <div class="color-dot" style="background: #00625F;" onclick="mudarCorIframe('00625F')" title="Verde Petróleo"></div>
+            <div class="details-bottom">
+                <div class="price-center">
+                    <span class="price-tag">R$ 45,00</span>
+                </div>
+
+                <a href="https://wa.me/5500000000000" target="_blank" class="buy-btn">
+                    <i class="fab fa-whatsapp"></i> Comprar Agora
+                </a>
             </div>
-
-            <p class="description">
-                Produzida em cerâmica de alta resistência com acabamento em alto brilho. Cores vivas que não desbotam e duram para sempre.
-            </p>
-
-            <div class="price-center">
-                <span class="price-tag">R$ 45,00</span>
-            </div>
-
-            <a href="https://wa.me/5500000000000" target="_blank" class="buy-btn">
-                <i class="fab fa-whatsapp"></i> Comprar Agora
-            </a>
         </section>
     </main>
 
@@ -272,28 +272,16 @@
             iframe.src = url;
         }
 
-        // Função para trocar apenas a cor no Iframe preservando o ID da imagem
         function mudarCorIframe(novaCor) {
             const iframe = document.getElementById('main-iframe');
             let urlAtual = iframe.src;
-
             if (urlAtual.includes('#')) {
                 let partes = urlAtual.split('#');
-                let base = partes[0];
                 let params = partes[1].split('|');
-
-                // params[0] = ID da imagem
-                // params[1] = Cor do detalhe (substituir)
-                // params[2] = Cor do fundo
-                
                 params[1] = novaCor; 
-
-                // Remonta a URL
-                let novaUrl = base + '#' + params.join('|');
-                iframe.src = novaUrl;
+                iframe.src = partes[0] + '#' + params.join('|');
             }
         }
     </script>
-
 </body>
 </html>
