@@ -59,7 +59,7 @@
             min-height: 0;
         }
 
-        /* --- LADO ESQUERDO (VISUALIZADOR) --- */
+        /* --- LADO ESQUERDO --- */
         .viewer-section { 
             display: flex; 
             flex-direction: column; 
@@ -72,7 +72,7 @@
             flex: 1; 
             border-radius: 20px;
             background: #fff;
-            box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 10px 25px rgba(0,0,0,0.05); /* Borda suave */
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 10px 25px rgba(0,0,0,0.05);
             overflow: hidden;
         }
 
@@ -89,78 +89,70 @@
         .thumb-item { 
             border-radius: 15px; 
             cursor: pointer; 
-            background: white; 
-            border: 1px solid rgba(0,0,0,0.08); /* Borda mais visível nas thumbs */
-            transition: 0.2s; 
+            border: 2px solid #fff; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            position: relative;
         }
-        .thumb-item:hover { border-color: var(--primary); transform: translateY(-2px); }
-        .thumb-item img { width: 85%; height: 85%; object-fit: contain; }
+        
+        /* Classe para destacar a miniatura selecionada */
+        .thumb-item.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary), 0 8px 20px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
 
-        /* --- LADO DIREITO (INFORMAÇÕES) --- */
+        .thumb-item img { width: 85%; height: 85%; object-fit: contain; z-index: 2; }
+
+        /* --- LADO DIREITO --- */
         .details-section {
             background: var(--white);
-            padding: 35px;
+            padding: 30px;
             border-radius: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Espalha os blocos para tirar o vazio branco */
+            justify-content: space-between;
             min-height: 0;
         }
 
-        /* Título em duas linhas */
-        .product-title { color: var(--dark); line-height: 1.1; margin-bottom: 5px; }
-        .product-title .line1 { display: block; font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
-        .product-title .line2 { display: block; font-size: 1.2rem; font-weight: 600; color: #64748b; }
+        .product-title { color: var(--dark); line-height: 1.1; }
+        .product-title .line1 { display: block; font-size: 1.7rem; font-weight: 800; letter-spacing: -1px; }
+        .product-title .line2 { display: block; font-size: 1.1rem; font-weight: 600; color: #64748b; }
 
         .promo-box {
             background: #f0f7ff;
             border-left: 4px solid var(--primary);
-            padding: 15px;
+            padding: 12px;
             border-radius: 12px;
-            margin: 15px 0; /* Espaçamento extra */
+            margin: 10px 0;
         }
-        .promo-box strong { color: var(--primary); font-size: 0.75rem; text-transform: uppercase; display: block; margin-bottom: 4px; }
-        .promo-box p { font-size: 0.85rem; color: #1e40af; font-weight: 600; line-height: 1.4; }
+        .promo-box strong { color: var(--primary); font-size: 0.7rem; text-transform: uppercase; display: block; }
+        .promo-box p { font-size: 0.8rem; color: #1e40af; font-weight: 600; line-height: 1.4; }
 
-        .color-selector-container { margin: 15px 0; }
-        .color-selector-label { font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; color: #94a3b8; }
-        .color-options { display: flex; gap: 10px; flex-wrap: wrap; }
+        .color-selector-container { margin: 10px 0; }
+        .color-selector-label { font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; color: #94a3b8; }
+        .color-options { display: flex; gap: 8px; flex-wrap: wrap; }
+        
         .color-dot { 
-            width: 24px; 
-            height: 24px; 
-            border-radius: 50%; 
-            cursor: pointer; 
-            border: 2px solid white; 
-            box-shadow: 0 0 0 1px #e2e8f0; 
-            transition: 0.2s;
+            width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid white; 
+            box-shadow: 0 0 0 1px #e2e8f0; transition: 0.2s;
         }
         .color-dot:hover { transform: scale(1.2); box-shadow: 0 0 0 2px var(--primary); }
 
-        .description { font-size: 0.9rem; line-height: 1.5; color: #64748b; margin-bottom: 20px; }
+        .description { font-size: 0.85rem; line-height: 1.5; color: #64748b; }
         
-        .price-container { text-align: center; margin-bottom: 5px; }
-        .price-tag { font-size: 3.5rem; color: var(--success); font-weight: 800; letter-spacing: -2px; display: block; }
+        .price-container { text-align: center; }
+        .price-tag { font-size: 3.2rem; color: var(--success); font-weight: 800; letter-spacing: -2px; display: block; }
 
         .buy-btn {
-            background: var(--primary);
-            color: white;
-            height: 60px;
-            border-radius: 18px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
-            transition: 0.3s;
+            background: var(--primary); color: white; height: 55px; border-radius: 18px; font-weight: 700;
+            text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2); transition: 0.3s;
         }
         .buy-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
 
@@ -168,7 +160,6 @@
             body { overflow: auto; height: auto; }
             .main-content { grid-template-columns: 1fr; }
             .iframe-wrapper { height: 350px; }
-            .details-section { padding: 25px; }
         }
     </style>
 </head>
@@ -195,16 +186,16 @@
             </div>
             
             <div class="thumbs-grid">
-                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#Jce3aS0|D30E15|ffebee')">
+                <div class="thumb-item active" onclick="changeModel(this, 'https://dirciano1.github.io/estamparia/app/caneca_pro.html#Jce3aS0|D30E15|ffebee')">
                     <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro.png">
                 </div>
-                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#OyXbJgI|151B4E|e3f2fd')">
+                <div class="thumb-item" onclick="changeModel(this, 'https://dirciano1.github.io/estamparia/app/caneca_pro.html#OyXbJgI|151B4E|e3f2fd')">
                     <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro2.png">
                 </div>
-                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#ySivcZC|00625F|f1f8e9')">
+                <div class="thumb-item" onclick="changeModel(this, 'https://dirciano1.github.io/estamparia/app/caneca_pro.html#ySivcZC|00625F|f1f8e9')">
                     <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro3.png">
                 </div>
-                <div class="thumb-item" onclick="changeModel('https://dirciano1.github.io/estamparia/app/caneca_pro.html#FMSt1mZ|FF6600|fff3e0')">
+                <div class="thumb-item" onclick="changeModel(this, 'https://dirciano1.github.io/estamparia/app/caneca_pro.html#FMSt1mZ|FF6600|fff3e0')">
                     <img src="https://dirciano1.github.io/estamparia/imagens/caneca_pro4.png">
                 </div>
             </div>
@@ -219,7 +210,7 @@
                 
                 <div class="promo-box">
                     <strong>Personalização Grátis</strong>
-                    <p>Artes exclusivas com suas fotos e frases favoritas SEM CUSTO ADICIONAL!</p>
+                    <p>Artes exclusivas com suas fotos e frases favoritas SEM CUSTO!</p>
                 </div>
 
                 <div class="color-selector-container">
@@ -237,7 +228,7 @@
                     </div>
                 </div>
 
-                <p class="description">Cerâmica de alta resistência, acabamento em alto brilho e cores vivas que não desbotam.</p>
+                <p class="description">Cerâmica de alta resistência, acabamento em alto brilho e cores vivas.</p>
             </div>
 
             <div class="details-bottom">
@@ -252,7 +243,25 @@
     </main>
 
     <script>
-        function changeModel(url) {
+        // Função para pintar as thumbs automaticamente com a cor de fundo do link
+        function pintarThumbs() {
+            const thumbs = document.querySelectorAll('.thumb-item');
+            thumbs.forEach(thumb => {
+                // Pega a URL que está no onclick
+                const onclickAttr = thumb.getAttribute('onclick');
+                // Extrai a cor hexadecimal do fundo (última parte após o último '|')
+                const match = onclickAttr.match(/\|([a-fA-F0-9]{3,6})'/);
+                if (match && match[1]) {
+                    thumb.style.backgroundColor = '#' + match[1];
+                }
+            });
+        }
+
+        function changeModel(el, url) {
+            // Remove classe ativa de todas e coloca na clicada
+            document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+            
             document.getElementById('main-iframe').src = url;
         }
 
@@ -266,6 +275,9 @@
                 iframe.src = partes[0] + '#' + params.join('|');
             }
         }
+
+        // Executa ao carregar a página
+        window.onload = pintarThumbs;
     </script>
 </body>
 </html>
