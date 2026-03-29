@@ -170,6 +170,31 @@
             box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
         }
 
+         /* --- EFEITO PREMIUM NO BOTÃO DE COMPRA --- */
+.buy-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid var(--primary); /* Cria a borda que aparecerá no hover */
+    position: relative;
+    overflow: hidden;
+}
+
+.buy-btn:hover {
+    background: var(--white) !important; /* Inverte o fundo para branco */
+    color: var(--primary) !important;    /* Inverte o texto/ícone para azul */
+    transform: translateY(-5px);         /* Efeito de elevação (Lift) */
+    box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3); /* Sombra mais profunda */
+}
+
+/* Garante que o ícone do WhatsApp também mude de cor no hover */
+.buy-btn:hover i {
+    color: var(--primary) !important;
+}
+
+/* Efeito de clique (feedback tátil) */
+.buy-btn:active {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(37, 99, 235, 0.2);
+}
         /* --- AJUSTES MOBILE --- */
         @media (max-width: 850px) {
             body { overflow-y: auto; overflow-x: hidden; }
